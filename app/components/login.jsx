@@ -8,6 +8,8 @@ class LoginWindow extends React.Component {
 			error: null
 		};
 
+		
+
 	}
 
 	componentDidMount () {
@@ -29,44 +31,46 @@ class LoginWindow extends React.Component {
 		var username = this.state.username;
 		var password = this.state.password;
 		
+		
 		if (username != '' && password != '') {
 			// send creds to node context
-				fdp.login(username, password).then((status) => {
-				// make sure login window is still open
-					// success -> proceed...
-					//console.log("STATUS",status);
-					//if (status == 1){
-						//windows['login'].destroy();
-						//console.log("windows destroy");
-						//}
-					//else{
-						// some type of error
-						//let msgObj = {};
-						// status is set by resolve in fdp.js...
-						//msgObj.status = status;
-						//msgObj.username = username;
-						//msgObj.password = password;
+				login(username, password).then((status,err)=>{
+					 //some type of error
 
-						//if (status == 403){
+					let msgObj = {};
+
+					 //status is set by resolve in index.js...
+
+
+						if (status == 403){
+
 							// incorrect username/pw
-							//msgObj.error = 'incorrect credentials';
-							//windows['login'].webContents.send("name", msgObj);
-						//} else {
-							// status == 0 aka server failure...
-							//msgObj.error = "server failure";
-							//windows['login'].webContents.send("name", msgObj);
-						//}
+							msgObj.error = 'incorrect credentials';
+							this.setState({
+								error: msgObj.error
+							});
 
-					//}
+						} 
+						else {
+
+							// status == 0 aka server failure...
+							msgObj.error = "server failure";
+							this.setState({
+								error: msgObj.error
+							});
+							
+						}
+
+					
+				});
 				
-			});
-			alert('placeholder');
 		}
 	}
 	
 	render() {
 		if (this.state.error) {
 			var error = (<div className="incorrect_cred">{this.state.error}</div>);
+
 		}
 		
 		return(

@@ -32,28 +32,26 @@ class FDP extends React.Component {
 			params.Email = username;
 			params.Passwd = password;
 		}
-		else if (this.refresh)
-			params.Refresh = this.refresh;
+		else if (localStorage.refresh)
+			params.Refresh = localStorage.refresh;
 		else
 			return;
 		
 		return new Promise((resolve, reject) => {
 			$.ajax({
 				rejectUnauthorized: false,
-				url: "https://dev4.fon9.com:8081/accounts/ClientLogin?auto=true&Email="+username+"&Passwd="+password+"&t=webNative",
+				url: "https://dev4.fon9.com:8081/accounts/ClientLogin",
 				method: 'POST',
 				timeout: 90000,
+				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
 				}				
 			}).done((res,success,body) =>{
 				console.log("RES",res);
-				if (!success){
-					// no response -> can't connect to FDP server -> display error
-					resolve(0);
-				}
+				
 				// if success...
-				else if (res.indexOf('Auth=') != -1) {
+				if (res.indexOf('Auth=') != -1) {
 					var creds = res.match(/Auth=[^\n]*/)[0].replace('Auth=', '').split('/');
 					this.refresh = res.match(/Refresh=[^\n]*/)[0].replace('Refresh=', '');
 
@@ -70,10 +68,15 @@ class FDP extends React.Component {
 					resolve(1);
 				}
 					// incorrect credentials -> status code is 403 -> "Error=BadAuthentication"
-				else if (body.status == 403){
-					resolve(body.status);
+				
+			}).fail((res,err,body)=>{
+				if (res.status == 403){
+					console.log("1",res);
+					// no response -> can't connect to FDP server -> display error
+					resolve(res.status);
 				}
 				else{
+					console.log("3",res);
 					// last ditch catch-all -> not success and not 403 bad auth...
 					resolve(0);
 				}
@@ -238,7 +241,7 @@ class FDP extends React.Component {
 	}
 	
 	// pull feed directly from server
-/*	getFeed(feed) {
+	getFeed(feed) {
 		return new Promise((resolve, reject) => {
 			$.ajax({
 				rejectUnauthorized: false,
@@ -249,7 +252,7 @@ class FDP extends React.Component {
 					'Authorization': 'auth=' + localStorage.auth,
 					'node': localStorage.node
 				}
-			}, (err, res, body) => {
+			}).done((err, res, body) => {
 				var data = JSON.parse(body
 					.replace(/\\'/g, "'")
 					.replace(/([\u0000-\u001F])/g, (match) => {
@@ -275,10 +278,10 @@ class FDP extends React.Component {
 				resolve(merged);
 			});
 		});
-	}*/
+	}
 	
 	// call fdp api
-/*	postFeed(feed, action, data) {
+	postFeed(feed, action, data) {
 		var params = {
 			t: 'web',
 			action: action
@@ -301,8 +304,8 @@ class FDP extends React.Component {
 				'node': localStorage.node
 			},
 			form: params
-		}, (err, res, body) => {
+		}).done((err, res, body) => {
 			// this placeholder is required to suppress network errors
 		});
-	}*/
+	}
 };
