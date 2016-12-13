@@ -48,7 +48,7 @@ class FDP extends React.Component {
 					'Content-type': 'application/x-www-form-urlencoded'
 				}				
 			}).done((res,success,body) =>{
-				console.log("RES",res);
+				
 				
 				// if success...
 				if (res.indexOf('Auth=') != -1) {
@@ -70,6 +70,9 @@ class FDP extends React.Component {
 					// incorrect credentials -> status code is 403 -> "Error=BadAuthentication"
 				
 			}).fail((res,err,body)=>{
+				if(err == "timeout"){
+					this.login();
+				}
 				if (res.status == 403){
 					console.log("1",res);
 					// no response -> can't connect to FDP server -> display error
