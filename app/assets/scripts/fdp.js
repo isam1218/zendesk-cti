@@ -22,7 +22,6 @@ class FDP extends React.Component {
 	
 	// get credentials
 	login(username, password) {
-		console.log("USER",username);
 		var params = {
 			auto: true,
 			t: 'webNative'
@@ -49,7 +48,7 @@ class FDP extends React.Component {
 				}				
 			}).done((res,success,body) =>{
 				
-				
+				console.log("SUCCESS",res);
 				// if success...
 				if (res.indexOf('Auth=') != -1) {
 					var creds = res.match(/Auth=[^\n]*/)[0].replace('Auth=', '').split('/');
@@ -67,19 +66,16 @@ class FDP extends React.Component {
 					// return promise
 					resolve(1);
 				}
-					// incorrect credentials -> status code is 403 -> "Error=BadAuthentication"
 				
 			}).fail((res,err,body)=>{
 				if(err == "timeout"){
-					this.login();
+					this.versionCheck();
 				}
 				if (res.status == 403){
-					console.log("1",res);
 					// no response -> can't connect to FDP server -> display error
 					resolve(res.status);
 				}
 				else{
-					console.log("3",res);
 					// last ditch catch-all -> not success and not 403 bad auth...
 					resolve(0);
 				}
@@ -137,7 +133,7 @@ class FDP extends React.Component {
 				if (updates.length > 0)
 					this.syncRequest(updates);
 				else
-					this.syncStatus();
+					this.syncStatus(body.status);
 			}
 			else
 				this.syncStatus(body.status);
@@ -146,7 +142,6 @@ class FDP extends React.Component {
 	
 	// retrieve feed updates
 	syncRequest(updates) {
-		console.log("UPDATES",updates);
 		$.ajax({
 			rejectUnauthorized: false,
 			url: `https://dev4.fon9.com:8081/v1/sync?t=web&${updates.join('=&')}=`,
@@ -158,7 +153,6 @@ class FDP extends React.Component {
 				'node': localStorage.node
 			}
 		}).done((res,success,body)=>{
-			
 
 			if (!success) {
 				// no connection
@@ -202,7 +196,7 @@ class FDP extends React.Component {
 				// send back to main script
 				//this.emit('sync', data);
 				
-				this.syncStatus();
+				this.syncStatus(body.status);
 			}
 			else
 				this.syncStatus(body.status);
@@ -210,9 +204,8 @@ class FDP extends React.Component {
 	}
 	
 	// check xmlhttp status before resuming sync
-	syncStatus(status = 200) {
+	syncStatus(status) {
 		this.status = status;
-		
 		switch(status) {
 			// auth error
 			case 401:
