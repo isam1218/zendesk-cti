@@ -13,7 +13,7 @@ ReactDOM.render(React.createElement(LoginWindow, null), document.getElementById(
 					// success -> proceed...
 
 					if (status == 1){
-						alert("SYNC STARTED");
+						console.log("SYNC STARTED");
 						//NEED TO RENDER app.jsx now but app.jsx needs to be modified.
 						//Example: ReactDOM.render(React.createElement(AppWindow, null), document.getElementById('body'));
 						}
