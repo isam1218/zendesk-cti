@@ -26,5 +26,5 @@ ReactDOM.render(React.createElement(LoginWindow, null), document.getElementById(
 			});	
 		});
 	}
-	login();
+	fdp.init();
 	

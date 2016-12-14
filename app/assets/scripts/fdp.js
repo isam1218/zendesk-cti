@@ -12,9 +12,7 @@ class FDP extends React.Component {
 		this.status = 0;
 	}
 	
-	init(data) {			
-		if (data.refresh)
-			this.refresh = data.refresh;
+	init() {			
 		
 		// start syncin'
 		this.versionCheck();
@@ -68,9 +66,7 @@ class FDP extends React.Component {
 				}
 				
 			}).fail((res,err,body)=>{
-				if(err == "timeout"){
-					this.versionCheck();
-				}
+
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
 					resolve(res.status);
@@ -137,7 +133,13 @@ class FDP extends React.Component {
 			}
 			else
 				this.syncStatus(body.status);
-		});
+
+		}).fail((res,err,body)=>{
+
+			if(res){
+				this.syncStatus(res.status);
+			}
+			});
 	}
 	
 	// retrieve feed updates
@@ -198,9 +200,13 @@ class FDP extends React.Component {
 				
 				this.syncStatus(body.status);
 			}
-			else
-				this.syncStatus(body.status);
-		});
+			
+		}).fail((res,err,body)=>{
+
+			if(res){
+				this.syncStatus(res.status);
+			}
+			});
 	}
 	
 	// check xmlhttp status before resuming sync
