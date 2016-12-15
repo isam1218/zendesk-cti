@@ -2,7 +2,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		concat: {
 			js: {
-				src: ['components/*.jsx'],
+				src: ['components/*.jsx', 'index.js'],
 				dest: 'bundle/components.js'
 			}
 		},
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 				tasks: ['less']
 			},
 			js: {
-				files: ['components/*.jsx'],
+				files: ['components/*.jsx', 'index.js'],
 				tasks: ['concat', 'babel']
 			}
 		}
