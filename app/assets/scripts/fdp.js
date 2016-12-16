@@ -135,6 +135,7 @@ class FDP extends React.Component {
 				this.syncStatus(body.status);
 
 		}).fail((res,err,body)=>{
+							ReactDOM.render(React.createElement(LoginWindow, null), document.getElementById('body'));
 
 			if(res){
 				this.syncStatus(res.status);
@@ -177,6 +178,7 @@ class FDP extends React.Component {
 				);
 
 				
+
 				for (let i in data) {
 					var feed = data[i];
 					var merged = [];
@@ -197,12 +199,11 @@ class FDP extends React.Component {
 				
 				// send back to main script
 				//this.emit('sync', data);
-				
+				ReactDOM.render(React.createElement(AppWindow, data), document.getElementById('body'));
 				this.syncStatus(body.status);
 			}
 			
 		}).fail((res,err,body)=>{
-
 			if(res){
 				this.syncStatus(res.status);
 			}

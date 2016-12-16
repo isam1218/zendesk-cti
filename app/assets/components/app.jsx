@@ -13,6 +13,8 @@ class AppWindow extends React.Component {
 		
 		// initial feed data from main.js
 		this.state = props;
+
+		console.log("APP PROPS DATA",this.state);
 	}
 
 	// THIS IS JUST AN EXAMPLE OF WHAT COULD BE RENDERED REFER TO HUDN LOGIC 
@@ -26,8 +28,8 @@ class AppWindow extends React.Component {
 					<div>
 						<span>Location:</span>
 						<span className="my_location" >
-							
 							<i className="material-icons">expand_more</i>
+							
 						</span>
 					</div>
 						
