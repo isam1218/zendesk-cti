@@ -145,6 +145,7 @@ class FDP extends React.Component {
 	
 	// retrieve feed updates
 	syncRequest(updates) {
+		console.log('SYNC REQUEST CALLED ! - ', updates);
 		$.ajax({
 			rejectUnauthorized: false,
 			url: `https://dev4.fon9.com:8081/v1/sync?t=web&${updates.join('=&')}=`,
@@ -198,7 +199,29 @@ class FDP extends React.Component {
 				}
 				
 				// send back to main script
+				/**** MIGHT HAVE TO REFACTOR SYNCREQUEST to wrap ajax call in new Promise to resolve data...
+					// do we wrap the final function in chain of functions (cuz login calls versionCheck calls syncRequest) into a promise (like below), or in the alternatie -> combine all into 1 func and return that as a promise????
+				
+				syncRequest(updates) {
+					return new Promise((resolve, reject) => {
+						$.ajax({
+		
+						}).done((res, success, body) => {
+							// eventually ended up w/ 'data', RETURN AS PROMISE!!!
+							resolve(data);
+						}).fail((res,err,body) => {
+							resolve(res.status);
+							this.syncStatus(res.status);
+						})
+				}
+					
+				}
+				*/
+
+
 				//this.emit('sync', data);
+				console.log('new data about to be sent to react component! - ', data);
+				// ReactDOM.render(<AppWindow />, document.getElementById('body'));
 				ReactDOM.render(React.createElement(AppWindow, data), document.getElementById('body'));
 				this.syncStatus(body.status);
 			}

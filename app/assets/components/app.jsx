@@ -10,11 +10,24 @@ class AppWindow extends React.Component {
 	
 	constructor(props) {
 		super(props);
-		
 		// initial feed data from main.js
-		this.state = props;
+		this.state = this.props;
+		// console.log('0 INITIAL props - ', this.state);
 
-		console.log("APP PROPS DATA",this.state);
+
+	}
+
+	componentWillReceiveProps() {
+		// console.log('1 props - ', this.props);
+		this.setState({
+			fdpImage: this.props.fdpImage,
+			location_status: this.props.location_status,
+			locations: this.props.locations,
+			me: this.props.me,
+			quickinbox: this.props.quickinbox,
+			settings: this.props.settings
+		})
+		// console.log('2 state after setting props - ', this.state);
 	}
 
 	// THIS IS JUST AN EXAMPLE OF WHAT COULD BE RENDERED REFER TO HUDN LOGIC 
@@ -23,8 +36,7 @@ class AppWindow extends React.Component {
 		// pass feed data down the chain as props
 		return(
 				<div id="basic" >	
-				
-				
+					{this.state.me[13].propertyValue}
 					<div>
 						<span>Location:</span>
 						<span className="my_location" >
