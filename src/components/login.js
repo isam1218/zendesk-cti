@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import fdp from './fdp';
-import $ from ''
 
 
 export default class LoginWindow extends Component {
@@ -12,7 +11,6 @@ export default class LoginWindow extends Component {
 			password: '',
 			error: null
 		};
-		console.log('*login - ', this.props);
 
 	}
 
@@ -40,15 +38,10 @@ export default class LoginWindow extends Component {
 		if (username != '' && password != '') {
 			// send creds to node context
 				fdp.login(username, password).then((status,err)=>{
-					 console.log('in login promise return !!! - ', status);
 					 //some type of error
-
 					let msgObj = {};
-
 					 //status is set by resolve in index.js...
-
 						if (status == 1){
-							// console.log("****LOGGED IN -> changing parent component!!! via this.props.changeLoginToApp(), ", this.props.login());
 							// called passed in function that changes parent component's state to change view from login -> app
 							this.props.login();
 							// DISPLAY APP!!!

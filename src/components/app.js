@@ -3,7 +3,6 @@ import LoginWindow from './login.js';
 import fdp from './fdp.js';
 import AppWindow from './appWindow.js';
 
-
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -12,33 +11,23 @@ export default class App extends Component {
       app: false
     }
     this.loginToApp = this.changeLoginToApp.bind(this);
-    // console.log('fdp - ', fdp);
-    // fdp.login(username, password).then((status) => {
-    //   if (status == 1){
-    //     console.log('sync start ');
-    //     fdp.init();
-    //     this.setState({
-    //       login: false,
-    //       app: true
-    //     })
-    //   }
-    //   else {
-    //     console.log('error logging in');
-    //   }
-    // })
   }
 
+  componentDidMount() {
+    this.dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
+      console.log('*** ---> Parent Component is receiving new data!!! - ', data);
+    })
+
+  }
+
+  // handles initialization of app upon login...
   changeLoginToApp() {
-    console.log('*APP - in changeLoginToApp! fdp is  - ', fdp);
     this.setState({
       login: false,
       app: true
     });
-    // update state w/ fdp sync?
-    // fdp.versionCheck();
-    fdp.versionCheck().then((status, err) => {
-      console.log('versioncheck promise return status = DATA???? -> - ', status);
-    })
+    // versionCheck calls -> syncRequest -> syncRequest calls syncStatus + emits data to listener here in componentDidMount 
+    fdp.versionCheck();
   }
 
   render() {
