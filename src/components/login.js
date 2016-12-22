@@ -31,6 +31,7 @@ export default class LoginWindow extends Component {
 		if (e && e.key != 'Enter')
 			return;
 		
+		// console.log('login commenced');
 		var username = this.state.username;
 		var password = this.state.password;
 		

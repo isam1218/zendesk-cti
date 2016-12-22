@@ -58,6 +58,13 @@ const fdp =  {
 				}
 				
 			}).fail((res,err,body)=>{
+				// does the below (along w/ an else if for 2nd branch) fix refresh???
+				/*
+				if (err == "timeout") {
+					console.log('timeout! refresh??? - ', err);
+					fdp.login();
+				}
+				*/
 
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
