@@ -29,7 +29,7 @@ export default class App extends Component {
       },
       locations: {
         self: {
-          name: "Fonality CTI",
+          name: this.configName,
           locationType: 'w',
           hidden: true
         }
@@ -40,6 +40,7 @@ export default class App extends Component {
     this.loginToApp = this._changeLoginToApp.bind(this);
     // need to include pkg.json module
     this.server = "https://dev4.fon9.com:8081";
+    this.configName = "Fonality CTI";
   }
 
   componentDidMount() {
@@ -90,6 +91,7 @@ export default class App extends Component {
                 icon_url: {$set: remote}
               }
             });
+            // console.log('remote avatar - ', remote);
             this.setState(updatedState);
           }
         }
@@ -97,10 +99,97 @@ export default class App extends Component {
 
 
       /**
+        LOCATIONS
+      */
+
+      if (data['locations']) {
+        // when synced delete tmp placeholder if any
+        // delete locations.temp;
+
+        // delete tmp locations...
+        // 1. delete locations
+        let updatedState = update(this.state, {
+          locations: {$set: null}
+        });
+        this.setState(updatedState);
+        // 2. recreate empty locations obj
+        let nextUpdatedState = update(this.state, {
+          locations: {$set: {}}
+        });
+        this.setState(nextUpdatedState);
+        for (let i = 0; i < data['locations'].length; i++) {
+          let location = data['locations'][i];
+          if (location.xef001type != 'delete') {
+            // don't show mobile
+            if (location.shortName == 'Mobile') {
+              location.name = 'Mobile';
+              location.hidden = true;
+            }
+            // change web name
+            else if (location.shortName == 'Web')
+              location.name = this.configName;
+            
+            location.status = {};
+            let curLocationKey = location.xpid;
+            let updatedState = update(this.state, {
+              locations: {
+                [curLocationKey]: {$set: location}
+              }
+            })
+            this.setState(updatedState);
+          }
+          else{
+            // delete locations[location.xpid];
+            // **** just sets delete location to null *** 
+            let updatedState = update(this.state, {
+              locations: {
+                [location.xpid]: {$set: null}
+              }
+            });
+            this.setState(updatedState);
+          }
+        }
+
+      }
+
+      if (data['location_status']) {
+        // attach details to each location
+        for (let i = 0; i < data['location_status'].length; i++) {
+          var status = data['location_status'][i];
+          
+          if (this.state.locations[status.xpid]){
+            let curLocationStatusXpid = status.xpid;
+            let updatedState = update(this.state, {
+              locations: {
+                [curLocationStatusXpid]: {
+                  status: {$set: status}
+                }
+              }
+            })
+            this.setState(updatedState)
+
+            // hard code mobile devices to registered
+            if (this.state.locations[status.xpid].locationType == 'm'){
+              let updatedState = update(this.state, {
+                locations: {
+                  [curLocationStatusXpid]: {
+                    status: {
+                      deviceStatus: {$set: 'r'}
+                    }
+                  }
+                }
+              })
+            }
+          }
+        }
+        
+      }
+
+      /**
         CALLS
       */
 
-    // console.log('updated state - ', this.state);
+    console.log('updated state - ', this.state);
     // listener ends...
     });
 
@@ -121,10 +210,11 @@ export default class App extends Component {
     if (this.state.app){
       // ***Uncomment below and comment above to enable refresh..
     // if (localStorage.node || localStorage.auth || this.state.app){
+      // fdp.init();
       // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
-          APP GOES HERE
+          <AppWindow locations={this.state.locations} settings={this.state.settings}/>
         </div>
       )
     }
