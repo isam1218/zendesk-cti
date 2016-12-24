@@ -23,8 +23,6 @@ export default class App extends Component {
         hudmw_webphone_speaker: '0.5',
         chat_status: 'offline', 
         chat_custom_status: '',
-        alwaysOnTop: false,
-        coords: {},
         devices: {input:[], output:[]},
       },
       locations: {
@@ -60,7 +58,7 @@ export default class App extends Component {
         for (let i = 0; i < data['me'].length; i++) {
           let curPropKey = data['me'][i].propertyKey;
           let curPropValue = data['me'][i].propertyValue;
-          // using react addon update library...
+          // using react addon update library to save all settings 
           let updatedState = update(this.state, {
             settings: {
               [curPropKey]: {$set: curPropValue}
@@ -86,13 +84,14 @@ export default class App extends Component {
           // find mine
           if (img.xpid == this.state.settings.my_pid){
             let remote = `${this.server}/v1/contact_image?pid=${img.xpid}&w=90&h=90&Authorization=${localStorage.auth}&node=${localStorage.node}&xver=${img.xef001iver}`;
+            // save avatar to settings.icon_url
             let updatedState = update(this.state, {
               settings: {
                 icon_url: {$set: remote}
               }
             });
-            // console.log('remote avatar - ', remote);
             this.setState(updatedState);
+            // console.log('setting avatar>>> - ', this.state);
           }
         }
       }
@@ -131,6 +130,7 @@ export default class App extends Component {
             
             location.status = {};
             let curLocationKey = location.xpid;
+            // save locations deep nested obj
             let updatedState = update(this.state, {
               locations: {
                 [curLocationKey]: {$set: location}
@@ -140,10 +140,10 @@ export default class App extends Component {
           }
           else{
             // delete locations[location.xpid];
-            // **** just sets delete location to null *** 
+            // **** sets delete location to undefined (or should I use null)*** 
             let updatedState = update(this.state, {
               locations: {
-                [location.xpid]: {$set: null}
+                [location.xpid]: {$set: undefined}
               }
             });
             this.setState(updatedState);
@@ -159,6 +159,7 @@ export default class App extends Component {
           
           if (this.state.locations[status.xpid]){
             let curLocationStatusXpid = status.xpid;
+            // save locations status - deep nested obj
             let updatedState = update(this.state, {
               locations: {
                 [curLocationStatusXpid]: {
@@ -186,10 +187,57 @@ export default class App extends Component {
       }
 
       /**
-        CALLS
+        NOTIFICATIONS
       */
 
-    console.log('updated state - ', this.state);
+      if (data['quickinbox']) {
+        for (let i = 0; i < data['quickinbox'].length; i++) {
+          let note = data['quickinbox'][i];
+
+          // if not a delete flag
+          if (note.xef001type != 'delete') {
+            //from today
+            if (new Date(note.time + localStorage.timeShift).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0)) {
+              switch(note.type) {
+                case 'gchat':
+                case 'chat':
+                case 'wall':
+                  note.type = 'chat';
+                case 'missed-call':
+                case 'vm':
+                  let updatedState = update(this.state, {
+                    quickinbox: {
+                      [note.xpid]: note
+                    }
+                  });
+                  this.setState(updatedState);
+              }
+            }
+          }
+          else {
+            // delete by setting to undefined???
+            // http://stackoverflow.com/questions/32884780/how-can-i-remove-an-attribute-from-a-reactjs-components-state-object
+            let updatedState = update(this.state, {
+              quickinbox: {
+                [note.xpid]: {$set: undefined}
+              }
+            })
+          }
+        }
+      }
+
+      /**
+        CALLS
+      */
+      // temporarily setting mycalls length to 0 (NEED TO SET UP CALLS DATA SYNC)
+      if (data['mycalls']){
+        let updatedState = update(this.state, {
+          mycalls: {$set: []}
+        })
+        this.setState(updatedState);
+      }
+
+      console.log('!updated state - ', this.state);
     // listener ends...
     });
 
@@ -214,7 +262,7 @@ export default class App extends Component {
       // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
-          <AppWindow locations={this.state.locations} settings={this.state.settings}/>
+          <AppWindow locations={this.state.locations} settings={this.state.settings} quickinbox={this.state.quickinbox} mycalls={this.state.mycalls}/>
         </div>
       )
     }
