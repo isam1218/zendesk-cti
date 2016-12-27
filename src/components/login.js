@@ -44,6 +44,7 @@ export default class LoginWindow extends Component {
 					 //status is set by resolve in index.js...
 						if (status == 1){
 							// called passed in function that changes parent component's state to change view from login -> app
+							console.log('successful login - back to app.js and running fdp.versionCheck()');
 							this.props.login();
 							// DISPLAY APP!!!
 							// pass state back up to app.js so app js can display appWindow

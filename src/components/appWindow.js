@@ -13,9 +13,6 @@ export default class AppWindow extends Component {
   constructor(props) {
     super(props);
     // initial feed data from main.js
-    // this.state = this.props;
-    console.log('1 INITIAL props - ', props);
-
 
   }
 
@@ -24,18 +21,11 @@ export default class AppWindow extends Component {
     this.setState({
       settings: this.props.settings,
       locations: this.props.locations,
-      quickinbox: this.props.quickinbox,
-      mycalls: this.props.mycalls
+      mycalls: this.props.mycalls,
+      avatars: this.props.avatars
     })
-    // this.setState({
-    //   fdpImage: this.props.fdpImage,
-    //   location_status: this.props.location_status,
-    //   locations: this.props.locations,
-    //   me: this.props.me,
-    //   quickinbox: this.props.quickinbox,
-    //   settings: this.props.settings
-    // })
-    console.log('2 state after setting props - ', this.state);
+
+    // console.log('2 state after setting props - ', this.state);
   }
 
   // THIS IS JUST AN EXAMPLE OF WHAT COULD BE RENDERED REFER TO HUDN LOGIC 
@@ -44,7 +34,8 @@ export default class AppWindow extends Component {
     // pass feed data down the chain as props
     // if (this.state && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
     // if location name is available -> display it
-    if (this.state && this.state.locations && Object.keys(this.state.locations).length > 1 && this.state.mycalls && this.state.mycalls.length == 0){
+    if (this.state && this.state.locations && Object.keys(this.state.locations).length > 1){
+      console.log('appWindow.js: 3a rendering app w/ data');
       // AT THIS POINT, WE'RE JUST TESTING TO GET SOME STUFF ON THE SCREEN
       var audioBtn, dialBtn, body;
       
@@ -174,6 +165,7 @@ export default class AppWindow extends Component {
 
     }
     else {
+      console.log('appWindow.js: 3b not rendering view w/ data yet...');
       // otherwise catch it when props hasn't been passed down yet
       return(
           <div id="basic" > 
