@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
+import css from '../../style/main.less';
 
 export default class AppWindow extends Component {
   // data requirements
-  // static propTypes = {
-  //   locations: React.PropTypes.object.isRequired,
-  //   settings: React.PropTypes.object.isRequired,
-  //   quickinbox: React.PropTypes.object.isRequired,
-  //   avatars: React.PropTypes.object.isRequired,
-  //   mycalls: React.PropTypes.array.isRequired
-  // }
+  static propTypes = {
+    locations: React.PropTypes.object.isRequired,
+    settings: React.PropTypes.object.isRequired,
+    avatars: React.PropTypes.object.isRequired,
+    mycalls: React.PropTypes.array.isRequired
+  }
   
   constructor(props) {
     super(props);
-    // initial feed data from main.js
-
+    // initial feed data from index.js
   }
 
   componentWillReceiveProps() {
-    // console.log('1 props - ', this.props);
+    // console.log('appWindow.js before props set as state - ', this.props);
     this.setState({
       settings: this.props.settings,
       locations: this.props.locations,
@@ -25,7 +24,7 @@ export default class AppWindow extends Component {
       avatars: this.props.avatars
     })
 
-    // console.log('2 state after setting props - ', this.state);
+    console.log('appWindow.js after props set as state - ', this.state);
   }
 
   // THIS IS JUST AN EXAMPLE OF WHAT COULD BE RENDERED REFER TO HUDN LOGIC 
@@ -35,7 +34,7 @@ export default class AppWindow extends Component {
     // if (this.state && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
     // if location name is available -> display it
     if (this.state && this.state.locations && Object.keys(this.state.locations).length > 1){
-      console.log('appWindow.js: 3a rendering app w/ data');
+      // console.log('appWindow.js: 3a rendering app w/ data  this.state is - ', this.state);
       // AT THIS POINT, WE'RE JUST TESTING TO GET SOME STUFF ON THE SCREEN
       var audioBtn, dialBtn, body;
       
@@ -165,7 +164,7 @@ export default class AppWindow extends Component {
 
     }
     else {
-      console.log('appWindow.js: 3b not rendering view w/ data yet...');
+      // console.log('appWindow.js: 3b not rendering view w/ data yet...');
       // otherwise catch it when props hasn't been passed down yet
       return(
           <div id="basic" > 

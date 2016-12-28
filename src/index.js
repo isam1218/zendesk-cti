@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-
 import App from './components/app';
 import LoginWindow from './components/login';
-import css from '../style/main.less';
 import fdp from './components/fdp.js';
+import css from '../style/main.less';
 
 // required settings
 var settings = {
@@ -22,26 +21,17 @@ var settings = {
 
 // temp location for config name
 var configName = "Fonality Zendesk CTI";
-
-// placeholder if fdp is down
-var locations = {
-	self: {
-		name: configName,
-		locationType: 'w',
-		hidden: true
-	}
-};
+var server = "https://dev4.fon9.com:8081";
 
 // other feed data
 // var quickinbox = {};
+var locations = {};
 var avatars = {};
 var mycalls = []; // must be array to facilitate sorting
-var server = "https://dev4.fon9.com:8081";
-var updates = {};
 
 // managing data changed by sync to update state which will be passed down
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
-  console.log('index.js: 1 -> Parent Component is receiving new data via listener!!! - ', data);
+  console.log('|index.js: Parent Component is receiving new data via listener - ', data);
 	/**
 		USER SETTINGS
 	*/
@@ -49,16 +39,12 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		for (let i = 0; i < data['me'].length; i++)
 			settings[data['me'][i].propertyKey] = data['me'][i].propertyValue;
 		
-		// flag as an update
-		updates.settings = settings;
-		
 	}
 	
 	if (data['settings']) {		
 		for (let i = 0; i < data['settings'].length; i++)
 			settings[data['settings'][i].key] = data['settings'][i].value;
 		
-		updates.settings = settings;
 	}
 
 
@@ -69,19 +55,15 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		for (let i = 0; i < data['fdpImage'].length; i++) {
 			var img = data['fdpImage'][i];
       var remote = `${server}/v1/contact_image?pid=${img.xpid}&w=90&h=90&Authorization=${localStorage.auth}&node=${localStorage.node}&xver=${img.xef001iver}`;
-
-			
 			// find mine
 			if (img.xpid == settings.my_pid) {
 				// https://dev4.fon9.com:8081/v1/contact_image?pid=1000015ad_1905460&w=90&h=90&Authorization=b4e0bc504a6975c5a749942b812d811de2994b484e24401b&node=fdp2.dev4.fon9.com&xver=2773840
         // store url on settings
-        updates.settings.icon_url = remote;				
+        settings.icon_url = remote;
 			}
 			else
 				avatars[img.xpid] = remote;
 		}
-		
-		updates.avatars = avatars;
 	}
 
 
@@ -90,8 +72,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	*/
 	if (data['mycalls']) {
 		processCalls(data['mycalls']);
-		
-		updates.mycalls = mycalls;
 	}
 	
 	if (data['mycalldetails']) {		
@@ -102,13 +82,10 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			for (let j = 0; j < mycalls.length; j++) {
 				if (details.xpid == mycalls[j].xpid) {
 					mycalls[j].details = details;
-					
 					break;
 				}
 			}
 		}
-		
-		updates.mycalls = mycalls;
 	}
 
 
@@ -137,7 +114,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 				delete locations[location.xpid];
 		}
 		
-		updates.locations = locations;
 	}
 	
 	if (data['location_status']) {
@@ -153,17 +129,15 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 					locations[status.xpid].status.deviceStatus = 'r';
 			}
 		}
-		
-		updates.locations = locations;
 	}
 
 
-  ReactDOM.render(<App updates={updates} />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations}  />, document.querySelector('.container'));
 });
 
 
 
-ReactDOM.render(<App updates={updates} />, document.querySelector('.container'));
+ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations}  />, document.querySelector('.container'));
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;
@@ -178,8 +152,8 @@ function processCalls(calls) {
 		
 		// adjust fdp timestamps
 		if (call.xpid) {
-			call.created += global.timeShift;
-			call.holdStart += global.timeShift;
+			call.created += localStorage.timeShift;
+			call.holdStart += localStorage.timeShift;
 		}
 		else
 			call.locationId = settings.current_location;

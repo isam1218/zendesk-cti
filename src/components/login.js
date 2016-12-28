@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import fdp from './fdp';
 
-
 export default class LoginWindow extends Component {
 	constructor(props) {
 		super(props);
@@ -19,7 +18,6 @@ export default class LoginWindow extends Component {
 	
 	_updateValue(e, property) {
 		// update state property based on input value
-		console.log(e.target.value);
 		this.setState({
 			[property]: e.target.value,
 			error: null
@@ -44,13 +42,13 @@ export default class LoginWindow extends Component {
 					 //status is set by resolve in index.js...
 						if (status == 1){
 							// called passed in function that changes parent component's state to change view from login -> app
-							console.log('successful login - back to app.js and running fdp.versionCheck()');
+							console.log('1successful login - back to app.js and running fdp.versionCheck()');
 							this.props.login();
 							// DISPLAY APP!!!
 							// pass state back up to app.js so app js can display appWindow
 						}
 						else if (status == 403){
-							console.log('BAD LOGIN INCORRECT CREDS');
+							console.log('1BAD LOGIN INCORRECT CREDS');
 							// incorrect username/pw
 							msgObj.error = 'incorrect credentials';
 							this.setState({
@@ -59,7 +57,7 @@ export default class LoginWindow extends Component {
 
 						} 
 						else {
-							console.log('BAD LOGIN SERVER FAILURE');
+							console.log('1BAD LOGIN SERVER FAILURE');
 							// status == 0 aka server failure...
 							msgObj.error = "server failure";
 							this.setState({
