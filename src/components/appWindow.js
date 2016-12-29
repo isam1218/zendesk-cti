@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import css from '../../style/main.less';
 import Popup from './popup.js';
+import Timer from './timer.js';
 
 export default class AppWindow extends Component {
   // data requirements
@@ -38,6 +39,23 @@ export default class AppWindow extends Component {
     // console.log('appWindow.js after props set as state - ', this.state);
   }
 
+  // press enter or green call button to call
+  _callNumber(e) {
+    // console.log('in _callNumber - ',e);
+    // can press enter to call
+    if (e && e.key != 'Enter')
+      return;
+    
+    if (this.state.phone != '') {
+      // this._sendAction('call', this.state.phone);
+      // WILL EVENTAULLY MAKE FDP CALL TO ACTUALLY MAKE THE CALL HERE...
+
+      this._changeScreen('call');
+
+      // e.target.blur();
+    }
+  }
+
   // change view
   _changeScreen(type = '') {
     this.setState({
@@ -47,48 +65,94 @@ export default class AppWindow extends Component {
     console.log('_changeScreen to -> ', type);
   }
 
-  // handles css depending on focus change of Number/Extension input
-  _setFocus(f) {
-    console.log('called _setFocus - ', f);
+	// [DIAL PAD SCREEN] - called on every digit input -> HOW TO ULTIMATELY IMPLEMENT THIS IF NOT USING SOFTPHONE?
+	_dtmf(digit, skip) {
+		var key = digit.toString();
+		
+		// if not direct input, append to text
+		if (!skip) {
+			this.setState({
+				phone: this.state.phone + key
+			});
+		}
+		
+		// send key to softphone
+		// if (key.length == 1)
+			// this._sendAction('dtmf', key);
+	}
+
+	// get avatar of person calling in (for [CALL SCREEN])
+	_getAvatar(call) {
+		// internal user
+		if (call.contactId) {
+			// avatar image
+			if (this.props.avatars[call.contactId]) {
+				return(<img className="avatar" src={this.props.avatars[call.contactId]} />);
+			}
+			// initials
+			else {
+				var split = call.displayName.split(' ');
+				var fName = split[0].charAt(0);
+				var lName = '';
+				
+				if (split.length > 1)
+					lName = split[split.length-1].charAt(0);
+				
+				return(
+					<div className="avatar">
+						<div className="initials">{fName + lName}</div>
+					</div>
+				);
+			}
+		}
+		// unknown
+		else
+			return (<img className="avatar" src="images/generic-avatar.png" />);
+	}
+	
+	// part of [CALL SCREEN]
+	_getStatus(call) {
+		// change text of call status based on state/type
+		switch(call.state) {
+			case 3:
+				return (
+					<div className="status">
+						On hold for (<Timer start={call.holdStart} />)
+					</div>
+				);
+			
+				break;
+			case 2:
+				return (
+					<div className="status">
+						On call for (<Timer start={call.created} />)
+					</div>
+				);
+				
+				break;
+			default:
+				// ringing
+				if (call.incoming) {
+					return (<div className="status">Incoming call</div>);
+				}
+				else {
+					return (<div className="status">Outbound call</div>);
+				}
+				
+				break;
+		}
+	}
+
+  // calls relevant popup
+  _openPopup(type) {
+    // make sure this only used in necessary areas
+    console.log('in _openPopup - ', type);
     this.setState({
-      focused: f
+      popup: type
     });
   }
-
-  // handles input event.target.value
-  _updateValue(e, property) {
-    console.log('in _updateValue - ', e.target.value);
-    this.setState({
-      [property]: e.target.value
-    })
-  }
-
-  // press enter or green call button to call
-  _callNumber(e) {
-    console.log('in _callNumber - ',e);
-    // can press enter to call
-    if (e && e.key != 'Enter')
-      return;
-    
-    if (this.state.phone != '') {
-      // this._sendAction('call', this.state.phone);
-
-      // NEED TO CHANGE TO DIALPAD SCREEN
-      // clear form + change to dialpad screen? or to call screen?
-      // this.setState({
-      //   phone: '',
-      //   screen: 'call'
-      // });
-
-      this._changeScreen('call');
-
-      e.target.blur();
-    }
-  }
-
   // parse out unwanted inputs
   _restrictInput(e) {
-    console.log('_restrictInput called - ', e);
     // convert letters and strip out unwanted chars
 		e.target.value = e.target.value
 			.replace(/[abc]/ig, 2)
@@ -102,13 +166,57 @@ export default class AppWindow extends Component {
 			.replace(/[^0-9\*\+\-()# ]/g, '');
   }
 
-  // calls relevant popup
-  _openPopup(type) {
-    console.log('in _openPopup - ', type);
+  _sendAction(action, value) {
+    switch(action){
+      case 'mute':
+      case 'hold':
+      case 'answer':
+      case 'end':
+        var mycall = {};
+        this._changeScreen('basic');
+        break;
+    }
+  }
+
+  // [BASIC SCREEN] handles css depending on focus change of Number/Extension input
+  _setFocus(f) {
     this.setState({
-      popup: type
+      focused: f
     });
   }
+
+	// [CALL SCREEN]
+	_toggleMute(call, onOffice) {
+		// conf calls, hardphone only
+		if (onOffice && call.type == 0)
+			this._sendAction('mute', call);
+		else {
+			var oldVal = this.props.settings.hudmw_webphone_mic;
+			var newVal = 0;
+			
+			// save old position when icon is clicked
+			if (oldVal != 0)
+				this._prev = oldVal;
+			// restore position
+			else if (this._prev)
+				newVal = this._prev;
+			else
+				newVal = .5;
+			
+			// this._sendAction('volume', {
+			// 	setting: 'hudmw_webphone_mic',
+			// 	value: newVal
+			// });
+		}
+	}
+
+  // handles input event.target.value
+  _updateValue(e, property) {
+    this.setState({
+      [property]: e.target.value
+    })
+  }
+
   
   // AT THIS POINT, WE'RE JUST TESTING TO GET SOME STUFF ON THE SCREEN
   render() {
@@ -159,20 +267,250 @@ export default class AppWindow extends Component {
             
             {dialBtn}
             
-            <i  onClick={() => this._callNumber()}>call</i>
+            <i className={callBtnCSS} onClick={() => this._callNumber()}>call</i>
           </div>
         </div>
       );
 
 
     }
+
     // [DIAL PAD SCREEN] {body}
     else if (this.state.screen == 'dialpad') {
-      console.log("DIAL PAD SCREEN GOES HERE!");
+			var input, actionBtn;
+			
+			// not on a call, so dialpad is just a glorified whatever
+			if (!mycall) {
+				input = (
+					<input 
+						className="input" 
+						type="text" 
+						placeholder="Enter Number or Ext." 
+						value={this.state.phone} 
+						onChange={(e) => this._updateValue(e, 'phone')} 
+						onKeyPress={(e) => this._callNumber(e)}
+						onInput={(e) => this._restrictInput(e)}
+					/>
+				);
+				
+				actionBtn = (<i className="material-icons answer" onClick={() => this._callNumber()}>call</i>);
+			}
+			else {
+				input = (
+					<input 
+						className="input" 
+						type="text" 
+						placeholder="Enter #" 
+						value={this.state.phone} 
+						onChange={(e) => this._updateValue(e, 'phone')}
+						onInput={(e) => this._restrictInput(e)}
+						onKeyPress={(e) => this._dtmf(e.key, true)}
+					/>
+				);
+				
+				actionBtn = (<i className="material-icons end" onClick={() => this._sendAction('end', mycall)}>call_end</i>);
+			}
+			
+			body = (
+				<div id="dialpad">
+					<div className="banner">
+						<i className="material-icons" onClick={() => this._changeScreen('basic')}>keyboard_arrow_left</i>
+						<span>Dialpad</span>
+					</div>
+					
+					{input}
+					
+					<div className="controls">
+						<div className="key" onClick={() => this._dtmf(1)}>
+							<div className="number">1</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(2)}>
+							<div className="number">2</div>
+							<div className="label">ABC</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(3)}>
+							<div className="number">3</div>
+							<div className="label">DEF</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(4)}>
+							<div className="number">4</div>
+							<div className="label">GHI</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(5)}>
+							<div className="number">5</div>
+							<div className="label">JKL</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(6)}>
+							<div className="number">6</div>
+							<div className="label">MNO</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(7)}>
+							<div className="number">7</div>
+							<div className="label">PQRS</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(8)}>
+							<div className="number">8</div>
+							<div className="label">TUV</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(9)}>
+							<div className="number">9</div>
+							<div className="label">WXYZ</div>
+						</div>
+						<div className="key special" onClick={() => this._dtmf('*')}>
+							<div className="number">*</div>
+						</div>
+						<div className="key" onClick={() => this._dtmf(0)}>
+							<div className="number">0</div>
+							<div className="label">+</div>
+						</div>
+						<div className="key special" onClick={() => this._dtmf('#')}>
+							<div className="number">#</div>
+						</div>
+					</div>
+					
+					<div className="buttons">
+						<i className="material-icons" onClick={() => this._changeScreen('basic')}>dialpad</i>
+						{actionBtn}
+					</div>
+				</div>
+			);
+
     }
     // [FULL VIEW ON CALL SCREEN] {body}
     else if (this.state.screen == 'call') {
+      // create a fake call obj...
+      mycall = {
+        type: 5,
+        locationId: "0_11216067",
+        incoming: false,
+        state: 3,
+        mute: false,
+        contactId: "1000015ad_1905460",
+        displayName: "Sean Rose",
+        created: 1483047916744,
+        phone: "714-469-1796"
+      }
+
       console.log('CALL SCREEN GOES HERE!');
+			var answerBtn, muteBtn;
+			
+			var audioBtnCSS = 'material-icons';
+			var moveBtnCSS = 'material-icons';
+			var holdBtnCSS = 'material-icons';
+			
+			// disable certain buttons based on context
+			var disableConf = mycall.type == 0 ? true : false;
+      var disablePhone = this.props.locations[mycall.locationId].locationType != 'w';
+      var disableMute = disablePhone && !disableConf;
+			var disableFDP = this.props.settings.chat_status == 'offline' ? true : false;
+			
+			if (this.state.popup == 'audio' || this.state.popup == 'move') {				
+				if (this.state.popup == 'audio')
+					audioBtnCSS += ' on';
+				else
+					moveBtnCSS += ' on';
+			}
+			
+			if (mycall.incoming && mycall.state == 0) {
+				// not for carrier location
+				if (this.props.locations[mycall.locationId].locationType != 'm')
+					answerBtn = (<i className="material-icons answer" onClick={() => this._sendAction('answer', mycall)}>call</i>);
+				
+				// change color of bottom bar
+				barCSS = `type${mycall.type}`;
+			}
+			
+			if (mycall.state == 3)
+				holdBtnCSS += ' on';
+			
+			if (mycall.mute || (!disablePhone && this.props.settings.hudmw_webphone_mic == 0))
+				muteBtn = (<i className='material-icons mic on'>mic_off</i>);
+			else
+				muteBtn = (<i className='material-icons mic'>mic</i>);
+		
+      // console.log('mycall - ', mycall);
+
+      // ***note that the below body has the following removed***
+      /*
+      {this._getAvatar(mycall)}
+      and
+      {this._getStatus(mycall)}
+			*/
+			body = (
+				<div id="full">				
+					<div className="banner">
+
+					</div>
+					
+					<div className="info">
+						<div className="name">{mycall.displayName}</div>
+
+						
+						<div className="controls">
+							<div 
+								className="button" 
+								onClick={() => this._sendAction('hold', mycall)}
+								disabled={disableConf}
+							>
+								<i className={holdBtnCSS}>pause</i>
+								<span className="label">hold</span>
+							</div>
+							
+							<div 
+								className="button"
+								onClick={() => this._changeScreen('dialpad')}
+								disabled={disablePhone}
+							>
+								<i className="material-icons">dialpad</i>
+								<span className="label">dialpad</span>
+							</div>
+							
+							<div 
+								className="button" 
+								onClick={() => this._openPopup('audio')}
+								disabled={disablePhone}
+							>
+								<i className={audioBtnCSS}>volume_up</i>
+								<span className="label">audio</span>
+							</div>
+							
+							<div 
+								className="button"
+								onClick={() => this._toggleMute(mycall, disablePhone)}
+								disabled={disableMute}
+							>
+								{muteBtn}
+								<span className="label">mute</span>
+							</div>
+							
+							<div 
+								className="button"
+								disabled={disableConf}
+								onClick={() => this._changeScreen('transfer')}
+							>
+								<i className="material-icons">phone_forwarded</i>
+								<span className="label">transfer</span>
+							</div>
+							
+							<div 
+								className="button" 
+								disabled={disableFDP}
+								onClick={() => this._openPopup('move')}
+							>
+								<i className={moveBtnCSS}>call_split</i>
+								<span className="label">move</span>
+							</div>
+						</div>
+						
+						<i className="material-icons end" onClick={() => this._sendAction('end', mycall)}>call_end</i>
+						
+						{answerBtn}
+					</div>
+				</div>
+			);
+
+
+      console.log('body in call - ', body);
     }
     
 
