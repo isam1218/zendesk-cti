@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import css from '../../style/main.less';
+import Popup from './popup.js';
 
 export default class AppWindow extends Component {
   // data requirements
@@ -31,7 +32,10 @@ export default class AppWindow extends Component {
       avatars: this.props.avatars
     })
 
-    console.log('appWindow.js after props set as state - ', this.state);
+    if (this.state && this.state.locations & this.state.settings){
+      console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
+    }
+    // console.log('appWindow.js after props set as state - ', this.state);
   }
 
   // change view
@@ -53,7 +57,7 @@ export default class AppWindow extends Component {
 
   // handles input event.target.value
   _updateValue(e, property) {
-    console.log('in _updateValue - ', e, property);
+    console.log('in _updateValue - ', e.target.value);
     this.setState({
       [property]: e.target.value
     })
@@ -100,7 +104,7 @@ export default class AppWindow extends Component {
 
   // calls relevant popup
   _openPopup(type) {
-    console.log('in _openPopup');
+    console.log('in _openPopup - ', type);
     this.setState({
       popup: type
     });
@@ -108,8 +112,12 @@ export default class AppWindow extends Component {
   
   // AT THIS POINT, WE'RE JUST TESTING TO GET SOME STUFF ON THE SCREEN
   render() {
-    // if (this.state && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
-    // if not on call, this is [DEFAULT SCREEN - BASIC WINDOW NO CALL]
+    var mycall = this.props.mycalls[0];
+    var popup, overlay, body, footer;
+    var barCSS = '';
+    // console.log('this.state - ', this.state); 
+
+    // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
     if (this.state && this.state.screen == 'basic' && this.state.mycalls && this.state.mycalls.length == 0 && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
       // console.log('appWindow.js: 3a rendering app w/ data  this.state is - ', this.state);
       var audioBtn, body;
@@ -119,19 +127,10 @@ export default class AppWindow extends Component {
       var callBtnCSS = 'material-icons callbtn';
       // var audioBtnCSS = 'material-icons audio';
       var dialBtn = (<i className="material-icons dialpad" onClick={() => this._changeScreen('dialpad')}>dialpad</i>);
-      // extra buttons for softphone users
-      // if (this.props.locations[this.props.settings['current_location']].locationType == 'w') {
-      //   console.log('in extra buttons if branch!');
-      //   var classy = 'material-icons audio';
-      
-      //   // if (this.state.popup == 'audio')
-      //   //   classy += ' on';
-        
-      //   // audioBtn = (<i className={classy} onClick={() => this._openPopup('audio')}>volume_up</i>);
-        
-      //   // dialBtn = (<i className="material-icons dialpad" onClick={() => this._changeScreen('dialpad')}>dialpad</i>);
-      // }
-    
+      // console.log('this.state.locations - ', this.state.locations);
+      // console.log('this.state.settings.current_location - ', this.state.settings.current_location);
+      // console.log('this.state.locations[this.state.settings.current_location] - ', this.state.locations[this.state.settings.current_location]);
+
       body = (
         <div id="basic">  
         
@@ -144,7 +143,7 @@ export default class AppWindow extends Component {
           </div>
             
           <div className="calling">
-            <div >
+            <div className={formCSS}>
               <div className="label">NUMBER/EXTENSION</div>
               <input 
                 className="number" 
@@ -165,109 +164,60 @@ export default class AppWindow extends Component {
         </div>
       );
 
-      // header is always the same; body will change
-      return(
-        <div id="app"  onClick={() => this._openPopup(null)}>
-
-        
-          <div id="header">
-            <div>
-              <div ></div>
-              FONALITY
-            </div>
-          
-            <div className="buttons">
-              
-              <div className="agentlogin">
-                <div className="tooltip"></div>
-                <i className="material-icons">headset</i>
-                
-              </div>
-            </div>
-            
-            <i className="material-icons" onClick={() => this._openPopup('preferences')}>power_settings_new</i>
-          </div>
-          
-          {body}
-          
-          
-          
-
-        </div>
-      );
-
-
-      {/*}
-      return(
-          <div id="basic" > 
-            <div>
-              <span>Location:</span>
-              <span className="my_location" >
-                <i className="material-icons">{this.state.locations[this.state.settings.current_location].name}</i>
-              </span>
-
-            </div>
-            
-            
-            <div className="calling">
-              <input 
-                className="number" 
-                type="text" 
-                placeholder="ENTER NUMBER OR EXT." 
-                value={this.state.phone} 
-                onChange={(e) => this._updateValue(e, 'phone')} 
-                onKeyPress={(e) => this._callNumber(e)}
-                onInput={(e) => this._restrictInput(e)}
-              />
-              
-              
-              <i  onClick={() => this._callNumber()}>call</i>
-            </div>
-          </div>
-      );
-      */}     
-
 
     }
+    // [DIAL PAD SCREEN] {body}
     else if (this.state.screen == 'dialpad') {
       console.log("DIAL PAD SCREEN GOES HERE!");
     }
+    // [FULL VIEW ON CALL SCREEN] {body}
     else if (this.state.screen == 'call') {
       console.log('CALL SCREEN GOES HERE!');
     }
-    else {
-      // console.log('appWindow.js: 3b not rendering view w/ data yet...');
-      // otherwise catch it when props hasn't been passed down yet
-      return(
-          <div id="basic" > 
-            <div>
-              <span>Location:</span>
-              <span className="my_location" >
-                <i className="material-icons">Location HERE</i>
-                
-              </span>
-            </div>
-            
-            {/*}
-            <div className="calling">
-              <input 
-                className="number" 
-                type="text" 
-                placeholder="ENTER NUMBER OR EXT." 
-                value={this.state.phone} 
-                onChange={(e) => this._updateValue(e, 'phone')} 
-                onKeyPress={(e) => this._callNumber(e)}
-                onInput={(e) => this._restrictInput(e)}
-              />
-              
-              
-              <i  onClick={() => this._callNumber()}>call</i>
-            </div>
-          */}
-          </div>
-        );
-      
+    
+
+    // [POPUPS] {popup} 
+    if (this.state.popup) {
+      var classy = this.state.popup + (mycall ? ' full' : ' basic');
+
+      popup = (
+        <Popup 
+          {...this.props}
+          className={classy}
+          callback={() => this._openPopup()}
+        />
+      );
+
+      overlay = (<div className="overlay"></div>);
     }
+
+    // RENDER COMPONENTS TOGETHER:
+    return(
+      <div id="app">
+        {overlay}
+        {popup}
+        <div id="header">
+          <div>
+            <div ></div>
+            FONALITY
+          </div>
+        
+          <div className="buttons">            
+          </div>
+          <div className="agentlogin">
+            <div className="tooltip"></div>
+            <i className="material-icons">headset</i>
+          </div>
+          
+          <i className="material-icons" onClick={() => this._openPopup('preferences')}>power_settings_new</i>
+        </div>
+        
+        {body}
+        
+      </div>
+    );
+
+
   }
 }
 

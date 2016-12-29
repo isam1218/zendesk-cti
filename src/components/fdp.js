@@ -86,6 +86,7 @@ const fdp =  {
 		else
 			url = `https://dev4.fon9.com:8081/v1/versionscache?t=web`;
 
+		// console.log('^versionCheck called! - ', url);
 		$.ajax({
 			rejectUnauthorized: false,
 			url: url,
@@ -97,8 +98,10 @@ const fdp =  {
 				'node': localStorage.node
 			}
 		}).done((res,success,body)=>{
+			// console.log('^version DONE - ', res, success, body.status);
 			var result = {};
 			if (!success) {
+				// console.log('^version DONE but !success - ', res, success, body.status);
 				// no connection
 				result.status = 404;
 				// restart sync process..
@@ -126,9 +129,11 @@ const fdp =  {
 					updates.push(params[i]);
 				
 				result.updates = updates;
+				// console.log('^versionCheck body.status == 200, updates.length > 0 -> syncRequest | updates.length == 0 -> syncStatus  | updates.length is -> ', updates.length);
 				if (updates.length > 0){
 					result.status = body.status;
 					// ***send to sync***
+					// console.log('^versionCheck, sending to syncRequest! w/ following updates', updates);
 					fdp.syncRequest(updates);
 				}
 				else{
@@ -138,12 +143,14 @@ const fdp =  {
 				}
 			}
 			else{
+				// console.log('^version DONE but body.status != 200 -> ', res, success, body.status);
 				result.status = body.status;
 				// fail - restart sync...
 				fdp.syncStatus(body.status);
 			}
 
 		}).fail((res,err,body)=>{
+			// console.log('^version FAIL - ', res, err, body);
 			if(res){
 				result.status = res.status;
 				// fail - restart sync...
@@ -152,6 +159,7 @@ const fdp =  {
 		});
 	},
 	syncRequest: (updates) => {
+		// console.log('^syncRequest called w/ updates - ', updates);
 		$.ajax({
 			rejectUnauthorized: false,
 			url: `https://dev4.fon9.com:8081/v1/sync?t=web&${updates.join('=&')}=`,
@@ -200,10 +208,11 @@ const fdp =  {
 				}
 			}
 
+			// console.log('final syncRequest data to be sent back to app - ', data);
 			// emit synced data...
 			fdp.emitter.emit('data_sync_update', data);
 			// then resync...
-			fdp.syncStatus(body.status);
+			fdp.syncStatus();
 
 		}).fail((res,err,body) => {
 			if (res) {
@@ -212,7 +221,7 @@ const fdp =  {
 			}
 		})
 	},
-	syncStatus: (status) => {
+	syncStatus: (status = 200) => {
 		fdp.status = status;
 		switch(status) {
 			// auth error
@@ -236,12 +245,44 @@ const fdp =  {
 			// timeout or success
 			case 0:
 			case 200:
+				// console.log('^^ syncStatus about to call versionCheck again - ', status);
 				setTimeout(() => {
 					fdp.versionCheck();
 				}, 1500);
 				
 				break;
 		}
+	},
+	// call fdp api
+	postFeed(feed, action, data) {
+		var params = {
+			t: 'web',
+			action: action
+		};
+		
+		// add optional paramters
+		if (data) {
+			for (let key in data) {
+				params[`a.${key}`] = data[key];
+			}
+		}
+		$.ajax({
+			rejectUnauthorized: false,
+			url: `https://dev4.fon9.com:8081/v1/${feed}`,
+			method: 'POST',
+			timeout: 90000,
+			headers: {
+				'Content-type': 'application/x-www-form-urlencoded',
+				'Authorization': 'auth=' + localStorage.auth,
+				'node': localStorage.node
+			},
+			form: params
+		}).done((res,success,body) => {
+			// console.log('postFeed done - ', res, success, body);
+		}).fail((res,err,body) => {
+			// fail placeholder
+			// console.log('postfeed fail - ', res, err, body);
+		});
 	}
 };
 
