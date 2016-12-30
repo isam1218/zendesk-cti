@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
 // custom span to auto-increment a timestamp //
 
-class Timer extends Component {	
+export default class Timer extends Component {	
 	// data requirements
 	static propTypes = {
 		start: React.PropTypes.number.isRequired

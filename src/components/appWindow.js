@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import ReactDOM from 'react-dom';
 import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
@@ -48,7 +49,8 @@ export default class AppWindow extends Component {
     
     if (this.state.phone != '') {
       // this._sendAction('call', this.state.phone);
-      // WILL EVENTAULLY MAKE FDP CALL TO ACTUALLY MAKE THE CALL HERE...
+      
+      // WILL EVENTAULLY MAKE FDP CALL TO ACTUALLY MAKE THE CALL (using this.state.phone) HERE...
 
       this._changeScreen('call');
 
@@ -65,21 +67,15 @@ export default class AppWindow extends Component {
     console.log('_changeScreen to -> ', type);
   }
 
-	// [DIAL PAD SCREEN] - called on every digit input -> HOW TO ULTIMATELY IMPLEMENT THIS IF NOT USING SOFTPHONE?
-	_dtmf(digit, skip) {
-		var key = digit.toString();
-		
-		// if not direct input, append to text
-		if (!skip) {
-			this.setState({
-				phone: this.state.phone + key
-			});
-		}
-		
-		// send key to softphone
-		// if (key.length == 1)
-			// this._sendAction('dtmf', key);
-	}
+  // [DIALPAD SCREEN]
+  // placeholder for dtmf - just updating this.state.phone w/ phone # to ultimately dial
+  _dial(digit, skip) {
+    if (!skip){
+      this.setState({
+        phone: this.state.phone + digit
+      });
+    }
+  }
 
 	// get avatar of person calling in (for [CALL SCREEN])
 	_getAvatar(call) {
@@ -112,6 +108,7 @@ export default class AppWindow extends Component {
 	
 	// part of [CALL SCREEN]
 	_getStatus(call) {
+    console.log('in _getStatus - ', call);
 		// change text of call status based on state/type
 		switch(call.state) {
 			case 3:
@@ -304,7 +301,7 @@ export default class AppWindow extends Component {
 						value={this.state.phone} 
 						onChange={(e) => this._updateValue(e, 'phone')}
 						onInput={(e) => this._restrictInput(e)}
-						onKeyPress={(e) => this._dtmf(e.key, true)}
+						onKeyPress={(e) => this._dial(e.key, true)}
 					/>
 				);
 				
@@ -321,49 +318,49 @@ export default class AppWindow extends Component {
 					{input}
 					
 					<div className="controls">
-						<div className="key" onClick={() => this._dtmf(1)}>
+						<div className="key" onClick={() => this._dial(1)}>
 							<div className="number">1</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(2)}>
+						<div className="key" onClick={() => this._dial(2)}>
 							<div className="number">2</div>
 							<div className="label">ABC</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(3)}>
+						<div className="key" onClick={() => this._dial(3)}>
 							<div className="number">3</div>
 							<div className="label">DEF</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(4)}>
+						<div className="key" onClick={() => this._dial(4)}>
 							<div className="number">4</div>
 							<div className="label">GHI</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(5)}>
+						<div className="key" onClick={() => this._dial(5)}>
 							<div className="number">5</div>
 							<div className="label">JKL</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(6)}>
+						<div className="key" onClick={() => this._dial(6)}>
 							<div className="number">6</div>
 							<div className="label">MNO</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(7)}>
+						<div className="key" onClick={() => this._dial(7)}>
 							<div className="number">7</div>
 							<div className="label">PQRS</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(8)}>
+						<div className="key" onClick={() => this._dial(8)}>
 							<div className="number">8</div>
 							<div className="label">TUV</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(9)}>
+						<div className="key" onClick={() => this._dial(9)}>
 							<div className="number">9</div>
 							<div className="label">WXYZ</div>
 						</div>
-						<div className="key special" onClick={() => this._dtmf('*')}>
+						<div className="key special" onClick={() => this._dial('*')}>
 							<div className="number">*</div>
 						</div>
-						<div className="key" onClick={() => this._dtmf(0)}>
+						<div className="key" onClick={() => this._dial(0)}>
 							<div className="number">0</div>
 							<div className="label">+</div>
 						</div>
-						<div className="key special" onClick={() => this._dtmf('#')}>
+						<div className="key special" onClick={() => this._dial('#')}>
 							<div className="number">#</div>
 						</div>
 					</div>
@@ -378,17 +375,18 @@ export default class AppWindow extends Component {
     }
     // [FULL VIEW ON CALL SCREEN] {body}
     else if (this.state.screen == 'call') {
-      // create a fake call obj...
+      // FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS
       mycall = {
         type: 5,
         locationId: "0_11216067",
         incoming: false,
-        state: 3,
+        state: 2,
         mute: false,
         contactId: "1000015ad_1905460",
         displayName: "Sean Rose",
         created: 1483047916744,
-        phone: "714-469-1796"
+        phone: "714-469-1796",
+        holdStart: 1483057916744
       }
 
       console.log('CALL SCREEN GOES HERE!');
@@ -399,10 +397,14 @@ export default class AppWindow extends Component {
 			var holdBtnCSS = 'material-icons';
 			
 			// disable certain buttons based on context
-			var disableConf = mycall.type == 0 ? true : false;
-      var disablePhone = this.props.locations[mycall.locationId].locationType != 'w';
-      var disableMute = disablePhone && !disableConf;
-			var disableFDP = this.props.settings.chat_status == 'offline' ? true : false;
+      var disableConf = false;
+      var disablePhone = false;
+      var disableMute = false;
+      var disableFDP = false;
+			// var disableConf = mycall.type == 0 ? true : false;
+      // var disablePhone = this.props.locations[mycall.locationId].locationType != 'w';
+      // var disableMute = disablePhone && !disableConf;
+			// var disableFDP = this.props.settings.chat_status == 'offline' ? true : false;
 			
 			if (this.state.popup == 'audio' || this.state.popup == 'move') {				
 				if (this.state.popup == 'audio')
@@ -428,23 +430,16 @@ export default class AppWindow extends Component {
 			else
 				muteBtn = (<i className='material-icons mic'>mic</i>);
 		
-      // console.log('mycall - ', mycall);
 
-      // ***note that the below body has the following removed***
-      /*
-      {this._getAvatar(mycall)}
-      and
-      {this._getStatus(mycall)}
-			*/
 			body = (
 				<div id="full">				
 					<div className="banner">
-
+            {this._getAvatar(mycall)}
 					</div>
 					
 					<div className="info">
 						<div className="name">{mycall.displayName}</div>
-
+            {this._getStatus(mycall)}
 						
 						<div className="controls">
 							<div 
@@ -512,8 +507,9 @@ export default class AppWindow extends Component {
 
       console.log('body in call - ', body);
     }
-    
 
+    // NEED TO DO [TRANSFER SCREEN]?
+    
     // [POPUPS] {popup} 
     if (this.state.popup) {
       var classy = this.state.popup + (mycall ? ' full' : ' basic');

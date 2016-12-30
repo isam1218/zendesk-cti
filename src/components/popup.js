@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import css from '../../style/main.less';
 import fdp from './fdp.js';
+import Slider from './slider.js';
 
 export default class Popup extends Component {
 	// data requirements
@@ -39,17 +40,17 @@ export default class Popup extends Component {
 				break;
 			case 'location basic':
 				// extend window if the pop-up is too big to fit
-				var popup = ReactDOM.findDOMNode(this);
-				var app = document.getElementById('app');
-				var offset = popup.offsetHeight - (app.offsetHeight - popup.offsetTop);
+				// var popup = ReactDOM.findDOMNode(this);
+				// var app = document.getElementById('app');
+				// var offset = popup.offsetHeight - (app.offsetHeight - popup.offsetTop);
 				
-				if (offset > -10) {
-					app.style.height = app.offsetHeight + offset + 10 + 'px';
-					// remote.getCurrentWindow().setContentSize(320, document.body.offsetHeight);
-				}
+				// if (offset > -10) {
+				// 	app.style.height = app.offsetHeight + offset + 10 + 'px';
+				// 	remote.getCurrentWindow().setContentSize(320, document.body.offsetHeight);
+				// }
 				
-				popup = null;				
-				app = null;				
+				// popup = null;				
+				// app = null;				
 			
 				break;
 		}
@@ -57,10 +58,10 @@ export default class Popup extends Component {
 	
 	componentWillUnmount() {
 		// revert back to normal size
-		if (this.props.className == 'location basic') {
-			document.getElementById('app').style.height = 'auto';
+		// if (this.props.className == 'location basic') {
+		// 	document.getElementById('app').style.height = 'auto';
 			// remote.getCurrentWindow().setContentSize(320, document.body.offsetHeight);
-		}
+		// }
 	}
 	
 	_showCustom() {
@@ -92,12 +93,23 @@ export default class Popup extends Component {
 		this.props.callback(null);
 	}
 	
+	// FDP CALLS in changeVolume and sendAction ARE BEING MADE BUT DATA NOT BEING RECEIVED BACK BY APP?
+
 	// used for slider callback and quick togglin'
 	_changeVolume(setting, value) {
-		ipcRenderer.send('window', {
-			action: 'volume',
-			value: {setting, value}
+		console.log('change volumne - setting, value - ', setting, value);
+		// NEED TO MAKE FDP CALL TO CHANGE volume settings...
+		fdp.postFeed('settings', 'volume', {
+			[setting] : value
 		});
+
+		// NEED TO CLOSE THIS POPUP SOMEHOW?
+		// this.props.callback(null);
+
+		// ipcRenderer.send('window', {
+		// 	action: 'volume',
+		// 	value: {setting, value}
+		// });
 	}
 	
 	_toggle(setting) {
@@ -245,7 +257,21 @@ export default class Popup extends Component {
 			
 				break;
 			case 'move':
-				var mycall = this.props.mycalls[0];
+				// var mycall = this.props.mycalls[0];
+				// HARD WIRED PHONE CALL MUST CHANGE
+				var mycall = {
+					type: 5,
+					locationId: "0_11216067",
+					incoming: false,
+					state: 2,
+					mute: false,
+					contactId: "1000015ad_1905460",
+					displayName: "Sean Rose",
+					created: 1483047916744,
+					phone: "714-469-1796",
+					holdStart: 1483057916744,
+					xpid: "0_6"
+				}
 			
 				content = (
 					<div>

@@ -266,6 +266,20 @@ const fdp =  {
 				params[`a.${key}`] = data[key];
 			}
 		}
+
+		// checking the fdp call before it's made...
+		console.log('about to make call - ', {
+			rejectUnauthorized: false,
+			url: `https://dev4.fon9.com:8081/v1/${feed}`,
+			method: 'POST',
+			timeout: 90000,
+			headers: {
+				'Content-type': 'application/x-www-form-urlencoded',
+				'Authorization': 'auth=' + localStorage.auth,
+				'node': localStorage.node
+			},
+			form: params
+		});
 		$.ajax({
 			rejectUnauthorized: false,
 			url: `https://dev4.fon9.com:8081/v1/${feed}`,
