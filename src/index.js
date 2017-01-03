@@ -113,7 +113,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			else
 				delete locations[location.xpid];
 		}
-		
 	}
 	
 	if (data['location_status']) {

@@ -1,8 +1,8 @@
 {
-  "name": "zen app",
+  "name": "Zendesk Fonality @ZI-2 (1.3.17)",
   "author": {
-    "name": "isam shabandri",
-    "email": "ishabandri@fonality.com",
+    "name": "Isam Shabandri, Sean Rose",
+    "email": "ishabandri@fonality.com, srose@fonality.com",
     "url": ""
   },
   "defaultLocale": "en",
