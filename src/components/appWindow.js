@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
+import fdp from './fdp.js';
 
 export default class AppWindow extends Component {
   // data requirements
@@ -20,37 +21,36 @@ export default class AppWindow extends Component {
       screen: 'default',
       phone: '',
       focused: false,
-      popup: null
+      popup: null,
+			my_pid: ''
     }
-    // initial feed data from index.js
   }
 
   componentWillReceiveProps() {
-    // console.log('appWindow.js before props set as state - ', this.props);
     this.setState({
       settings: this.props.settings,
       locations: this.props.locations,
       mycalls: this.props.mycalls,
-      avatars: this.props.avatars
-    })
-
-    if (this.state && this.state.locations & this.state.settings){
-      console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
-    }
-    // console.log('appWindow.js after props set as state - ', this.state);
+      avatars: this.props.avatars,
+			my_pid: this.props.settings.my_pid
+    });
+    // if (this.state && this.state.locations & this.state.settings){
+    //   console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
+    // }
+		
   }
 
   // press enter or green call button to call
   _callNumber(e) {
-    // console.log('in _callNumber - ',e);
     // can press enter to call
     if (e && e.key != 'Enter')
       return;
     
-    if (this.state.phone != '') {
-      // this._sendAction('call', this.state.phone);
-      
-      // WILL EVENTAULLY MAKE FDP CALL TO ACTUALLY MAKE THE CALL (using this.state.phone) HERE...
+    if (this.state.phone != '') {      
+      // logic if no other call is already in progress (using this.state.phone as the phone # to dial)
+			console.log('about to call this number - ', this.state.phone);
+
+			fdp.postFeed('me', 'callTo', {phoneNumber: this.state.phone});
 
       this._changeScreen('call');
 
@@ -64,7 +64,7 @@ export default class AppWindow extends Component {
       screen: type,
       phone: ''
     });
-    console.log('_changeScreen to -> ', type);
+    console.log('_changeScreen to ', type);
   }
 
   // [DIALPAD SCREEN]
@@ -76,6 +76,15 @@ export default class AppWindow extends Component {
       });
     }
   }
+
+	_endCall(call) {
+		// hang up current call
+		console.log('in _endCall w/ xpid - ', call);
+		// fdp post request to end call
+		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid});
+		// change screen back to default
+		this._changeScreen('default');
+	}
 
 	// get avatar of person calling in (for [CALL SCREEN])
 	_getAvatar(call) {
@@ -103,12 +112,12 @@ export default class AppWindow extends Component {
 		}
 		// unknown
 		else
-			return (<img className="avatar" src="images/generic-avatar.png" />);
+			return (<img className="avatar" src="../../images/generic-avatar.png" />);
 	}
 	
 	// part of [CALL SCREEN]
 	_getStatus(call) {
-    console.log('in _getStatus - ', call);
+    // console.log('in _getStatus - ', call);
 		// change text of call status based on state/type
 		switch(call.state) {
 			case 3:
@@ -120,6 +129,7 @@ export default class AppWindow extends Component {
 			
 				break;
 			case 2:
+				console.log('getstatus case 2, call.created is  - ', call.created);
 				return (
 					<div className="status">
 						On call for (<Timer start={call.created} />)
@@ -137,6 +147,18 @@ export default class AppWindow extends Component {
 				}
 				
 				break;
+		}
+	}
+
+	_holdCall(call) {
+		console.log('in hold call! - ', call);
+		// if call is not on hold
+		if (call.state !== 3){
+			// fdp request to hold call...
+			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid});
+		} else if (call.state === 3){
+			fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid, toContactId: this.state.my_pid})
+			// otherwise if call  is on hold -> unhold...
 		}
 	}
 
@@ -227,10 +249,10 @@ export default class AppWindow extends Component {
     var mycall = this.props.mycalls[0];
     var popup, overlay, body, footer;
     var barCSS = '';
-    // console.log('this.state - ', this.state); 
+    // console.log('RENDER METHOD: this.state - ', this.state); 
 
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
-    if (this.state && this.state.screen == 'default' && this.state.mycalls && this.state.mycalls.length == 0 && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
+    if (this.state && this.state.screen == 'default' &&  this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
       // console.log('appWindow.js: 3a rendering app w/ data  this.state is - ', this.state);
       var audioBtn, body;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
@@ -239,9 +261,6 @@ export default class AppWindow extends Component {
       var callBtnCSS = 'material-icons callbtn';
       // var audioBtnCSS = 'material-icons audio';
       var dialBtn = (<i className="material-icons dialpad" onClick={() => this._changeScreen('dialpad')}>dialpad</i>);
-      // console.log('this.state.locations - ', this.state.locations);
-      // console.log('this.state.settings.current_location - ', this.state.settings.current_location);
-      // console.log('this.state.locations[this.state.settings.current_location] - ', this.state.locations[this.state.settings.current_location]);
 
       body = (
         <div id="basic">  
@@ -380,24 +399,24 @@ export default class AppWindow extends Component {
 			);
 
     }
-    // [FULL VIEW ON CALL SCREEN] {body}
-    else if (this.state.screen == 'call') {
+    
+		// [ON CALL SCREEN] (full view) {body}
+    else if (this.state.screen == 'call' && mycall) {
       /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
 			// WILL HAVE TO REMOVE
-      mycall = {
-        type: 5,
-        locationId: "0_11216067",
-        incoming: false,
-        state: 2,
-        mute: false,
-        contactId: "1000015ad_1905460",
-        displayName: "Sean Rose",
-        created: 1483047916744,
-        phone: "714-469-1796",
-        holdStart: 1483057916744
-      }
+      // mycall = {
+      //   type: 5,
+      //   locationId: "0_11216067",
+      //   incoming: false,
+      //   state: 2,
+      //   mute: false,
+      //   contactId: "1000015ad_1905460",
+      //   displayName: "Sean Rose",
+      //   created: 1483047916744,
+      //   phone: "714-469-1796",
+      //   holdStart: 1483057916744
+      // }
 
-      console.log('CALL SCREEN GOES HERE!');
 			var answerBtn, muteBtn;
 			
 			var audioBtnCSS = 'material-icons';
@@ -452,7 +471,7 @@ export default class AppWindow extends Component {
 						<div className="controls">
 							<div 
 								className="button" 
-								onClick={() => this._sendAction('hold', mycall)}
+								onClick={() => this._holdCall(mycall)}
 								disabled={disableConf}
 							>
 								<i className={holdBtnCSS}>pause</i>
@@ -505,7 +524,8 @@ export default class AppWindow extends Component {
 							</div>
 						</div>
 						
-						<i className="material-icons end" onClick={() => this._sendAction('end', mycall)}>call_end</i>
+						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
+						
 						
 						{answerBtn}
 					</div>
@@ -513,10 +533,9 @@ export default class AppWindow extends Component {
 			);
 
 
-      console.log('body in call - ', body);
     }
 
-    // NEED TO DO [TRANSFER SCREEN]?
+    // NEED TO DO [TRANSFER SCREEN]
 		else if (this.state.screen == 'transfer') {
       /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
 			// WILL HAVE TO REMOVE
