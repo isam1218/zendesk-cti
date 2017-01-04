@@ -143,7 +143,7 @@ export default class AppWindow extends Component {
   // calls relevant popup
   _openPopup(type) {
     // make sure this only used in necessary areas
-    console.log('in _openPopup - ', type);
+    // console.log('in _openPopup - ', type);
     this.setState({
       popup: type
     });

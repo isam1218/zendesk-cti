@@ -79,7 +79,6 @@ export default class Popup extends Component {
 	}
 	
 	_sendAction(action, value) {
-    console.log('_sendAction should be "location", "key" - ', action, value);
     // need to CHANGE LOCATION! by passing this value ^ back to appWindow
     // make fdp call to locations
     fdp.postFeed('locations', 'select', {
@@ -97,7 +96,7 @@ export default class Popup extends Component {
 
 	// used for slider callback and quick togglin'
 	_changeVolume(setting, value) {
-		console.log('change volumne - setting, value - ', setting, value);
+		// console.log('change volumne - setting, value - ', setting, value);
 		// NEED TO MAKE FDP CALL TO CHANGE volume settings...
 		fdp.postFeed('settings', 'volume', {
 			[setting] : value
