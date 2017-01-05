@@ -1,8 +1,8 @@
 {
-  "name": "zen app",
+  "name": "Demo 1 @ZI-2 (1.4.17)",
   "author": {
-    "name": "isam shabandri",
-    "email": "ishabandri@fonality.com",
+    "name": "Isam Shabandri, Sean Rose",
+    "email": "ishabandri@fonality.com, srose@fonality.com",
     "url": ""
   },
   "defaultLocale": "en",
@@ -12,6 +12,6 @@
       "top_bar": "assets/index.html"
     }
   },
-  "version": "1.0.3",
+  "version": "1.0",
   "frameworkVersion": "2.0"
 }

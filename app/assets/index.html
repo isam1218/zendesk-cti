@@ -1,27 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8" />
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-	<link rel="stylesheet" href="bundle/styles.css" />
-	
-	<!-- libraries -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react-dom.min.js"></script>
-	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-  <script src="scripts/fdp.js"></script>
-</head>  
-<body>
-  <div id="body"></div>
-  <div id="content"></div>
-  	<script src="bundle/components.js"></script>
-	<!-- <script src="index.js"></script> -->
-	  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
-  <script>
-    // Initialise the Zendesk JavaScript API client
-    // https://developer.zendesk.com/apps/docs/apps-v2
-    var client = ZAFClient.init();
-    client.invoke('resize', { width: '350px', height: '240px' });
-  </script>
-</body>
+  <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container"></div>
+    <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+    <script>
+      // Initialise the Zendesk JavaScript API client
+      // https://developer.zendesk.com/apps/docs/apps-v2
+      var client = ZAFClient.init();
+      client.invoke('resize', { width: '350px', height: '440px' });
+    </script>
+  </body>
+  <script src="/bundle.js"></script>
 </html>
