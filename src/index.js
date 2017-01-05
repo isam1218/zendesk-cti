@@ -151,8 +151,8 @@ function processCalls(calls) {
 		
 		// adjust fdp timestamps
 		if (call.xpid) {
-			call.created += localStorage.timeShift;
-			call.holdStart += localStorage.timeShift;
+			call.created += parseInt(localStorage.timeShift);
+			call.holdStart += parseInt(localStorage.timeShift);
 		}
 		else
 			call.locationId = settings.current_location;

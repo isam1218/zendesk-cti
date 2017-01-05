@@ -131,7 +131,6 @@ export default class AppWindow extends Component {
 	
 	// part of [CALL SCREEN]
 	_getStatus(call) {
-    // console.log('in _getStatus - ', call);
 		// change text of call status based on state/type
 		switch(call.state) {
 			case 3:
@@ -144,9 +143,9 @@ export default class AppWindow extends Component {
 				break;
 			case 2:
 				// console.log('getstatus case 2, call.created is  - ', parseInt(call.created));
-						// On call for (<Timer start={call.created} />)
 				return (
 					<div className="status">
+						On call for (<Timer start={call.created} />)
 					</div>
 				);
 				
