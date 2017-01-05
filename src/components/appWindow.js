@@ -38,7 +38,20 @@ export default class AppWindow extends Component {
     //   console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
     // }
 		
+		// change screen state back to default if caller on the other side of phone call hangs up
+		if (this.props.mycalls.length == 0){
+			this.setState({
+				screen: 'default'
+			})
+		}
+		
   }
+
+	_answerCall(call) {
+		// fdp postFeed
+		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
+		// change hide of accept and end calls
+	}
 
   // press enter or green call button to call
   _callNumber(e) {
@@ -111,8 +124,9 @@ export default class AppWindow extends Component {
 			}
 		}
 		// unknown
-		else
+		else{
 			return (<img className="avatar" src="../../images/generic-avatar.png" />);
+		}
 	}
 	
 	// part of [CALL SCREEN]
@@ -129,7 +143,7 @@ export default class AppWindow extends Component {
 			
 				break;
 			case 2:
-				console.log('getstatus case 2, call.created is  - ', call.created);
+				// console.log('getstatus case 2, call.created is  - ', parseInt(call.created));
 				return (
 					<div className="status">
 						On call for (<Timer start={call.created} />)
@@ -244,16 +258,16 @@ export default class AppWindow extends Component {
   }
 
   
-  // AT THIS POINT, WE'RE JUST TESTING TO GET SOME STUFF ON THE SCREEN
   render() {
     var mycall = this.props.mycalls[0];
     var popup, overlay, body, footer;
     var barCSS = '';
-    // console.log('RENDER METHOD: this.state - ', this.state); 
+
 
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
-    if (this.state && this.state.screen == 'default' &&  this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
-      // console.log('appWindow.js: 3a rendering app w/ data  this.state is - ', this.state);
+		// if (this.props.mycalls.length === 0){
+    if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
+      // console.error('default screen - ', this.state, this.props);
       var audioBtn, body;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       // var formCSS = 'form focused';
@@ -399,23 +413,98 @@ export default class AppWindow extends Component {
 			);
 
     }
-    
-		// [ON CALL SCREEN] (full view) {body}
-    else if (this.state.screen == 'call' && mycall) {
+
+    // NEED TO DO [TRANSFER SCREEN]
+		else if (this.state.screen == 'transfer') {
       /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
 			// WILL HAVE TO REMOVE
-      // mycall = {
-      //   type: 5,
-      //   locationId: "0_11216067",
-      //   incoming: false,
-      //   state: 2,
-      //   mute: false,
-      //   contactId: "1000015ad_1905460",
-      //   displayName: "Sean Rose",
-      //   created: 1483047916744,
-      //   phone: "714-469-1796",
-      //   holdStart: 1483057916744
-      // }
+      mycall = {
+        type: 5,
+        locationId: "0_11216067",
+        incoming: false,
+        state: 2,
+        mute: false,
+        contactId: "1000015ad_1905460",
+        displayName: "Sean Rose",
+        created: 1483047916744,
+        phone: "714-469-1796",
+        holdStart: 1483057916744
+      }
+
+			// disable buttons based on length of input value
+			var disableNum = false;
+			var disableVM = false;
+			
+			if (this.state.phone == '') {
+				disableNum = true;
+				disableVM = true;
+			}
+			else {
+				var num = this.state.phone;
+				
+				// reserved numbers
+				if (num.length >= 10 || num == 0 || num == 911 || num == 8555 || (num >= 8500 && num <= 8520) || (num >= 9000 && num <= 9050))
+					disableVM = true;
+			}
+			
+			body = (
+				<div id="transfer">
+					<div className="banner">
+						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
+						<span>Transfer</span>
+					</div>
+					
+					<div className="info">
+						<div className="alert">
+							{this._getAvatar(mycall)}
+							<div className="details">
+								<div className="name">{mycall.displayName}</div>
+								{this._getStatus(mycall)}
+							</div>
+						</div>
+						
+						<div className="to">
+							<span>To:</span>
+							<input 
+								className="number" 
+								type="text" 
+								placeholder="Enter Ext or Number" 
+								value={this.state.phone} 
+								onChange={(e) => this._updateValue(e, 'phone')}
+								onInput={(e) => this._restrictInput(e)}
+							/>
+						</div>
+					</div>
+					
+					<div className="controls">
+						<div>
+							<div
+								className="button" 
+								disabled={disableNum}
+								onClick={() => this._transfer(mycall)}
+							>
+								<i className="material-icons">phone_forwarded</i>
+								<span className="label">transfer</span>
+							</div>
+							<div
+								className="button" 
+								disabled={disableVM}
+								onClick={() => this._transfer(mycall, true)}
+							>
+								<i className="material-icons">voicemail</i>
+								<span className="label">voicemail</span>
+							</div>
+						</div>
+						
+						<div className="cancel" onClick={() => this._changeScreen('default')}>cancel</div>
+					</div>
+				</div>
+			);
+		}
+
+		// [ON CALL SCREEN] (full view) {body}
+    else if (this.props.mycalls.length > 0) {
+			// console.error('CALL screen - ', this.state, this.props);
 
 			var answerBtn, muteBtn;
 			
@@ -439,11 +528,14 @@ export default class AppWindow extends Component {
 				else
 					moveBtnCSS += ' on';
 			}
+
+			// ****DO NOT SHOW ANSWER BUTTON WHEN HAVE AN OUTGOING CALL!!!!****
+			// MAKE SURE ANSWER BUTTON IS WIRED UP TO FDP!!!
 			
 			if (mycall.incoming && mycall.state == 0) {
 				// not for carrier location
 				if (this.props.locations[mycall.locationId].locationType != 'm')
-					answerBtn = (<i className="material-icons answer" onClick={() => this._sendAction('answer', mycall)}>call</i>);
+					answerBtn = (<i className="material-icons answer" onClick={() => this._answerCall(mycall)}>call</i>);
 				
 				// change color of bottom bar
 				barCSS = `type${mycall.type}`;
@@ -535,94 +627,7 @@ export default class AppWindow extends Component {
 
     }
 
-    // NEED TO DO [TRANSFER SCREEN]
-		else if (this.state.screen == 'transfer') {
-      /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
-			// WILL HAVE TO REMOVE
-      mycall = {
-        type: 5,
-        locationId: "0_11216067",
-        incoming: false,
-        state: 2,
-        mute: false,
-        contactId: "1000015ad_1905460",
-        displayName: "Sean Rose",
-        created: 1483047916744,
-        phone: "714-469-1796",
-        holdStart: 1483057916744
-      }
-
-			// disable buttons based on length of input value
-			var disableNum = false;
-			var disableVM = false;
-			
-			if (this.state.phone == '') {
-				disableNum = true;
-				disableVM = true;
-			}
-			else {
-				var num = this.state.phone;
-				
-				// reserved numbers
-				if (num.length >= 10 || num == 0 || num == 911 || num == 8555 || (num >= 8500 && num <= 8520) || (num >= 9000 && num <= 9050))
-					disableVM = true;
-			}
-			
-			body = (
-				<div id="transfer">
-					<div className="banner">
-						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
-						<span>Transfer</span>
-					</div>
-					
-					<div className="info">
-						<div className="alert">
-							{this._getAvatar(mycall)}
-							<div className="details">
-								<div className="name">{mycall.displayName}</div>
-								{this._getStatus(mycall)}
-							</div>
-						</div>
-						
-						<div className="to">
-							<span>To:</span>
-							<input 
-								className="number" 
-								type="text" 
-								placeholder="Enter Ext or Number" 
-								value={this.state.phone} 
-								onChange={(e) => this._updateValue(e, 'phone')}
-								onInput={(e) => this._restrictInput(e)}
-							/>
-						</div>
-					</div>
-					
-					<div className="controls">
-						<div>
-							<div
-								className="button" 
-								disabled={disableNum}
-								onClick={() => this._transfer(mycall)}
-							>
-								<i className="material-icons">phone_forwarded</i>
-								<span className="label">transfer</span>
-							</div>
-							<div
-								className="button" 
-								disabled={disableVM}
-								onClick={() => this._transfer(mycall, true)}
-							>
-								<i className="material-icons">voicemail</i>
-								<span className="label">voicemail</span>
-							</div>
-						</div>
-						
-						<div className="cancel" onClick={() => this._changeScreen('default')}>cancel</div>
-					</div>
-				</div>
-			);
-		}
-    
+		    
     // [POPUPS] {popup} 
     if (this.state.popup) {
       var classy = this.state.popup + (mycall ? ' full' : ' basic');

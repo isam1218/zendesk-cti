@@ -20,7 +20,7 @@ var settings = {
 };
 
 // temp location for config name
-var configName = "Fonality Zendesk CTI";
+// var configName = "Fonality Zendesk CTI";
 var server = "https://dev4.fon9.com:8081";
 
 // other feed data
@@ -104,8 +104,8 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 					location.hidden = true;
 				}
 				// change web name
-				else if (location.shortName == 'Web')
-					location.name = configName;
+				// else if (location.shortName == 'Web')
+				// 	location.name = configName;
 				
 				location.status = {};
 				locations[location.xpid] = location;
@@ -191,8 +191,9 @@ function processCalls(calls) {
 			}
 		}
 		
-		if (!found && call.displayName !== undefined)
+		if (!found && call.displayName !== undefined){
 			mycalls.push(call);
+		}
 	}
 	
 	if (mycalls.length > 1) {
