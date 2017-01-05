@@ -125,7 +125,7 @@ export default class AppWindow extends Component {
 		}
 		// unknown
 		else{
-			return (<img className="avatar" src="../../images/generic-avatar.png" />);
+			return (<img className="avatar" src="./generic-avatar.png" />);
 		}
 	}
 	
@@ -144,9 +144,9 @@ export default class AppWindow extends Component {
 				break;
 			case 2:
 				// console.log('getstatus case 2, call.created is  - ', parseInt(call.created));
+						// On call for (<Timer start={call.created} />)
 				return (
 					<div className="status">
-						On call for (<Timer start={call.created} />)
 					</div>
 				);
 				
