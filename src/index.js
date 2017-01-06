@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './components/app';
 import LoginWindow from './components/login';
 import fdp from './components/fdp.js';
-import css from '../style/main.less';
+// import css from '../style/main.less';
 
 // required settings
 var settings = {
@@ -151,8 +151,8 @@ function processCalls(calls) {
 		
 		// adjust fdp timestamps
 		if (call.xpid) {
-			call.created += localStorage.timeShift;
-			call.holdStart += localStorage.timeShift;
+			call.created += parseInt(sessionStorage.timeShift);
+			call.holdStart += parseInt(sessionStorage.timeShift);
 		}
 		else
 			call.locationId = settings.current_location;

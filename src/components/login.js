@@ -80,6 +80,10 @@ export default class LoginWindow extends Component {
 		
 		return(
 			<div id="login">
+				<div className="logintop">
+					<img className="loginlogo" src="./FonalityLogo.png" />
+				</div>
+
 				<div className="label">Sign in with your <strong>HUD</strong> account</div>
 				
 				<input 

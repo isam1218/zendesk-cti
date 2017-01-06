@@ -109,16 +109,16 @@ const fdp =  {
 				var params = res.split(";");
 				
 				// grab server timestamp
-				if (localStorage.timeShift === undefined) {
+				if (sessionStorage.timeShift === undefined) {
 					var date = new Date().getTime();
 					
 					// client time is ahead
 					if (date > params[0])
-						localStorage.timeShift = (date - params[0]);
+						sessionStorage.timeShift = (date - params[0]);
 					else if (params[0] > date)
-						localStorage.timeShift = (params[0] - date)*-1;
+						sessionStorage.timeShift = (params[0] - date)*-1;
 					else
-						localStorage.timeShift = 0;
+						sessionStorage.timeShift = 0;
 				}
 				
 				// compile list of this.feeds to sync				

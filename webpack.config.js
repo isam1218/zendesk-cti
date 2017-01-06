@@ -3,7 +3,7 @@ var path = require('path');
 const PATHS = {
   app: './src/index.js',
   html: './src/index.html',
-  dist: path.join(__dirname, 'dist', 'assets')
+  dist: path.join(__dirname, 'app', 'assets')
 };
 
 module.exports = {
