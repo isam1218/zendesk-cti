@@ -256,21 +256,21 @@ export default class Popup extends Component {
 			
 				break;
 			case 'move':
-				// var mycall = this.props.mycalls[0];
+				var mycall = this.props.mycalls[0];
 				// HARD WIRED PHONE CALL MUST CHANGE
-				var mycall = {
-					type: 5,
-					locationId: "0_11216067",
-					incoming: false,
-					state: 2,
-					mute: false,
-					contactId: "1000015ad_1905460",
-					displayName: "Sean Rose",
-					created: 1483047916744,
-					phone: "714-469-1796",
-					holdStart: 1483057916744,
-					xpid: "0_6"
-				}
+				// var mycall = {
+				// 	type: 5,
+				// 	locationId: "0_11216067",
+				// 	incoming: false,
+				// 	state: 2,
+				// 	mute: false,
+				// 	contactId: "1000015ad_1905460",
+				// 	displayName: "Sean Rose",
+				// 	created: 1483047916744,
+				// 	phone: "714-469-1796",
+				// 	holdStart: 1483057916744,
+				// 	xpid: "0_6"
+				// }
 			
 				content = (
 					<div>
