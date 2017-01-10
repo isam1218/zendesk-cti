@@ -92,33 +92,16 @@ export default class Popup extends Component {
 		this.props.callback(null);
 	}
 	
-	// FDP CALLS in changeVolume and sendAction ARE BEING MADE BUT DATA NOT BEING RECEIVED BACK BY APP?
 
 	// used for slider callback and quick togglin'
 	_changeVolume(setting, value) {
-		// console.log('change volumne - setting, value - ', setting, value);
-		// NEED TO MAKE FDP CALL TO CHANGE volume settings...
-		fdp.postFeed('settings', 'volume', {
-			[setting] : value
-		});
-
-		// NEED TO CLOSE THIS POPUP SOMEHOW?
-		// this.props.callback(null);
-
-		// ipcRenderer.send('window', {
-		// 	action: 'volume',
-		// 	value: {setting, value}
-		// });
-	}
-
-	_moveLocation(call, key) {
-		fdp.postFeed('mycalls', 'route', {
-			mycallId: call.xpid,
-			toLocationId: key,
-			variance: 'native',
-			options: '0'
-		});
-		this.props.callback(null);
+		// called by _toggle
+		if (setting.indexOf('hudmw') != -1){
+			if (setting == 'hudmw_webphone_mic')
+				fdp.updateSettings('hudmw_webphone_mic', 'update', value);
+			else if (setting == 'hudmw_webphone_speaker')
+				fdp.updateSettings('hudmw_webphone_speaker', 'update', value);
+		}
 	}
 	
 	_toggle(setting) {
@@ -132,6 +115,17 @@ export default class Popup extends Component {
 			this._changeVolume(setting, this._prev[setting]);
 		else
 			this._changeVolume(setting, .5);
+	}
+
+	_moveLocation(call, key) {
+		fdp.postFeed('mycalls', 'route', {
+			mycallId: call.xpid,
+			toLocationId: key,
+			variance: 'native',
+			options: '0'
+		});
+		// close popup...
+		this.props.callback(null);
 	}
 	
 	render() {

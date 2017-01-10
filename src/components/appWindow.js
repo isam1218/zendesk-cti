@@ -657,7 +657,7 @@ export default class AppWindow extends Component {
 
     // RENDER COMPONENTS TOGETHER:
     return(
-      <div id="app">
+		<div id="app" onClick={popup ? () => this._openPopup(null) : ''}>
         {overlay}
         {popup}
         <div id="header">
