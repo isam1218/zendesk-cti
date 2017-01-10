@@ -103,7 +103,7 @@ export default class AppWindow extends Component {
 
 	_endCall(call) {
 		// hang up current call
-		console.log('in _endCall w/ xpid - ', call);
+		// console.log('in _endCall w/ xpid - ', call);
 		// fdp post request to end call
 		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid});
 		// change screen back to default
@@ -175,7 +175,7 @@ export default class AppWindow extends Component {
 	}
 
 	_holdCall(call) {
-		console.log('in hold call! - ', call);
+		// console.log('in hold call! - ', call);
 		// if call is not on hold
 		if (call.state !== 3){
 			// fdp request to hold call...
@@ -230,25 +230,30 @@ export default class AppWindow extends Component {
 
 	// [CALL SCREEN]
 	_toggleMute(call, onOffice) {
+		var data;
 		// if webphone...
-		if (this.props.locations[this.props.settings['current_location']].locationType == 'w'){
+		if (this.state.locations[this.state.settings['current_location']].locationType == 'w'){
 			// if not muted -> MUTE...
 			if (this.state.settings.hudmw_webphone_mic != "0"){
 				// save current volume for later use when unmuting...
 				localStorage.hudmw_webphone_mic = this.state.settings.hudmw_webphone_mic;
 				// set volume to 0
-				fdp.updateSettings('hudmw_webphone_mic', 'update', 0);
+				data = {'name': 'hudmw_webphone_mic', value: 0};
+				fdp.postFeed('settings', 'update', data);
 				this.setState({
 					mute: true
 				});
 			} else if (this.state.mute == true){
-				// else it is currently muted -> unmute to saved volume...
-				fdp.updateSettings('hudmw_webphone_mic', 'update', localStorage.hudmw_webphone_mic);
+				// else if already muted -> UNMUTE...
+				// default to .5 if no saved LS value
+				localStorage.hudmw_webphone_mic = localStorage.hudmw_webphone_mic ? localStorage.hudmw_webphone_mic : .5;
+				data = {'name': 'hudmw_webphone_mic', 'value': localStorage.hudmw_webphone_mic};
+				fdp.postFeed('settings', 'update', data);
 				this.setState({
 					mute: false,
 				})
 			} 
-		} else if (this.props.locations[this.props.settings['current_location']].locationType == 'o'){
+		} else if (this.state.locations[this.state.settings['current_location']].locationType == 'o'){
 			// if office phone different API call for mute?
 		} else {
 			// if mobile diff API call for mute?

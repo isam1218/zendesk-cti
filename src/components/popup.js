@@ -96,11 +96,18 @@ export default class Popup extends Component {
 	// used for slider callback and quick togglin'
 	_changeVolume(setting, value) {
 		// called by _toggle
+		var data;
 		if (setting.indexOf('hudmw') != -1){
-			if (setting == 'hudmw_webphone_mic')
-				fdp.updateSettings('hudmw_webphone_mic', 'update', value);
-			else if (setting == 'hudmw_webphone_speaker')
-				fdp.updateSettings('hudmw_webphone_speaker', 'update', value);
+			// mic...
+			if (setting == 'hudmw_webphone_mic'){
+				data = {'name': 'hudmw_webphone_mic', 'value': value};
+				fdp.postFeed('settings', 'update', data);
+			}
+			else if (setting == 'hudmw_webphone_speaker'){
+				// speaker...
+				data = {'name': 'hudmw_webphone_speaker', 'value': value};
+				fdp.postFeed('settings', 'update', data);
+			}
 		}
 	}
 	
