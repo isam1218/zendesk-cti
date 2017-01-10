@@ -247,6 +247,37 @@ const fdp =  {
 				break;
 		}
 	},
+	
+	updateSettings(type, action, model) {
+		var params = {
+					'a.name': type,
+					't': 'web',
+					'action': action
+			};
+
+		var feed = 'settings';
+	
+		if (model || model == 0) {
+				if (model.value) {
+						params['a.value'] = model.value;
+				} else {
+						params['a.value'] = model;
+				}
+		}
+	
+		$.ajax({
+				method: 'POST',
+				url: `https://dev4.fon9.com:8081/v1/${feed}`,
+				data: $.param(params),
+				headers: {
+						'Content-Type': 'application/x-www-form-urlencoded',
+						'Authorization': 'auth=' + localStorage.auth,
+						'node': localStorage.node
+				},
+				data: params
+		});
+	},
+
 	// call fdp api
 	postFeed(feed, action, data) {
 		var params = {

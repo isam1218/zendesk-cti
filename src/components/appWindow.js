@@ -22,7 +22,8 @@ export default class AppWindow extends Component {
       phone: '',
       focused: false,
       popup: null,
-			my_pid: ''
+			my_pid: '',
+			mute: '',
     }
   }
 
@@ -44,7 +45,17 @@ export default class AppWindow extends Component {
 				screen: 'default'
 			})
 		}
-		
+		// if user mutes thru hudn softphone, need to change mute button anyways
+		if (this.props.settings.hudmw_webphone_mic == "0"){
+			this.setState({
+				mute: true
+			})
+		} else {
+			this.setState({
+				mute: false
+			})
+		}
+		// console.log('this.state in appWindow, specifically settings.hudmw_webphone_mic -> ', this.props.settings.hudmw_webphone_mic);
   }
 
 	_answerCall(call) {
@@ -219,26 +230,28 @@ export default class AppWindow extends Component {
 
 	// [CALL SCREEN]
 	_toggleMute(call, onOffice) {
-		// conf calls, hardphone only
-		if (onOffice && call.type == 0)
-			this._sendAction('mute', call);
-		else {
-			var oldVal = this.props.settings.hudmw_webphone_mic;
-			var newVal = 0;
-			
-			// save old position when icon is clicked
-			if (oldVal != 0)
-				this._prev = oldVal;
-			// restore position
-			else if (this._prev)
-				newVal = this._prev;
-			else
-				newVal = .5;
-			
-			// this._sendAction('volume', {
-			// 	setting: 'hudmw_webphone_mic',
-			// 	value: newVal
-			// });
+		// if webphone...
+		if (this.props.locations[this.props.settings['current_location']].locationType == 'w'){
+			// if not muted -> MUTE...
+			if (this.state.settings.hudmw_webphone_mic != "0"){
+				// save current volume for later use when unmuting...
+				localStorage.hudmw_webphone_mic = this.state.settings.hudmw_webphone_mic;
+				// set volume to 0
+				fdp.updateSettings('hudmw_webphone_mic', 'update', 0);
+				this.setState({
+					mute: true
+				});
+			} else if (this.state.mute == true){
+				// else it is currently muted -> unmute to saved volume...
+				fdp.updateSettings('hudmw_webphone_mic', 'update', localStorage.hudmw_webphone_mic);
+				this.setState({
+					mute: false,
+				})
+			} 
+		} else if (this.props.locations[this.props.settings['current_location']].locationType == 'o'){
+			// if office phone different API call for mute?
+		} else {
+			// if mobile diff API call for mute?
 		}
 	}
 
