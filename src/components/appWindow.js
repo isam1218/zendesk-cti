@@ -274,9 +274,24 @@ export default class AppWindow extends Component {
     })
   }
 
+	_zendesk(call) {
+		console.log('ZAFClient - ', ZAFClient);
+		console.log('client = ', client);
+		var endGoal = 'search.json?query=160';
+		fdp.getZendeskRequest(endGoal);
+		// ISSUES:
+			// doesn't work without cors, using specific postman-generated crednetials for auth, 
+			// if given phone # of mycall obj -> need to return LIST OF MATCHING TICKETS (not just json data)
+			// 1. need to figure out how to format the zendesk api request
+			// 2. need to figure out what's the correct api zendesk request to make (search?, tickets? etc)
+
+
+	}
+
   
   render() {
     var mycall = this.props.mycalls[0];
+		console.log('mycall - ', mycall);
     var popup, overlay, body, footer;
     var barCSS = '';
 
@@ -291,6 +306,7 @@ export default class AppWindow extends Component {
       // var callBtnCSS = 'material-icons callbtn' + (this.state.phone != '' ? ' active' : '');
       var callBtnCSS = 'material-icons callbtn';
       // var audioBtnCSS = 'material-icons audio';
+			
       var dialBtn = (<i className="material-icons dialpad" onClick={() => this._changeScreen('dialpad')}>dialpad</i>);
 
       body = (
@@ -589,7 +605,7 @@ export default class AppWindow extends Component {
 							
 							<div 
 								className="button"
-								onClick={() => this._changeScreen('dialpad')}
+								onClick={() => this._zendesk(mycall)}
 								disabled={disablePhone}
 							>
 								<i className="material-icons">dialpad</i>

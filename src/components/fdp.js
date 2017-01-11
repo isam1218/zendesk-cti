@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import {EventEmitter} from 'fbemitter';
+import config from '../config.js';
 
 const emitter = new EventEmitter();
 
@@ -246,6 +247,26 @@ const fdp =  {
 				
 				break;
 		}
+	},
+
+	getZendeskRequest(url) {
+		var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
+			"method": "GET",
+			"beforeSend": function(xhr) {
+				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
+			},
+			"cors": false
+		}
+		$.ajax(settings).done((res) => {
+			console.log('res - ', res);
+			var resultsArray = res.results;
+		}).fail((res,err,body) => {
+			console.log('fail - ', res);
+		})
+
 	},
 	
 	// call fdp api
