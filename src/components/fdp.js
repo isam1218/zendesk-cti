@@ -268,6 +268,28 @@ const fdp =  {
 		})
 
 	},
+
+	postZendeskRequest(url) {
+		var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
+			"method": "POST",
+			"beforeSend": function(xhr) {
+				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
+			},
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"cors": false
+		}
+		$.ajax(settings).done((res) => {
+			console.log('res - ', res);
+			var resultsArray = res.results;
+		}).fail((res,err,body) => {
+			console.log('fail - ', res);
+		})
+	},
 	
 	// call fdp api
 	postFeed(feed, action, data) {
