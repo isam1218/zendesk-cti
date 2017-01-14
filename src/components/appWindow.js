@@ -4,6 +4,7 @@ import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
 import fdp from './fdp.js';
+import zendesk from './zendesk.js';
 
 export default class AppWindow extends Component {
   // data requirements
@@ -24,6 +25,7 @@ export default class AppWindow extends Component {
       popup: null,
 			my_pid: '',
 			mute: '',
+			zendeskAgentId: null
     }
   }
 
@@ -33,8 +35,10 @@ export default class AppWindow extends Component {
       locations: this.props.locations,
       mycalls: this.props.mycalls,
       avatars: this.props.avatars,
-			my_pid: this.props.settings.my_pid
+			my_pid: this.props.settings.my_pid,
+			display_name: this.props.settings.display_name
     });
+		console.log('this.props.settings - ', this.state.display_name);
     // if (this.state && this.state.locations & this.state.settings){
     //   console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
     // }
@@ -55,7 +59,24 @@ export default class AppWindow extends Component {
 				mute: false
 			})
 		}
-		// console.log('this.state in appWindow, specifically settings.hudmw_webphone_mic -> ', this.props.settings.hudmw_webphone_mic);
+		console.log('this.state in appWindow, specifically settings.hudmw_webphone_mic -> ', this.props.settings);
+		
+		if (this.state.settings){
+			// console.log('this.state - ', this.state.settings.display_name);
+			zendesk.grabMyAgentId(this.state.settings.display_name)
+				.then((status, err) => {
+					// console.log('promise return status - ', status);
+					var possibleUsersArray = status;
+					if (possibleUsersArray.length == 1){
+						// 1 single match b/w hud displayname and zendesk displayname
+							// so save agent id -> to be used in screen pop call
+							this.setState({
+								zendeskAgentId: possibleUsersArray[0].id
+							});
+							console.log('state of agent id - ', this.state.zendeskAgentId);
+					}
+				});		
+		}
   }
 
 	_answerCall(call) {
@@ -275,16 +296,54 @@ export default class AppWindow extends Component {
   }
 
 	_zendesk(call) {
-		console.log('ZAFClient - ', ZAFClient);
-		console.log('client = ', client);
-		var endGoal = 'search.json?query=160';
-		fdp.getZendeskRequest(endGoal);
+		// hopefully alreayd have agent id stored in zendesk (need agent_id + enduser_id to send POST request for user profile screen pop)
+			// @@LINK CALL CENTER AGENT TO ZD-AGENT
+			// this would accomplish step 2 below
+			// BUT!!!! HOW DO WE KNOW WHAT ZD-USER IS ASSOCIATED W/ THE CURRENTLY-LOGGED IN hudweb user (matching email addresses?)
+				// can search using display_name for now. 
+				// ****but would using a phone number, or email address be better????
+				// try a search using displayName
+		
+		// STEP 2 -> moved to componentDidMount section of the code (want to grab it as soon as user logs in)
+		// zendesk.grabMyAgentId(this.state.display_name)
+		// 	.then((status, err) => {
+		// 		console.log('promise return status - ', status);
+		// 		var possibleUsersArray = status;
+		// 		if (possibleUsersArray.length == 1){
+		// 			// 1 single match b/w hud displayname and zendesk displayname
+		// 				// so save agent id -> to be used in screen pop call
+		// 				this.setState({
+		// 					zendeskAgentId: possibleUsersArray[0].id
+		// 				});
+		// 				console.log('state of agent id - ', this.state.zendeskAgentId);
+		// 		}
+		// 	});
+
+		// zendesk.openProfile();
+		/* STEPS
+			1. grab call object - phone # and link it to a zendesk end user (run search for incoming phone number -> want it to return a zd-end-user)
+				a) -> if phone # turns up NO END USERS -> create a new ZD end user profile
+						-> 2. (user created) -> @@link call center agent to a zendesk agent
+						-> 3. (userID + agentID) -> screen pop a brand new ticket for that end user
+				b) -> if turns up 1 END USER -> grab user_id
+						-> 2. (user found) -> @@link call center agent to a zendesk agent 
+							-> (have agentID + userID) -> screen pop end user's profile
+				c) -> if phone # has multiple users attached -> display the first match end user supplied by the API
+		*/
+
+		// zendesk.getZendeskRequest(phoneNumber);
+		// if no results -> create a new end user profile in ZD w/ phone number of caller
+		// zendesk.createUser(phoneNumber);
 		// ISSUES:
-			// doesn't work without cors, using specific postman-generated crednetials for auth, 
 			// if given phone # of mycall obj -> need to return LIST OF MATCHING TICKETS (not just json data)
 			// 1. need to figure out how to format the zendesk api request
 			// 2. need to figure out what's the correct api zendesk request to make (search?, tickets? etc)
 
+			// agentId: 
+				// 3921212486 (Sean Rose)
+
+			// end user Ids:
+				//4158534023
 
 	}
 

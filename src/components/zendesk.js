@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import config from '../config.js';
 
+// http://stackoverflow.com/questions/5507234/how-to-use-basic-auth-with-jquery-and-ajax
 const zendesk = {
 	getZendeskRequest(phoneNumber) {
     var url = `/search.json?query=role%3Aend-user%20phone%3A*${phoneNumber}`;
@@ -20,6 +21,36 @@ const zendesk = {
 		}).fail((res,err,body) => {
 			console.log('fail - ', res);
 		})
+
+	},
+
+	grabMyAgentId(name) {
+		// console.log('zd module arg - ', name);
+		// run a search using name arg to return associated ZD agent ...
+		var uri = `/users/search.json?query=type:user ${name}`;
+		var url = encodeURI(uri);
+    // var url = `/users/search.json?query=type%3Auser${name}`;
+		// search.json?query=type%3Aticket+status%3Aopen
+		var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
+			"method": "GET",
+			"beforeSend": function(xhr) {
+				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
+			},
+			"cors": false
+		}
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).done((res) => {
+				console.log('AGNET ID res!! - ', res);
+				var resultsArray = res.users;
+				resolve(resultsArray);
+			}).fail((res,err,body) => {
+				console.log('AGENT ID fail! - ', res);
+				resolve(res)
+			});
+		});
 
 	},
 
