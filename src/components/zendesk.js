@@ -13,6 +13,8 @@ const zendesk = {
 			"beforeSend": function(xhr) {
 				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
 			},
+			"contentType": "application/json",
+			"dataType": "json",
 			"cors": false
 		}
 		$.ajax(settings).done((res) => {
@@ -24,13 +26,9 @@ const zendesk = {
 
 	},
 
-	grabMyAgentId(name) {
-		// console.log('zd module arg - ', name);
-		// run a search using name arg to return associated ZD agent ...
-		var uri = `/users/search.json?query=type:user ${name}`;
-		var url = encodeURI(uri);
-    // var url = `/users/search.json?query=type%3Auser${name}`;
-		// search.json?query=type%3Aticket+status%3Aopen
+	grabMe() {
+		var url = 'users/me.json';
+		console.log('in zd grab me func! url is - ', `https://fonality1406577563.zendesk.com/api/v2/${url}`)
 		var settings = {
 			"async": true,
 			"crossDomain": true,
@@ -39,24 +37,85 @@ const zendesk = {
 			"beforeSend": function(xhr) {
 				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
 			},
-			"cors": false
+			"headers": {
+				"Accept": "application/json"
+			},
+			"cache": false,
+			"dataType": "json",
+			"cors": true,
+			"xhrFields": {
+				"withCredentials": false
+			}
 		}
 		return new Promise((resolve, reject) => {
-			$.ajax(settings).done((res) => {
-				console.log('AGNET ID res!! - ', res);
-				var resultsArray = res.users;
-				resolve(resultsArray);
-			}).fail((res,err,body) => {
-				console.log('AGENT ID fail! - ', res);
-				resolve(res)
-			});
+			$.ajax(settings).success((res) => {
+				console.log('success THIS IS ME IN ZD - ', res);
+				resolve(res);
+			})
+			// .fail((err) => {
+			// 	console.log('fail my agent id!! - ', err);
+			// 	resolve(err);
+			// })
 		});
-
 	},
 
-	openProfile() {
-    var url = 'channels/voice/agents/3921212486/users/345563995/display.json';
-		console.log('in OPEN PROFILE!, url -> -', url);
+	grabIncomingCallId(phoneNumber) {
+		// var uri = `search.json?query=role%3Aend-user%20phone%3A*${phoneNumber}`;
+    // var url = `/users/search.json?query=type%3Auser${name}`;
+		// search.json?query=type%3Aticket+status%3Aopen
+		var url = `users/search.json?query=*${phoneNumber}`
+		// var url = encodeURI(uri);
+		console.log('in grabIncomingCallId, url is - ', `https://fonality1406577563.zendesk.com/api/v2/${url}`);
+		var settings = {
+			"async": true,
+			"crossDomain": true,
+			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
+			"method": "GET",
+			"beforeSend": function(xhr) {
+				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
+			},
+			"headers": {
+				"Accept": "application/json"
+			},
+			"cache": false,
+			"dataType": "json",
+			"cors": true,
+			"xhrFields": {
+				"withCredentials": false
+			}
+		}
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).success((res) => {
+				console.log('success THIS IS ME IN ZD grab incoming call - ', res);
+				resolve(res);
+			})
+			// .fail((err) => {
+			// 	console.log('fail my agent id!! - ', err);
+			// 	resolve(err);
+			// })
+		});
+		// return new Promise((resolve, reject) => {
+		// 	$.ajax(settings).done((res,success,body) => {
+		// 		console.log('****END USER ID res!! - ', res);
+		// 		var resultsArray = res.results;
+		// 		resolve(resultsArray);
+		// 	}).fail((res,err,body) => {
+		// 		console.log('incoming call id fail! - ', res);
+		// 		resolve(res);
+		// 	});
+		// });
+	},
+
+	openProfile(agent, user) {
+		console.log('in OPEN PROFILE!, agent + user  -> -', agent, user);
+		// 'channels/voice/agents/3921212486/users/4180586926/display.json'
+    // var url = 'channels/voice/agents/3921212486/users/345563995/display.json';
+		// var url = 'channels/voice/agents/3921212486/users/4180586926/display.json';
+		
+		var uri = `channels/voice/agents/${agent}/users/${user}/display.json`;
+		var url = encodeURI(uri);
+		// console.log('in OPEN PROFILE!, final url -> -', `https://fonality1406577563.zendesk.com/api/v2/${url}`);
+		console.log('in openprofile url is - ', url);
 		var settings = {
 			"async": true,
 			"crossDomain": true,
@@ -72,7 +131,7 @@ const zendesk = {
 		}
 		$.ajax(settings).done((res) => {
 			console.log('res!!! - ', res);
-			var resultsArray = res.results;
+			// var resultsArray = res.results;
 		}).fail((res,err,body) => {
 			console.log('fail - ', res, err, body);
 		})    		
@@ -112,8 +171,7 @@ const zendesk = {
 			},
 			"headers": {
 				"Content-Type": "application/json"
-			},
-			"cors": false
+			}
 		}
 		$.ajax(settings).done((res) => {
 			console.log('res - ', res);

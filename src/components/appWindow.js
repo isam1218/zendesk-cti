@@ -25,9 +25,26 @@ export default class AppWindow extends Component {
       popup: null,
 			my_pid: '',
 			mute: '',
-			zendeskAgentId: null
+			myZendeskAgent: null,
+			incomingCallerEndUser: null
     }
   }
+
+	// this lifecycle method happens once when component 1st loads...
+	componentDidMount() {
+		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as
+			// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
+		zendesk.grabMe()
+			.then((status, err) => {
+				console.log('$ this is me in appwindow - ', status);
+				// agent obj === res.user
+				// my agentId is -> res.user.id
+				this.setState({
+					myZendeskAgent: status.user
+				});
+				console.log('state after setting myZendeskAgent prop on state is - ', this.state);
+			});
+	}
 
   componentWillReceiveProps() {
     this.setState({
@@ -38,7 +55,7 @@ export default class AppWindow extends Component {
 			my_pid: this.props.settings.my_pid,
 			display_name: this.props.settings.display_name
     });
-		console.log('this.props.settings - ', this.state.display_name);
+		// console.log('this.props.settings - ', this.state.display_name);
     // if (this.state && this.state.locations & this.state.settings){
     //   console.log('***appWindow, my location should now be - ', this.state.locations[this.state.settings.current_location].name);
     // }
@@ -59,10 +76,13 @@ export default class AppWindow extends Component {
 				mute: false
 			})
 		}
-		console.log('this.state in appWindow, specifically settings.hudmw_webphone_mic -> ', this.props.settings);
+		// console.log('this.state in appWindow, specifically settings.hudmw_webphone_mic -> ', this.props.settings);
 		
+		/*
 		if (this.state.settings){
 			// console.log('this.state - ', this.state.settings.display_name);
+
+			// ISSUE 1: WE'RE GRABBING AGENT ID BASED ON HUDWEB DISPLAY NAME!!!
 			zendesk.grabMyAgentId(this.state.settings.display_name)
 				.then((status, err) => {
 					// console.log('promise return status - ', status);
@@ -73,9 +93,32 @@ export default class AppWindow extends Component {
 							this.setState({
 								zendeskAgentId: possibleUsersArray[0].id
 							});
-							console.log('state of agent id - ', this.state.zendeskAgentId);
+							// console.log('state of agent id - ', this.state.zendeskAgentId);
 					}
 				});		
+		}
+		*/
+
+		if (this.props.mycalls.length > 0) {
+			console.log('call info - ', this.props.mycalls[0]);
+			var inComingCallNumber = this.props.mycalls[0].phone;
+			zendesk.grabIncomingCallId(inComingCallNumber)
+				.then((status, err) => {
+					// console.log('***STATUS -> ', status);
+					// returns an array of end users who's phone number matches the incoming call
+						// just take the 1st match -> set state as incoming caller end user
+					this.setState({
+						incomingCallerEndUser: status[0]
+					});
+
+					// make screen pop w/ this incoming caller...
+					// instead of this.state.zendeskAgentId, use '3921212486'
+					//openProfile(agent, user);
+					// zendesk.openProfile('3921212486', this.state.incomingCallerEndUser.id);
+					// console.log('ABOUT TO CALL OPEN PROFILE ON INCOMING CALL the incoming number is -!!!! - ', inComingCallNumber);
+					// zendesk.openProfile('3921212486', this.state.incomingCallerEndUser.id);
+
+				})
 		}
   }
 
@@ -83,6 +126,14 @@ export default class AppWindow extends Component {
 		// fdp postFeed
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
 		// change hide of accept and end calls
+		console.log('!!!upon answer call, this.state is -> ', this.state);
+		// console.log('ABOUT TO CALL OPEN PROFILE ON INCOMING CALL w/ following info zendeskagentid and incomingcaller id - - ',this.state.zendeskAgentId, this.state.incomingCallerEndUser.id);
+		// ISSUE: zendesk.grabIncomingCallId is not resolving and returning data. Using hardcoded id
+		// temporary hardcoded version...
+		zendesk.openProfile(this.state.myZendeskAgent.id, '4180586926');
+		
+		// THIS SHOULD BE FINAL VERSION OF API CALL...
+		// zendesk.openProfile(this.state.zendeskAgentId.id, this.state.incomingCallerEndUser.id);
 	}
 
   // press enter or green call button to call
@@ -295,6 +346,11 @@ export default class AppWindow extends Component {
     })
   }
 
+	_zendesk2(call) {
+		console.log('ZD2, this.state is - ', this.state);
+		zendesk.openProfile(this.state.zendeskAgentId, this.state.incomingCallerEndUser.id);
+	}
+
 	_zendesk(call) {
 		// hopefully alreayd have agent id stored in zendesk (need agent_id + enduser_id to send POST request for user profile screen pop)
 			// @@LINK CALL CENTER AGENT TO ZD-AGENT
@@ -319,7 +375,17 @@ export default class AppWindow extends Component {
 		// 		}
 		// 	});
 
-		// zendesk.openProfile();
+
+		// THIS HARDCODED VERSION WORKS!!!
+		// zendesk.openProfile('3921212486', '345563995');
+		console.log('ZD1, this.state is - ', this.state);
+		zendesk.openProfile('3921212486', '4180586926');
+
+		// zendesk.openProfile(this.state.zendeskAgentId, this.state.incomingCallerEndUser.id);
+		// 3921212486
+		// var url = 'channels/voice/agents/3921212486/users/345563995/display.json';
+
+
 		/* STEPS
 			1. grab call object - phone # and link it to a zendesk end user (run search for incoming phone number -> want it to return a zd-end-user)
 				a) -> if phone # turns up NO END USERS -> create a new ZD end user profile
@@ -330,6 +396,12 @@ export default class AppWindow extends Component {
 							-> (have agentID + userID) -> screen pop end user's profile
 				c) -> if phone # has multiple users attached -> display the first match end user supplied by the API
 		*/
+
+
+		// LEFT OFF HERE ON 1-16-17:
+		// Steps 1 and 3 work, need to fix promise resolve of step 2 (not returning incoming caller promise for some reason)
+
+
 
 		// zendesk.getZendeskRequest(phoneNumber);
 		// if no results -> create a new end user profile in ZD w/ phone number of caller
@@ -692,7 +764,7 @@ export default class AppWindow extends Component {
 							<div 
 								className="button"
 								disabled={disableConf}
-								onClick={() => this._changeScreen('transfer')}
+								onClick={() => this._zendesk2(mycall)}
 							>
 								<i className="material-icons">phone_forwarded</i>
 								<span className="label">transfer</span>
