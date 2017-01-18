@@ -31,7 +31,7 @@ var mycalls = []; // must be array to facilitate sorting
 
 // managing data changed by sync to update state which will be passed down
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
-  console.log('*index.js: Parent Component new incoming data -> ', data);
+  // console.log('*index.js: Parent Component new incoming data -> ', data);
 	/**
 		USER SETTINGS
 	*/
