@@ -2,17 +2,18 @@ import $ from 'jquery';
 import config from '../config.js';
 
 // http://stackoverflow.com/questions/5507234/how-to-use-basic-auth-with-jquery-and-ajax
+// xhr.setRequestHeader("Authorization", "Bearer " + `${config.accessToken}`);
 const zendesk = {
 
 	defaultRequestConfig(url, method) {
-		// url argument is everything that comes AFTER '/api/v2/'...
+		// url argument is everything that comes AFTER '/api/v2/'
 		return {
 			"async": true,
 			"crossDomain": true,
 			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
 			"method": method,
 			"beforeSend": function(xhr) {
-				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
+				xhr.setRequestHeader("Authorization", "Bearer " + `${config.accessToken}`);
 			},
 			"headers": {
 				"Accept": "application/json"
@@ -28,10 +29,9 @@ const zendesk = {
 	},
 
 	grabMyAgentObj() {
+		// https://developer.zendesk.com/rest_api/docs/core/users#show-the-currently-authenticated-user
 		var url = 'users/me.json';
-		// GET REQUEST to url...
 		var settings = this.defaultRequestConfig(url, "GET");
-		console.log('&zd: grabMyAgentId: settings.url - ', settings.url);
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done(res => {
 				console.log('&zd: success THIS IS ME IN ZD - ', res);
@@ -44,48 +44,31 @@ const zendesk = {
 	},
 
 	profilePop(agent, user) {
-		console.log('in OPEN PROFILE!, agent + user  -> -', agent, user);
-		// 'channels/voice/agents/3921212486/users/4180586926/display.json'
-    // var url = 'channels/voice/agents/3921212486/users/345563995/display.json';
-		// var url = 'channels/voice/agents/3921212486/users/4180586926/display.json';
-		
+		// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-users-profile-in-an-agents-browser
+		console.log('in profilePop!, agent + user  -> -', agent, user);
 		var uri = `channels/voice/agents/${agent}/users/${user}/display.json`;
 		var url = encodeURI(uri);
 		var settings = this.defaultRequestConfig(url, "POST");
-		settings.contentType = "application/json";
-		// settings.contentType: "text/plain";
-		// settings.dataType = "text";
-		console.log('zd: profilePop settings -  ', settings);
-		$.ajax(settings).done((res) => {
-			JSON.parse(res);
-			// JSON.stringify(res, null, 2, true);
-			console.log('zd: profile pop res!!! - ', JSON.parse(res));
-		}).fail((res,err,body) => {
-			console.log('zd: fail - ', res, err, body);
-		})    		
+		settings.contentType = "text/plain";
+		settings.dataType = "text";
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).done((res) => {
+				console.log('END USER PROFILE POP SUCCEESS! res -', res);
+				resolve(res);
+			}).fail((res,err,body) => {
+				console.log('zd: fail - res -', res);
+				console.log('err - ', err);
+				console.log('body - ', body);
+				resolve(res,err,body);
+			});		
+		})
 	},
 
 	grabCallId(phoneNumber) {
-		// API ENDPOINTS THAT DO NOT WORK:
-		// var uri = `search.json?query=role%3Aend-user%20phone%3A*${phoneNumber}`;
-		// var uri = `users/search.json?phone=*${phoneNumber}`;
-		// var uri = `users/search.json?phone=*${phoneNumber}`;
-		// var uri = `search.json?query=type:user "phone:${phoneNumber}"`;
-		// var uri = `search.json?query=type:user"phone:${phoneNumber}"`;
-
-		// tried hitting different search API endpoints...
-		// THESE ALL PROVIDE WORKING RESPONSE, but nothing comes back in promise resolve so I cannot make 3rd request.
+		// https://developer.zendesk.com/rest_api/docs/core/search#search
 		var uri = `users/search.json?query=*${phoneNumber}`;
-		// var uri = `users/search.json?query=${phoneNumber}`;
-		// var uri = `search.json?query=${phoneNumber}`;
-		// var uri = `search.json?query=type:user "${phoneNumber}"`;
-		// var uri = `search.json?query=type:user"${phoneNumber}"`
-		// var uri = `search.json?query=type:user phone:${phoneNumber}`;
-
 		var url = encodeURI(uri);
 		var settings = this.defaultRequestConfig(url, "GET");
-		// try different settings.dataType...
-		console.log('@zd: grabCallId settings - ', settings);
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
 				console.log('@zd: success grabCallId - ', res);
@@ -97,27 +80,76 @@ const zendesk = {
 	},
 
   createUser(userData) {
+		// https://developer.zendesk.com/rest_api/docs/core/users#create-user
     var url = 'users.json';
-		var settings = {
-			"async": true,
-			"crossDomain": true,
-			"url": `https://fonality1406577563.zendesk.com/api/v2/${url}`,
-			"method": "POST",
-			"beforeSend": function(xhr) {
-				xhr.setRequestHeader("Authorization", "Basic " + btoa(`${config.username}:${config.token}`));
-			},
-			"headers": {
-				"Content-Type": "application/json"
-			},
-			"cors": false
-		}
-		$.ajax(settings).done((res) => {
-			console.log('res - ', res);
-			var resultsArray = res.results;
-		}).fail((res,err,body) => {
-			console.log('fail - ', res);
-		})    
-  }
+		var settings = this.defaultRequestConfig(url, "POST");
+		settings.contentType = "application/json";
+		settings.data = JSON.stringify(userData);
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).done((res) => {
+				console.log('res USER CREATED successfully in zd module - ', res);
+				resolve(res);
+			}).fail((res,err,body) => {
+				console.log('fail - ', res,err,body);
+			})    
+		})
+  },
+
+	createNewTicket(endUser, via_id, meAgent) {
+		//https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+		var url = 'channels/voice/tickets.json';
+		// var url = 'tickets.json';
+		var settings = this.defaultRequestConfig(url, "POST");
+		// requester == user asking for support (the end customer/user in our case)
+		// submitter == user creating the ticket (the agent in our case)
+		var data = {
+			"display_to_agent": meAgent.id,
+			"ticket": {
+				"via_id": via_id,
+				"created_at": endUser.created_at,
+				"requester_id": endUser.id,
+				"submitter_id": meAgent.id,
+				"description": `New ticket for new end user created. Origin phone number is: ${endUser.phone}`,
+				"requester": {
+					"name": endUser.name,
+					"phone": endUser.phone
+				}
+			}
+		};
+		settings.contentType = "application/json";
+		settings.data = JSON.stringify(data);
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).done(res => {
+				console.log('ticket created in zd module - ', res);
+				resolve(res);
+			}).fail((res,err,body) => {
+				console.log('fail - ', res,err,body);
+				resolve(res);
+			})
+		})
+
+	},
+
+	openCreatedTicket(myAgentId, ticketId) {
+		// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser	
+		var uri = `channels/voice/agents/${myAgentId}/tickets/${ticketId}/display.json`;
+		var url = encodeURI(uri);
+		var settings = this.defaultRequestConfig(url, "POST");
+		settings.contentType = "text/plain";
+		settings.dataType = "text";
+		return new Promise((resolve, reject) => {
+			$.ajax(settings).done((res) => {
+				console.log('NEW TICKET POP SUCCEESS! res -', res);
+				resolve(res);
+			}).fail((res,err,body) => {
+				console.log('zd: new ticket pop fail - res -', res);
+				console.log('err - ', err);
+				console.log('body - ', body);
+				resolve(res,err,body);
+			});	
+
+		});
+	}
 
 }
 

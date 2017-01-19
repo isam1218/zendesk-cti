@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import ReactDOM from 'react-dom';
 import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
@@ -26,16 +25,15 @@ export default class AppWindow extends Component {
 			my_pid: '',
 			mute: '',
 			myZendeskAgent: null,
-			incomingCallerEndUser: null
+			incomingCallerEndUser: null,
+			createdTicket: null
     }
   }
 
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as
-			// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
-
-		// this works w/ no CORS errors...
+		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 		zendesk.grabMyAgentObj()
 			.then((status, err) => {
 				console.log('&aw: grabMyAgentObj -> ', status);
@@ -73,45 +71,110 @@ export default class AppWindow extends Component {
 			})
 		}
 
+		/* SCREEN POP STEPS...
+			1. grab call object - phone # and link it to a zendesk end user (run search for incoming phone number -> want it to return a zd-end-user)
+				a) -> if phone # returns NO END USERS -> create a new ZD end user profile
+						-> 2. (after user is created) -> @@link call center agent to a zendesk agent
+						-> 3. (user userID + agentID) -> screen pop a brand new ticket for that end user
+				b) -> if turns up 1 END USER -> grab user_id
+						-> 2. (user found) -> @@link call center agent to a zendesk agent 
+							-> 3. (have agentID + userID) -> screen pop end user's profile
+				c) -> if phone # has multiple users attached -> display the first match end user supplied by the API
+		*/
 
 		// CALL INCOMING...
 		if (this.props.mycalls.length > 0) {
 			// console.log('call info - ', this.props.mycalls[0]);
 			var incomingCallNumber = this.props.mycalls[0].phone;
-			// var parsedNumber = incomingCallNumber.replace(/-/g, "");
 
-			// this API request is not working w/o cors error....
 			zendesk.grabCallId(incomingCallNumber)
 				.then((status, err) => {
-					console.log('@aw: grab call id result - ', status, err);
+					// console.log('@aw: grab call id result - ', status, err);
 					this.setState({
 						incomingCallerEndUser: status.users[0]
 					});
-					console.log('this.state after setting end user - ', this.state.incomingCallerEndUser);
 
-					// IF status.users.length < 1 -> means there are NO related END USERS, so...
-						// 2 steps:
+					// IF status.users.length < 1... means there are NO related END USERS, so...
+						// 3 steps:
 						// 1. must ping API to create a new END USER
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
 						// 2. must ping API to create a new ticket
 							//https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+						// 3. screen pop that new ticket
+							// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser	
 					
+					if (status.users.length < 1){
+						// NO MATCH OF END USERS, create a user w/ random phone number...
+						
+						// ***SWAP OUT THIS LOGIC WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***
+						var getRandom = function(length) {
+							return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
+						};
+
+						var ourNumber = getRandom(10);
+						// test create user:
+						var userData = {
+							"user": {
+								"name": `Caller: ${ourNumber}`,
+								"phone": ourNumber + ""
+							}
+						};
+						// ***SWAP OUT THIS LOGIC WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***
+
+						// IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
+						// 1. create new end user profile..
+						// https://developer.zendesk.com/rest_api/docs/core/users#create-user
+						zendesk.createUser(userData)
+							.then((status, err) => {
+								console.log("USER CREATED SUCCESFFULY BACK IN HOME MODULE - ", status);
+								var createdUser = status.user
+								// grab call info...
+								var incomingCall = this.props.mycalls[0].incoming;
+								// incoming call -> ID == 45
+								// outbound call -> ID == 46
+								var via_id = incomingCall ? 45 : 46;
+								// 2. create new ticket w/ prepopulated data
+								// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+								zendesk.createNewTicket(createdUser, via_id, this.state.myZendeskAgent)
+									.then((status, err) => {
+										console.log("TICKET CREATED SUCCESSFULLY BACK IN HOME MODULE - ", status);
+										var lastCreatedTicket = status.ticket;
+										this.setState({
+											createdTicket: lastCreatedTicket
+										});
+									// 3. open that ticket in an agent's browser...
+									// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser
+									// zendesk.openCreatedTicket('3921212486', this.state.createdTicket.id)
+									// otherwise, working version is...
+									zendesk.openCreatedTicket(this.state.myZendeskAgent.id, this.state.createdTicket.id)
+										.then((status, err) => {
+											console.log("NEW TICKET POP SHOULD SUCCESSFULLY HAPPEN (BACK IN HOME MODULE) - ", status);
+										});
+									});
+							});
+					}
+
 				});
+		} // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 
-
-		}
-  }
+  } // CLOSE BRACKET OF: componentWillReceiveProps
 
 	_answerCall(call) {
 		// fdp postFeed
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
-		// ISSUE: zendesk.grabCallId is not resolving and returning data. Using hardcoded id
 		
 		// temporary hardcoded version THAT WORKS if necessary...
 		// zendesk.profilePop(this.state.myZendeskAgent.id, '4180586926');
+		console.log('about to screen pop -, the ids are -  ', this.state.myZendeskAgent.id, this.state.incomingCallerEndUser.id);
 
-		if (this.state.myZendeskAgent.id && this.state.incomingCallerEndUser.id)
-			zendesk.profilePop(this.state.myZendeskAgent.id, this.state.incomingCallerEndUser.id);
+		// this should work if have correct agent id and end user id and logged correctly w/ proper oAuth secret...
+		if (this.state.myZendeskAgent.id && this.state.incomingCallerEndUser.id){
+			zendesk.profilePop(this.state.myZendeskAgent.id, this.state.incomingCallerEndUser.id)
+				.then((status, err) => {
+					console.log('IN HOME MODULE SUCCESSFUL SCREEN POP? - ', status, err);
+				});
+
+		}
 		
 	}
 
@@ -326,30 +389,81 @@ export default class AppWindow extends Component {
   }
 
 	_zendesk2(call) {
-		// THIS METHOD IS HOOKED UP TO TRANSFER BUTTON (ON CALL) FOR TESTING PURPOSES
-		// THIS ONE DOESN'T WORK
-		console.log('ZD2, this.state is - ', this.state);
-		zendesk.profilePop(this.state.myZendeskAgent.id, this.state.incomingCallerEndUser.id);
+		// THIS METHOD IS HOOKED UP TO MOVE BUTTON (ON CALL) FOR TESTING PURPOSES...
+		// HARDCODED TEST OF SCREEN POP A NEW END USER + NEW TICKET FOR INCOMING CALLER
+		
+		// THIS CREATES A RANDOM USER so don't use up all of external phone numbers (new phone numbers are automatcially stored in the db, so wouldn't be able to test w/ that phone number again)
+		var getRandom = function(length) {
+			return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
+		};
+		var ourNumber = getRandom(10);
+		// test create user:
+		var userData = {
+			"user": {
+				"name": `Caller: ${ourNumber}`,
+				"phone": ourNumber + ""
+			}
+		};
+
+		// IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
+		// 1. create new end user profile..
+		// https://developer.zendesk.com/rest_api/docs/core/users#create-user
+		zendesk.createUser(userData)
+			.then((status, err) => {
+				console.log("USER CREATED SUCCESFFULY BACK IN HOME MODULE - ", status);
+				var createdUser = status.user
+
+				// grab call info...
+				var incomingCall = this.props.mycalls[0].incoming;
+				console.log('my call - ', this.props.mycalls[0]);
+				// incoming call -> ID == 45
+				// outbound call -> ID == 46
+				var via_id = incomingCall ? 45 : 46;
+
+				// 2. create new ticket w/ prepopulated data
+				// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+				zendesk.createNewTicket(createdUser, via_id, this.state.myZendeskAgent)
+					.then((status, err) => {
+						console.log("TICKET CREATED SUCCESSFULLY BACK IN HOME MODULE - ", status);
+						var lastCreatedTicket = status.ticket;
+						this.setState({
+							createdTicket: lastCreatedTicket
+						});
+
+					// THOUGHTS... (not sure if correct - need to verify)...
+					/* 
+					the agent id for the post request must match the user that user is logged in as...
+					our auth token is attached to Sam. So can't use that token, logged into Zendesk as Sean, and expect screen pop functionality to work.
+					will need to be logged in as Sam in Zendesk sandbox if using Sam's token
+					zendesk.openCreatedTicket(3921212486, this.state.createdTicket.id)
+					*/
+
+					// 3. open that ticket in an agent's browser...
+					// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser
+					// 1st argument passed into openCreatedTicket should be: this.state.myZendeskAgent.id
+					// '3921212486'
+					// if not working, probably cuz not logged in as Sam but using his token, so use...
+
+					// zendesk.openCreatedTicket('3921212486', this.state.createdTicket.id)
+					// otherwise, working version is...
+					zendesk.openCreatedTicket(this.state.myZendeskAgent.id, this.state.createdTicket.id)
+						.then((status, err) => {
+							console.log("NEW TICKET POP SHOULD SUCCESSFULLY HAPPEN (BACK IN HOME MODULE) - ", status);
+						});
+
+					});
+			});
+			// ***NEW TICKET SCREEN POP END***
 	}
 
 	_zendesk(call) {
 		// THIS METHOD IS HOOKED UP TO DIALPAD BUTTON (ON CALL)
 		// THIS IS THE HARDCODED VERSION WORKS!!!
-		console.log('ZD1, this.state is - ', this.state);
-		zendesk.profilePop('3921212486', '4180586926');
+		// zendesk.profilePop('3921212486', '4180586926');
 
-
-		/* STEPS
-			1. grab call object - phone # and link it to a zendesk end user (run search for incoming phone number -> want it to return a zd-end-user)
-				a) -> if phone # turns up NO END USERS -> create a new ZD end user profile
-						-> 2. (user created) -> @@link call center agent to a zendesk agent
-						-> 3. (userID + agentID) -> screen pop a brand new ticket for that end user
-				b) -> if turns up 1 END USER -> grab user_id
-						-> 2. (user found) -> @@link call center agent to a zendesk agent 
-							-> (have agentID + userID) -> screen pop end user's profile
-				c) -> if phone # has multiple users attached -> display the first match end user supplied by the API
-		*/
-
+		// hardcoded version w/ Sean Rose as agent id
+		zendesk.profilePop('3921212486', this.state.incomingCallerEndUser.id);
+		// zendesk.profilePop(this.state.myZendeskAgent, this.state.incomingCallerEndUser.id);
 	}
 
   
@@ -669,7 +783,7 @@ export default class AppWindow extends Component {
 							
 							<div 
 								className="button"
-								onClick={() => this._zendesk(mycall)}
+								onClick={() => this._changeScreen('dialpad')}
 								disabled={disablePhone}
 							>
 								<i className="material-icons">dialpad</i>
@@ -706,7 +820,7 @@ export default class AppWindow extends Component {
 							<div 
 								className="button" 
 								disabled={disableFDP}
-								onClick={() => this._openPopup('move')}
+								onClick={() => this._zendesk(mycall)}
 							>
 								<i className={moveBtnCSS}>call_split</i>
 								<span className="label">move</span>
