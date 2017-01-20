@@ -34,7 +34,7 @@ const zendesk = {
 		var settings = this.defaultRequestConfig(url, "GET");
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done(res => {
-				console.log('&zd: success THIS IS ME IN ZD - ', res);
+				// console.log('&zd: success THIS IS ME IN ZD - ', res);
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('&fail my agent id!! - ', err);
@@ -45,7 +45,7 @@ const zendesk = {
 
 	profilePop(agent, user) {
 		// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-users-profile-in-an-agents-browser
-		console.log('in profilePop!, agent + user  -> -', agent, user);
+		// console.log('in profilePop!, agent + user  -> -', agent, user);
 		var uri = `channels/voice/agents/${agent}/users/${user}/display.json`;
 		var url = encodeURI(uri);
 		var settings = this.defaultRequestConfig(url, "POST");
@@ -53,7 +53,7 @@ const zendesk = {
 		settings.dataType = "text";
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
-				console.log('END USER PROFILE POP SUCCEESS! res -', res);
+				// console.log('END USER PROFILE POP SUCCEESS! res -', res);
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('zd: fail - res -', res);
@@ -71,7 +71,7 @@ const zendesk = {
 		var settings = this.defaultRequestConfig(url, "GET");
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
-				console.log('@zd: success grabCallId - ', res);
+				// console.log('@zd: success grabCallId - ', res);
 				resolve(res);
 			}).fail((res, err, body) => {
 				console.log('@zd: fail grabCallId - ', res);
@@ -87,7 +87,7 @@ const zendesk = {
 		settings.data = JSON.stringify(userData);
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
-				console.log('res USER CREATED successfully in zd module - ', res);
+				// console.log('res USER CREATED successfully in zd module - ', res);
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('fail - ', res,err,body);
@@ -120,7 +120,7 @@ const zendesk = {
 		settings.data = JSON.stringify(data);
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done(res => {
-				console.log('ticket created in zd module - ', res);
+				// console.log('ticket created in zd module - ', res);
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('fail - ', res,err,body);
@@ -139,7 +139,7 @@ const zendesk = {
 		settings.dataType = "text";
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
-				console.log('NEW TICKET POP SUCCEESS! res -', res);
+				// console.log('NEW TICKET POP SUCCEESS! res -', res);
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('zd: new ticket pop fail - res -', res);
