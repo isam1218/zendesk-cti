@@ -113,7 +113,13 @@ const zendesk = {
 				"requester": {
 					"name": endUser.name,
 					"phone": endUser.phone
-				}
+				},
+				"custom_fields": [
+					{
+						"id": 22060945,
+						"value": endUser.phone
+					}
+				]
 			}
 		};
 		settings.contentType = "application/json";
@@ -121,6 +127,13 @@ const zendesk = {
 		return new Promise((resolve, reject) => {
 			$.ajax(settings).done(res => {
 				// console.log('ticket created in zd module - ', res);
+				// if need to fill a custom field, use the following code to print out list of custom fields -> grab the id of that field, then can modify in createNewTicket function above...
+				// var config = this.defaultRequestConfig('ticket_fields.json', "GET");
+				// $.ajax(config).done(res => {
+				// 	for (var i = 0; i < res.ticket_fields.length; i++){
+				// 		console.log('ticket field name - ', res.ticket_fields[i].title, res.ticket_fields[i]);
+				// 	}
+				// });
 				resolve(res);
 			}).fail((res,err,body) => {
 				console.log('fail - ', res,err,body);
