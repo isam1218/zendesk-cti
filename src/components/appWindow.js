@@ -101,7 +101,9 @@ export default class AppWindow extends Component {
 		*/
 
 		// Here comes a call...
-		if (this.props.mycalls.length > 0) {
+		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
+		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
+		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
 			// console.log('call info - ', this.props.mycalls[0]);
 			var endUserCallNumber = this.props.mycalls[0].phone;
 
