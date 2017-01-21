@@ -89,7 +89,7 @@ export default class LoginWindow extends Component {
 				<input 
 					className="input" 
 					type="text" 
-					placeholder="Username" 
+					placeholder="username" 
 					value={this.state.username}
 					onChange={(e) => this._updateValue(e, 'username')} 
 					onKeyPress={(e) => this._attemptLogin(e)}
@@ -98,7 +98,7 @@ export default class LoginWindow extends Component {
 				<input 
 					className="input" 
 					type="password" 
-					placeholder="Password" 
+					placeholder="password" 
 					value={this.state.password}
 					onChange={(e) => this._updateValue(e, 'password')} 
 					onKeyPress={(e) => this._attemptLogin(e)}

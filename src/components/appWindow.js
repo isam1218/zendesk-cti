@@ -100,7 +100,6 @@ export default class AppWindow extends Component {
 					3. screen pop the 1st end user's profile that matches...
 		*/
 
-
 		// Here comes a call...
 		if (this.props.mycalls.length > 0) {
 			// console.log('call info - ', this.props.mycalls[0]);
@@ -434,18 +433,14 @@ export default class AppWindow extends Component {
     var barCSS = '';
 
 
-    // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
-		// if (this.props.mycalls.length === 0){
+    // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} 
+		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
     if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){
       // console.error('default screen - ', this.state, this.props);
       var audioBtn, body;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
-      // var formCSS = 'form focused';
-      // var callBtnCSS = 'material-icons callbtn' + (this.state.phone != '' ? ' active' : '');
-      var callBtnCSS = 'material-icons callbtn';
-      // var audioBtnCSS = 'material-icons audio';
-			
-      var dialBtn = (<i className="material-icons dialpad" onClick={() => this._changeScreen('dialpad')}>dialpad</i>);
+      var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
+
 
       body = (
         <div id="basic">  
@@ -472,9 +467,7 @@ export default class AppWindow extends Component {
                 onBlur={(e) => this._setFocus(false)}
               />
             </div>
-            
-            {dialBtn}
-            
+                        
             <i className={callBtnCSS} onClick={() => this._callNumber()}>call</i>
           </div>
         </div>
@@ -585,7 +578,7 @@ export default class AppWindow extends Component {
 
     }
 
-    // NEED TO DO [TRANSFER SCREEN]
+    // STILL NEED TO DO [TRANSFER SCREEN]
 		else if (this.state.screen == 'transfer') {
       /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
 			// WILL HAVE TO REMOVE
@@ -673,9 +666,45 @@ export default class AppWindow extends Component {
 			);
 		}
 
+		// [INCOMING CALL SCREEN]
+		else if (this.props.mycalls.length == 1 && this.props.mycalls[0].state === 0){
+			// console.log("CALL RINGING INCOMING !!!! - ", this.props.mycalls[0]);
+
+			var answerBtn;
+			
+			if (mycall.incoming && mycall.state == 0) {
+				// not for carrier location
+				if (this.props.locations[mycall.locationId].locationType != 'm')
+					answerBtn = (<i className="material-icons answer" onClick={() => this._answerCall(mycall)}>call</i>);
+				
+				// change color of bottom bar
+				barCSS = `type${mycall.type}`;
+			}
+					
+			body = (
+				<div id="full">				
+					
+					<div className="info">
+						<div className="name">{mycall.displayName}</div>
+            {this._getStatus(mycall)}
+						
+						<div className="no-controls">
+
+
+						</div>
+						
+						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
+						
+						
+						{answerBtn}
+					</div>
+				</div>
+			);
+		}
+
 		// [ON CALL SCREEN] (full view) {body}
     else if (this.props.mycalls.length > 0) {
-			// console.error('CALL screen - ', this.state, this.props);
+			// console.error('ON CALL screen - ', this.state, this.props);
 
 			var answerBtn, muteBtn;
 			
@@ -723,9 +752,6 @@ export default class AppWindow extends Component {
 
 			body = (
 				<div id="full">				
-					<div className="banner">
-            {this._getAvatar(mycall)}
-					</div>
 					
 					<div className="info">
 						<div className="name">{mycall.displayName}</div>
@@ -822,15 +848,12 @@ export default class AppWindow extends Component {
         <div id="header">
           <div>
             <div ></div>
-            FONALITY
+						<img className="agent-login" src="./queue-off.png" />
           </div>
         
           <div className="buttons">            
           </div>
-          <div className="agentlogin">
-            <div className="tooltip"></div>
-            <i className="material-icons">headset</i>
-          </div>
+
           
           <i className="material-icons" onClick={() => this._openPopup('preferences')}>power_settings_new</i>
         </div>
