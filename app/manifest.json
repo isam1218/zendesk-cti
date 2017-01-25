@@ -9,7 +9,15 @@
   "private": true,
   "location": {
     "support": {
-      "top_bar": "assets/index.html"
+      "top_bar": "assets/index.html",
+      "ticket_sidebar":{ 
+        "autoHide": true,
+        "url":"assets/iframe.html"
+      },
+      "new_ticket_sidebar":{ 
+        "autoHide": true,
+        "url":"assets/iframe.html"
+      }
     }
   },
   "version": "1.2",

@@ -64,11 +64,11 @@ export default class AppWindow extends Component {
       locations: this.props.locations,
       mycalls: this.props.mycalls,
       avatars: this.props.avatars,
+      ticketPhone: this.props.ticketPhone,
 			my_pid: this.props.settings.my_pid,
 			display_name: this.props.settings.display_name
     });
 		
-
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
 			this.setState({
@@ -77,6 +77,12 @@ export default class AppWindow extends Component {
 			})
 			
 		}
+
+        if(this.props.ticketPhone.length > 0){
+        	var phone_number = this.props.ticketPhone;
+        	this._updateValue(phone_number, "phone");
+      }
+
 		// if user mutes thru hudn softphone, need to change mute button anyways
 		if (this.props.settings.hudmw_webphone_mic == "0"){
 			this.setState({
@@ -423,17 +429,24 @@ export default class AppWindow extends Component {
 
   // handles input event.target.value
   _updateValue(e, property) {
-    this.setState({
-      [property]: e.target.value
-    })
+  	if(e.length > 0){
+	    this.setState({
+	      [property]: e
+    	})
+	}
+	else{
+		this.setState({
+	      [property]: e.target.value
+    	})
+	}
   }
+
   
   render() {
     var mycall = this.props.mycalls[0];
 		// console.log('mycall - ', mycall);
     var popup, overlay, body, footer;
     var barCSS = '';
-
 
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} 
 		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
@@ -442,6 +455,7 @@ export default class AppWindow extends Component {
       var audioBtn, body;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
+
 
 
       body = (

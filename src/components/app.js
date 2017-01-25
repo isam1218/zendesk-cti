@@ -7,11 +7,20 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    // add additional state properties for different window components (e.g. preferences, about, etc)
-    this.state = {
-      login: true,
-      app: false
+this.state = {
+      login: '',
+      app: '',
+      ticketPhone: ''
     }
+          // Initialise the Zendesk JavaScript API client
+      // https://developer.zendesk.com/apps/docs/apps-v2
+    
+
+
+
+       
+    // add additional state properties for different window components (e.g. preferences, about, etc)
+
 
     this.loginToApp = this._changeLoginToApp.bind(this);
     // need to include pkg.json module
@@ -24,7 +33,54 @@ export default class App extends Component {
   }
 
   componentDidMount() {
+        if(localStorage.refresh != undefined){
+      fdp.versionCheck();
+            this.setState({
+              login: false,
+              app: true,
+            });
+
+
+      var topBarClientPromise = client.get('instances').then(instancesData =>{
+        var instances = instancesData.instances;
+        for (var instanceGuid in instances) {
+          if (instances[instanceGuid].location === 'top_bar') {
+            return client.instance(instanceGuid);
+          }
+        }
+      });
+
+      topBarClientPromise.then(topBarClient =>{
+
+        // opens the top bar app, even if its iframe hasn't been loaded
+        topBarClient.invoke('popover');
+
+        client.get('ticket.requester.customField:primary_phone').then(data=>{
+
+          this.setState({
+            ticketPhone : data["ticket.requester.customField:primary_phone"]
+          });
+
+        });
+
+      });
+
+    
+  }
+    else{
+
+    this.setState({
+      login: true,
+      app: false,
+      ticketPhone: ''
+    });
+  }
+
     // console.log('app.js: 2b componentDidMount, this.props - ', this.props);
+
+
+
+
   }
 
   // handles initialization of app upon login...
@@ -45,7 +101,7 @@ export default class App extends Component {
       // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} />
         </div>
       )
     }
@@ -53,5 +109,6 @@ export default class App extends Component {
       // console.log('1, localStorage - ', localStorage.node, localStorage.auth);
       return <LoginWindow login={this.loginToApp} />
     }
+    return (<div></div>)
   }
 }

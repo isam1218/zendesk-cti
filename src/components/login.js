@@ -32,6 +32,8 @@ export default class LoginWindow extends Component {
 		// console.log('login commenced');
 		var username = this.state.username;
 		var password = this.state.password;
+
+		var refresh = localStorage.refresh;
 		
 		
 		if (username != '' && password != '') {
@@ -70,6 +72,8 @@ export default class LoginWindow extends Component {
 				});
 				
 		}
+
+
 	}
 	
 	render() {

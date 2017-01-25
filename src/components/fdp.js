@@ -52,7 +52,7 @@ const fdp =  {
 					localStorage.refresh = refresh;
 					//login resolves in a promise instead of automatically starting sync process...
 					// start syncing
-					// fdp.versionCheck()
+					 //fdp.versionCheck();
 
 					// return promise
 					resolve(1);
