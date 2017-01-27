@@ -1,0 +1,54 @@
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+<body>
+  <h2>Zendesk Apps Tools Iframe Scaffold</h2>
+  <div class="container"></div>
+  <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
+  <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+  <script>
+    // Initialise the Zendesk JavaScript API client
+    // https://developer.zendesk.com/apps/docs/apps-v2
+    localStorage.setItem("ticketPhone"," ");
+    var client = ZAFClient.init();
+    client.invoke('resize', { width: '100%', height: '440px' });
+
+          var topBarClientPromise = client.get('instances').then(function(instancesData){
+        var instances = instancesData.instances;
+        for (var instanceGuid in instances) {
+          if (instances[instanceGuid].location === 'top_bar') {
+            return client.instance(instanceGuid);
+          }
+        }
+      });
+
+      topBarClientPromise.then(function(topBarClient){        
+        // opens the top bar app, even if its iframe hasn't been loaded
+        topBarClient.invoke('popover');
+
+      });
+
+            client.get("ticket.requester.id").then(function(data){
+
+              var id = data["ticket.requester.id"];
+              var fetchTicket = {
+                  url: "/api/v2/users/"+id+".json",
+                  type: 'GET',
+                  dataType: 'json'
+                };
+
+              client.request(fetchTicket).then(function(ticket){
+
+                    localStorage.setItem("ticketPhone",ticket.user.phone);
+
+
+            });
+      
+          });
+
+  </script>
+
+</body>
+
+</html>

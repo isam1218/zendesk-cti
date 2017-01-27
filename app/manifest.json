@@ -12,11 +12,15 @@
       "top_bar": "assets/index.html",
       "ticket_sidebar":{ 
         "autoHide": true,
-        "url":"assets/iframe.html"
+        "url":"assets/iframe1.html"
       },
       "new_ticket_sidebar":{ 
         "autoHide": true,
-        "url":"assets/iframe.html"
+        "url":"assets/iframe3.html"
+      },
+      "user_sidebar":{ 
+        "autoHide": true,
+        "url":"assets/iframe2.html"
       }
     }
   },

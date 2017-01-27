@@ -78,10 +78,24 @@ export default class AppWindow extends Component {
 			
 		}
 
-        if(this.props.ticketPhone.length > 0){
-        	var phone_number = this.props.ticketPhone;
+ /*       if(this.props.ticketPhone.length > 0){
+        	var phone_number = localStorage.getItem("ticketPhone");
         	this._updateValue(phone_number, "phone");
-      }
+        	console.log("phone number",phone_number);
+      }*/
+
+      window.addEventListener('storage', (e)=> {  
+      	console.log("Storage",e);
+		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
+		  	this.setState({
+		  		phone: e.newValue
+		  	})
+		  	this.setState({
+		  		focused: true
+		  	})
+		  }
+		  localStorage.removeItem("ticketPhone"); 
+		});
 
 		// if user mutes thru hudn softphone, need to change mute button anyways
 		if (this.props.settings.hudmw_webphone_mic == "0"){
@@ -429,16 +443,9 @@ export default class AppWindow extends Component {
 
   // handles input event.target.value
   _updateValue(e, property) {
-  	if(e.length > 0){
-	    this.setState({
-	      [property]: e
-    	})
-	}
-	else{
 		this.setState({
 	      [property]: e.target.value
     	})
-	}
   }
 
   
@@ -448,6 +455,7 @@ export default class AppWindow extends Component {
     var popup, overlay, body, footer;
     var barCSS = '';
 
+    console.log("RENDER PHONE",this.state.phone);
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} 
 		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
     if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name){

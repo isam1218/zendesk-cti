@@ -9,9 +9,27 @@
     <script>
       // Initialise the Zendesk JavaScript API client
       // https://developer.zendesk.com/apps/docs/apps-v2
+      localStorage.setItem("ticketPhone"," ");
       var client = ZAFClient.init();
       client.invoke('resize', { width: '320px', height: '440px' });
       console.log('client - ', client);
+      
+
+      var topBarClientPromise = client.get('instances').then(function(instancesData){
+        var instances = instancesData.instances;
+        for (var instanceGuid in instances) {
+          if (instances[instanceGuid].location === 'top_bar') {
+            return client.instance(instanceGuid);
+          }
+        }
+      });
+
+      topBarClientPromise.then(function(topBarClient){        
+        // opens the top bar app, even if its iframe hasn't been loaded
+        topBarClient.invoke('popover');
+
+      });
+
     </script>
   </body>
   <script src="/bundle.js"></script>

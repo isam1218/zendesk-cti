@@ -33,40 +33,20 @@ this.state = {
   }
 
   componentDidMount() {
-        if(localStorage.refresh != undefined){
-      fdp.versionCheck();
+
+
+    if(localStorage.refresh != undefined){
+      
             this.setState({
               login: false,
               app: true,
+              ticketPhone: ''
             });
 
-
-      var topBarClientPromise = client.get('instances').then(instancesData =>{
-        var instances = instancesData.instances;
-        for (var instanceGuid in instances) {
-          if (instances[instanceGuid].location === 'top_bar') {
-            return client.instance(instanceGuid);
-          }
-        }
-      });
-
-      topBarClientPromise.then(topBarClient =>{
-
-        // opens the top bar app, even if its iframe hasn't been loaded
-        topBarClient.invoke('popover');
-
-        client.get('ticket.requester.customField:primary_phone').then(data=>{
-
-          this.setState({
-            ticketPhone : data["ticket.requester.customField:primary_phone"]
-          });
-
-        });
-
-      });
-
+            fdp.versionCheck();
     
-  }
+    }
+
     else{
 
     this.setState({
@@ -76,7 +56,6 @@ this.state = {
     });
   }
 
-    // console.log('app.js: 2b componentDidMount, this.props - ', this.props);
 
 
 
