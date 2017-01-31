@@ -128,6 +128,24 @@ const zendesk = {
 			  resolve(data);
 			});
 		});
+	},
+	getUser(id){
+		var url = "users/"+id+".json";
+		var settings = this.defaultRequestConfig(url, "GET");
+		settings.contentType = "text/plain";
+		settings.dataType = "text";
+				return new Promise((resolve, reject) => {
+			$.ajax(settings).done((res) => {
+				 console.log('USER DATA SUCCESS', res);
+				resolve(res);
+			}).fail((res,err,body) => {
+				console.log('zd: get user fail - res -', res);
+				console.log('err - ', err);
+				console.log('body - ', body);
+				resolve(res,err,body);
+			});	
+
+		});
 	}
 
 }

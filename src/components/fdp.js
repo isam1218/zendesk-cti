@@ -52,7 +52,7 @@ const fdp =  {
 					localStorage.refresh = refresh;
 					//login resolves in a promise instead of automatically starting sync process...
 					// start syncing
-					// fdp.versionCheck()
+					 //fdp.versionCheck();
 
 					// return promise
 					resolve(1);
@@ -66,7 +66,7 @@ const fdp =  {
 					fdp.login();
 				}
 				*/
-
+					console.log("ERRORS",res,err,body);
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
 					resolve(res.status);

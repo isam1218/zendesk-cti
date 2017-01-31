@@ -7,11 +7,20 @@ export default class App extends Component {
   constructor(props) {
     super(props);
 
-    // add additional state properties for different window components (e.g. preferences, about, etc)
-    this.state = {
-      login: true,
-      app: false
+this.state = {
+      login: '',
+      app: '',
+      ticketPhone: ''
     }
+          // Initialise the Zendesk JavaScript API client
+      // https://developer.zendesk.com/apps/docs/apps-v2
+    
+
+
+
+       
+    // add additional state properties for different window components (e.g. preferences, about, etc)
+
 
     this.loginToApp = this._changeLoginToApp.bind(this);
     // need to include pkg.json module
@@ -24,7 +33,33 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    // console.log('app.js: 2b componentDidMount, this.props - ', this.props);
+
+
+    if(localStorage.refresh != undefined){
+      
+            this.setState({
+              login: false,
+              app: true,
+              ticketPhone: ''
+            });
+
+            fdp.versionCheck();
+    
+    }
+
+    else{
+
+    this.setState({
+      login: true,
+      app: false,
+      ticketPhone: ''
+    });
+  }
+
+
+
+
+
   }
 
   // handles initialization of app upon login...
@@ -45,7 +80,7 @@ export default class App extends Component {
       // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} />
         </div>
       )
     }
@@ -53,5 +88,6 @@ export default class App extends Component {
       // console.log('1, localStorage - ', localStorage.node, localStorage.auth);
       return <LoginWindow login={this.loginToApp} />
     }
+    return (<div></div>)
   }
 }
