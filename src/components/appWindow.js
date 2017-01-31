@@ -35,26 +35,14 @@ export default class AppWindow extends Component {
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
-		if (client) {
-			// use client API if available...
-			client.get('currentUser').then(user => {
-				// console.log('ME! - ', user.currentUser);
-				this.setState({
-					myZendeskAgent: user.currentUser
-				});
-			});
-		} else {
-			// otherwise use alternative ZD API call...
-			// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
+		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
 				.then((status, err) => {
-					// console.log('&aw: grabMyAgentObj -> ', status);
+					 console.log('&aw: grabMyAgentObj -> ', status);
 					this.setState({
 						myZendeskAgent: status.user
 					});
 				});
-		}
-		// console.log('aw: state after setting myagentid is -> ', this.state);
 	}
 
 
@@ -106,7 +94,7 @@ export default class AppWindow extends Component {
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
 			// console.log('call info - ', this.props.mycalls[0]);
 			var endUserCallNumber = this.props.mycalls[0].phone;
-
+			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 			// set newCallerFlag to false since we have a new call...
 			if (this.state.newCallerFlag == true) {
 				this.setState({
@@ -115,8 +103,10 @@ export default class AppWindow extends Component {
 				
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
-				zendesk.grabCallId(endUserCallNumber)
+				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
+
+						
 						// console.log('@aw: call id grabbed -> ', status, err);
 						
 						// set the end user profile object
@@ -130,7 +120,7 @@ export default class AppWindow extends Component {
 							if (this.state.myZendeskAgent.id && this.state.otherCallerEndUser.id){
 								zendesk.profilePop(this.state.myZendeskAgent.id, this.state.otherCallerEndUser.id)
 									.then((status, err) => {
-										// console.log('IN HOME MODULE SUCCESSFUL SCREEN POP? - ', status, err);
+										 console.log('IN HOME MODULE SUCCESSFUL SCREEN POP? - ', status, err);
 									});
 							}
 						}
@@ -141,27 +131,27 @@ export default class AppWindow extends Component {
 							// NOTE TO ISAM:
 							/***SWAP OUT THIS LOGIC!!! WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***/
 							// this logic helps w/ testing new end users by storing a random phone number into zd database in place of # that's actually calling...
-							var getRandom = function(length) {
+					/*		var getRandom = function(length) {
 								return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
 							};
 							var callerPhoneNumber = getRandom(10);
 							console.log('random phone # generated - ', callerPhoneNumber);
 							var userData = {
 								"user": {
-									"name": `Caller: ${callerPhoneNumber}`,
+									"name": `Caller-${callerPhoneNumber}`,
 									"phone": callerPhoneNumber + ""
 								}
-							};
+							};*/
 							/***SWAP OUT!!! THIS LOGIC WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***/
 
 
 							// **** SWAP IN THIS LOGIC!!! IN PLACE of code above ^^^ **** -> use caller's real phone # rather than randomly generated phone number
-							// var userData = {
-							// 	"user": {
-							// 		"name": `Caller: ${endUserCallNumber}`,
-							// 		"phone": endUserCallNumber + ""
-							// 	}
-							// }
+							 var userData = {
+							 	"user": {
+							 		"name": `Caller: ${endUserNumber}`,
+							 		"phone": endUserNumber + ""
+							 	}
+							 };
 							// **** SWAP IN!!! THIS LOGIC IN PLACE ****
 
 
@@ -172,6 +162,7 @@ export default class AppWindow extends Component {
 								.then((status, err) => {
 									// console.log("USER CREATED SUCCESFFULY BACK IN HOME MODULE - ", status);
 									var createdUser = status.user
+									console.log("CREATED USER",createdUser);
 									// grab call info...
 									var incomingCall = this.props.mycalls[0].incoming;
 									// incoming call -> ID == 45
