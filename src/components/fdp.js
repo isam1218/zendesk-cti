@@ -6,7 +6,7 @@ const emitter = new EventEmitter();
 
 const fdp =  {
 	emitter: emitter,
-	feeds: ['me', 'settings', 'locations', 'location_status', 'mycalls', 'mycalldetails', 'fdpImage', 'quickinbox'],
+	feeds: ['me', 'settings', 'locations', 'location_status', 'mycalls', 'mycalldetails', 'fdpImage', 'quickinbox','calllog'],
 	synced: false,
 	refresh: null,
 	status: 0,

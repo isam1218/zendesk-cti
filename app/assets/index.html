@@ -4,7 +4,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   </head>
   <body>
-    <div class="container"></div>
+    <div class="container" style="height:440px"></div>
     <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
     <script>
       // Initialise the Zendesk JavaScript API client
@@ -17,6 +17,7 @@
 
       var topBarClientPromise = client.get('instances').then(function(instancesData){
         var instances = instancesData.instances;
+        console.log("ALL Instances",instancesData);
         for (var instanceGuid in instances) {
           if (instances[instanceGuid].location === 'top_bar') {
             return client.instance(instanceGuid);
@@ -29,6 +30,11 @@
         topBarClient.invoke('popover');
 
       });
+
+      client.on('instances', function() {
+        //client.invoke('popover');
+        console.log("INSTANCE CREATED");
+    });
 
     </script>
      <script src="bundle.js"></script>

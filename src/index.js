@@ -27,7 +27,9 @@ var server = "https://dev4.fon9.com:8081";
 // var quickinbox = {};
 var locations = {};
 var avatars = {};
-var mycalls = []; // must be array to facilitate sorting
+var mycalls = [];
+var calllog = [];
+ // must be array to facilitate sorting
 
 // managing data changed by sync to update state which will be passed down
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
@@ -39,6 +41,11 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		for (let i = 0; i < data['me'].length; i++)
 			settings[data['me'][i].propertyKey] = data['me'][i].propertyValue;
 		
+	}
+
+	if(data['calllog']){
+		for (let i = 0; i < data['calllog'].length; i++)
+			calllog.push(data['calllog'][i]);
 	}
 	
 	if (data['settings']) {		
@@ -131,12 +138,12 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 
-  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations}  />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} />, document.querySelector('.container'));
 });
 
 
 
-ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations}  />, document.querySelector('.container'));
+ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} />, document.querySelector('.container'));
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;

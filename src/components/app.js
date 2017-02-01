@@ -80,7 +80,7 @@ this.state = {
       // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} />
         </div>
       )
     }
