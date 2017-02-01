@@ -57,7 +57,7 @@ export default class AppWindow extends Component {
 			my_pid: this.props.settings.my_pid,
 			display_name: this.props.settings.display_name
     });
-		
+		this.props.calllog.reverse();
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
 			this.setState({
@@ -67,12 +67,6 @@ export default class AppWindow extends Component {
 			
 		}
 
-		console.log("CALL LOG",this.props.calllog);
- /*       if(this.props.ticketPhone.length > 0){
-        	var phone_number = localStorage.getItem("ticketPhone");
-        	this._updateValue(phone_number, "phone");
-        	console.log("phone number",phone_number);
-      }*/
 
       window.addEventListener('storage', (e)=> {  
 		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
@@ -451,11 +445,13 @@ export default class AppWindow extends Component {
 		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
     if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name && this.props.calllog.length >= 0){
       // console.error('default screen - ', this.state, this.props);
-      var audioBtn, body;
+      var audioBtn, body, call_style, call_type;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
-
-
+		/*this.props.calllog.map(items =>{
+		      var call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
+		      console.log("CALL STYLE",call_style);
+		});*/
 
       body = (
       	<div>
@@ -487,21 +483,30 @@ export default class AppWindow extends Component {
             <i className={callBtnCSS} onClick={() => this._callNumber()}>call</i>
           </div>
         </div>
-
+        <div id="recentTitle">RECENT CALLS</div>
         <div id="recentSection">
-        		<div id="recentTitle">RECENT CALLS</div>
-        </div>
-        <ul>
+        		
+        
+        <ul className="recentList">
 		        {
 
 			        	this.props.calllog.map(items =>{
-			        	return <li className="recentItems"><i className="material-icons">{(!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '' }</i></li>
+			        		call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
+			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
+			        		console.log("CALL STYLE",call_style);
+			        	return( 
+			        		<li className="recentItems">
+			        		<i className={call_style}>{call_type}</i>
+			        		<div className="recentDisplayName">{items.displayName}<br/><p className="displayPhone">{items.phone}</p></div>
+			        		<div className="recentTimeAgo">{moment(items.startedAt).startOf().fromNow()}</div>
+			        		</li>
+			        		)
 
 			        	})
 		        	
 		        }
         </ul>
-
+        </div>
 
         </div>
       );
