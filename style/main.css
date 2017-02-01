@@ -187,7 +187,6 @@ progress::-webkit-progress-bar {
 #app {
   min-width: 320px;
   min-height: 175px;
-  border-bottom: 5px solid #d8d8d8;
 }
 #app .overlay {
   position: absolute;
@@ -306,6 +305,9 @@ progress::-webkit-progress-bar {
 #app #header .agent-login {
   width: 80%;
 }
+#app #basic {
+  border-bottom: 5px solid #d8d8d8;
+}
 #app #basic .material-icons.audio {
   position: absolute;
   top: 6px;
@@ -387,6 +389,16 @@ progress::-webkit-progress-bar {
 }
 #app #basic .calling .callbtn.active {
   background-color: #00ad33;
+}
+#app #recentTitle {
+  font-size: 15px;
+  font-weight: bold;
+  color: #686868;
+  margin: 10px 0 10px 10px;
+}
+#app .recentItems {
+  font-size: 12px;
+  list-style: none;
 }
 #app #full .name,
 #app #footer .name,
