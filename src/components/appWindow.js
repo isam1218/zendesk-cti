@@ -497,7 +497,7 @@ export default class AppWindow extends Component {
 			        	this.props.calllog.slice(0,5).map(items =>{
 			        		call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
-			        		console.log("CALL STYLE",call_style);
+			        	
 			        	return( 
 			        		<li className="recentItems" onClick={() => this._callRecent(items.phone)}>
 			        		<i className={call_style}>{call_type}</i>
