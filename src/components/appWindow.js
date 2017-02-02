@@ -57,7 +57,7 @@ export default class AppWindow extends Component {
 			my_pid: this.props.settings.my_pid,
 			display_name: this.props.settings.display_name
     });
-		this.props.calllog.reverse();
+		
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
 			this.setState({
