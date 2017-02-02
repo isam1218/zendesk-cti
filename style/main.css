@@ -326,7 +326,7 @@ progress::-webkit-progress-bar {
 }
 #app #basic .location {
   background-color: #fbfbfb;
-  padding: 20px 12px;
+  padding: 10px 12px;
 }
 #app #basic .location .my_location {
   font-weight: bold;
@@ -394,10 +394,10 @@ progress::-webkit-progress-bar {
   font-size: 15px;
   font-weight: bold;
   color: #616161;
-  margin: 10px 0 10px 10px;
+  margin: 10px 0 0px 10px;
 }
 #app #recentSection {
-  max-height: 225px;
+  max-height: 260px;
   overflow-y: auto;
 }
 #app .recentList {
