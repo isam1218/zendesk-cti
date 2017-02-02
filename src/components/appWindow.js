@@ -242,6 +242,10 @@ export default class AppWindow extends Component {
     }
   }
 
+  _callRecent(data){
+  	fdp.postFeed('me', 'callTo', {phoneNumber: data});
+  }
+
   // change view
   _changeScreen(type = '') {
     this.setState({
@@ -495,7 +499,7 @@ export default class AppWindow extends Component {
 			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		console.log("CALL STYLE",call_style);
 			        	return( 
-			        		<li className="recentItems">
+			        		<li className="recentItems" onClick={() => this._callRecent(items.phone)}>
 			        		<i className={call_style}>{call_type}</i>
 			        		<div className="recentDisplayName">{items.displayName}<br/><p className="displayPhone">{items.phone}</p></div>
 			        		<div className="recentTimeAgo">{moment(items.startedAt).startOf().fromNow()}</div>
