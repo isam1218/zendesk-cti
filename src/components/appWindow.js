@@ -490,7 +490,7 @@ export default class AppWindow extends Component {
         <ul className="recentList">
 		        {
 
-			        	this.props.calllog.map(items =>{
+			        	this.props.calllog.slice(0,5).map(items =>{
 			        		call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		console.log("CALL STYLE",call_style);
