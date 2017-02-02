@@ -252,7 +252,7 @@ export default class AppWindow extends Component {
       screen: type,
       phone: ''
     });
-    // console.log('_changeScreen to ', type);
+     console.log('_changeScreen to ', type);
   }
 
   // [DIALPAD SCREEN]
@@ -431,6 +431,28 @@ export default class AppWindow extends Component {
 		this._changeScreen('default');
 	}
 
+	_switch(call) {
+		if (this.props.mycalls.length < 2)
+			this._changeScreen();
+		for(var i =0; i<this.props.mycalls.length;i++){
+			if(this.props.mycalls[i].xpid != call.xpid){
+				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid});
+			}
+		}
+		
+		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid});
+	}
+
+	_add(mycall) {
+		console.log("MYCALL",mycall);
+		// place existing call on hold
+		if (mycall.state != 3)
+		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid});
+	//this._sendAction('hold', mycall);
+		
+		this._changeScreen('dialpad:add');
+	}
+
   // handles input event.target.value
   _updateValue(e, property) {
 		this.setState({
@@ -519,11 +541,15 @@ export default class AppWindow extends Component {
     }
 
     // [DIAL PAD SCREEN] {body}
-    else if (this.state.screen == 'dialpad') {
+    else if (this.state.screen.indexOf('dialpad') != -1) {
 			var input, actionBtn;
+
+			var screen = this.state.screen.split(':')[1];
+			var title = screen == 'add' ? 'Add Call' : 'Dialpad';
+			var input, actionBtn, backBtn;
 			
 			// not on a call, so dialpad is just a glorified whatever
-			if (!mycall) {
+			if (!mycall || screen) {
 				input = (
 					<input 
 						className="input" 
@@ -829,11 +855,12 @@ export default class AppWindow extends Component {
 							
 							<div 
 								className="button"
-								onClick={() => this._toggleMute(mycall, disablePhone)}
-								disabled={disableMute}
+								onClick={() => this._add(mycall)}
+								disabled={mycall.state == 0}
+								//disabled={disableMute}
 							>
-								{muteBtn}
-								<span className="label">mute</span>
+								<i className="material-icons">add</i>
+								<span className="label">add</span>
 							</div>
 							
 							<div 
@@ -865,6 +892,40 @@ export default class AppWindow extends Component {
 
 
     }
+
+    		// add remaining alerts to bottom of template
+		if (this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add')) {
+			var index = mycall && this.state.screen == 'dialpad:add' ? 0 : 1;
+			console.log("DIALPAD:ADD");
+			footer = (
+				<div id="footer">
+					{this.props.mycalls.slice(index, this.props.mycalls.length).map((call, key) => {
+						var actionBtn;
+						
+						// on hold
+						if (call.state == 3)
+							actionBtn = (<i className="material-icons switch" onClick={() => this._switch(call)}>swap_calls</i>);
+						else if (call.state == 0)
+							actionBtn = (<i className="material-icons answer">call</i>);
+						
+						return (
+							<div className={`alert type${call.type}`} key={key}>
+								{this._getAvatar(call)}
+								<div className="details">
+									<div className="name">{call.displayName}</div>
+									{this._getStatus(call)}
+								</div>
+								<div>
+									<i className="material-icons end" onClick={() => this._sendAction('end', call)}>call_end</i>
+									
+									{actionBtn}
+								</div>
+							</div>
+						);
+					})}
+				</div>
+			);
+		}
 
 		    
     // [POPUPS] {popup} 
@@ -901,7 +962,7 @@ export default class AppWindow extends Component {
         </div>
         
         {body}
-        
+        {footer}
       </div>
     );
 

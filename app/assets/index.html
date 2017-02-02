@@ -17,7 +17,6 @@
 
       var topBarClientPromise = client.get('instances').then(function(instancesData){
         var instances = instancesData.instances;
-        console.log("ALL Instances",instancesData);
         for (var instanceGuid in instances) {
           if (instances[instanceGuid].location === 'top_bar') {
             return client.instance(instanceGuid);
@@ -30,13 +29,6 @@
         topBarClient.invoke('popover');
 
       });
-
-
-      client.on('instances', function() {
-        //client.invoke('popover');
-        console.log("INSTANCE CREATED");
-     /*   client.invoke('notify', "You have entered a incorrectly formatted ticket number. Please make sure you are entering the correct ticket number to log an internal note for this call.",'error',8000);*/
-    });
 
     </script>
      <script src="bundle.js"></script>
