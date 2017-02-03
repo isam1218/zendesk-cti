@@ -219,7 +219,15 @@ export default class AppWindow extends Component {
 
 
 	_answerCall(call) {
+		console.log("ANSWER",call);
 		// fdp postFeed
+		
+		for(var i = 0; i < this.props.mycalls.length; i++){
+			if(this.props.mycalls[i].xpid != call.xpid){
+				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid});
+			}
+		}
+
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
 		
 	}
@@ -266,6 +274,7 @@ export default class AppWindow extends Component {
   }
 
 	_endCall(call) {
+		console.log("CALL",call);
 		// hang up current call
 		// console.log('in _endCall w/ xpid - ', call);
 		// fdp post request to end call
@@ -474,10 +483,10 @@ export default class AppWindow extends Component {
       var audioBtn, body, call_style, call_type;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
-		/*this.props.calllog.map(items =>{
-		      var call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
-		      console.log("CALL STYLE",call_style);
-		});*/
+      console.log("CALLLOG",this.props.calllog);
+	var sorted = this.props.calllog.sort(function(a, b) {
+        return a.startedAt - b.startedAt;
+    });
 
       body = (
       	<div>
@@ -516,7 +525,7 @@ export default class AppWindow extends Component {
         <ul className="recentList">
 		        {
 
-			        	this.props.calllog.slice(0,5).map(items =>{
+			        	sorted.reverse().slice(0,5).map(items =>{
 			        		call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        	
@@ -906,7 +915,7 @@ export default class AppWindow extends Component {
 						if (call.state == 3)
 							actionBtn = (<i className="material-icons switch" onClick={() => this._switch(call)}>swap_calls</i>);
 						else if (call.state == 0)
-							actionBtn = (<i className="material-icons answer">call</i>);
+							actionBtn = (<i className="material-icons answer" onClick={() => this._answerCall(call)}>call</i>);
 						
 						return (
 							<div className={`alert type${call.type}`} key={key}>
@@ -916,7 +925,7 @@ export default class AppWindow extends Component {
 									{this._getStatus(call)}
 								</div>
 								<div>
-									<i className="material-icons end" onClick={() => this._sendAction('end', call)}>call_end</i>
+									<i className="material-icons end" onClick={() => this._endCall(call)}>call_end</i>
 									
 									{actionBtn}
 								</div>

@@ -45,7 +45,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 	if(data['calllog']){
 		for (let i = 0; i < data['calllog'].length; i++)
-			calllog.unshift(data['calllog'][i]);
+			calllog.push(data['calllog'][i]);
 	}
 	
 	if (data['settings']) {		
