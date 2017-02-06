@@ -66,9 +66,11 @@ const fdp =  {
 					fdp.login();
 				}
 				*/
-					console.log("ERRORS",res,err,body);
+				
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
+					console.log("ERR",res.status);
+					localStorage.refresh = '';
 					resolve(res.status);
 				}
 				else{

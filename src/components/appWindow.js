@@ -261,6 +261,23 @@ export default class AppWindow extends Component {
       phone: ''
     });
      console.log('_changeScreen to ', type);
+     if(type == "default"){
+     		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"440px" });
+     		if(this.props.mycalls.length == 2)
+     		client.invoke('resize', { width: '320px', height:"490px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"540px" });
+ 		}
+ 	if(type == "dialpad:add"){
+     		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"490px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"540px" });
+ 	}
+
+
+
   }
 
   // [DIALPAD SCREEN]
@@ -274,7 +291,7 @@ export default class AppWindow extends Component {
   }
 
 	_endCall(call) {
-		console.log("CALL",call);
+
 		// hang up current call
 		// console.log('in _endCall w/ xpid - ', call);
 		// fdp post request to end call
@@ -453,9 +470,8 @@ export default class AppWindow extends Component {
 	}
 
 	_add(mycall) {
-		console.log("MYCALL",mycall);
-		// place existing call on hold
-		if (mycall.state != 3)
+
+
 		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid});
 	//this._sendAction('hold', mycall);
 		
@@ -483,7 +499,6 @@ export default class AppWindow extends Component {
       var audioBtn, body, call_style, call_type;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
-      console.log("CALLLOG",this.props.calllog);
 	var sorted = this.props.calllog.sort(function(a, b) {
         return a.startedAt - b.startedAt;
     });
@@ -747,6 +762,7 @@ export default class AppWindow extends Component {
 		else if (this.props.mycalls.length == 1 && this.props.mycalls[0].state === 0){
 			// console.log("CALL RINGING INCOMING !!!! - ", this.props.mycalls[0]);
 
+
 			var answerBtn;
 			
 			if (mycall.incoming && mycall.state == 0) {
@@ -782,6 +798,7 @@ export default class AppWindow extends Component {
 		// [ON CALL SCREEN] (full view) {body}
     else if (this.props.mycalls.length > 0) {
 			// console.error('ON CALL screen - ', this.state, this.props);
+
 
 			var answerBtn, muteBtn;
 			
@@ -906,6 +923,8 @@ export default class AppWindow extends Component {
 		if (this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add')) {
 			var index = mycall && this.state.screen == 'dialpad:add' ? 0 : 1;
 			console.log("DIALPAD:ADD");
+
+
 			footer = (
 				<div id="footer">
 					{this.props.mycalls.slice(index, this.props.mycalls.length).map((call, key) => {

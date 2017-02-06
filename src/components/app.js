@@ -35,7 +35,7 @@ this.state = {
   componentDidMount() {
 
 
-    if(localStorage.refresh != undefined){
+    if(localStorage.refresh){
       
             this.setState({
               login: false,
@@ -48,7 +48,6 @@ this.state = {
     }
 
     else{
-
     this.setState({
       login: true,
       app: false,
@@ -88,6 +87,6 @@ this.state = {
       // console.log('1, localStorage - ', localStorage.node, localStorage.auth);
       return <LoginWindow login={this.loginToApp} />
     }
-    return (<div></div>)
+    return (<LoginWindow login={this.loginToApp} />)
   }
 }
