@@ -452,7 +452,7 @@ export default class AppWindow extends Component {
 
 	_transfer(call, isVM) {
 		// call FDP API to transfer call (either regular or to VM transfer)
-
+		fdp.postFeed('mycalls', 'transferTo', {mycallId: call.xpid, toNumber: this.state.phone});
 		// clear screen
 		this._changeScreen('default');
 	}
@@ -671,21 +671,9 @@ export default class AppWindow extends Component {
     }
 
     // STILL NEED TO DO [TRANSFER SCREEN]
-		else if (this.state.screen == 'transfer') {
+		else if (this.state.screen == 'transfer' && mycall && mycall.state != 0) {
       /*  *****FAKE CALL OBJ HARDWIRED IN SO WE CAN SWITCH SCREENS**** */
-			// WILL HAVE TO REMOVE
-      mycall = {
-        type: 5,
-        locationId: "0_11216067",
-        incoming: false,
-        state: 2,
-        mute: false,
-        contactId: "1000015ad_1905460",
-        displayName: "Sean Rose",
-        created: 1483047916744,
-        phone: "714-469-1796",
-        holdStart: 1483057916744
-      }
+
 
 			// disable buttons based on length of input value
 			var disableNum = false;
@@ -745,7 +733,7 @@ export default class AppWindow extends Component {
 							<div
 								className="button" 
 								disabled={disableVM}
-								onClick={() => this._transfer(mycall, true)}
+								onClick={() => this._transfer(mycall)}
 							>
 								<i className="material-icons">voicemail</i>
 								<span className="label">voicemail</span>
@@ -891,8 +879,8 @@ export default class AppWindow extends Component {
 							
 							<div 
 								className="button"
-								disabled={disableConf}
-								onClick={() => this._transfer(mycall)}
+								disabled={disableConf || mycall.state == 0}
+								onClick={() => this._changeScreen("transfer")}
 							>
 								<i className="material-icons">phone_forwarded</i>
 								<span className="label">transfer</span>
