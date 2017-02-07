@@ -156,6 +156,55 @@
         }
       }
     }
+
+    #addText{
+    font-size: 16px;
+    width: 220px;
+    margin: 40px 40px 50px 40px;
+    }
+
+    #dialpad {
+        color: black;
+
+        .calling{
+
+        .form {
+          flex: 1;
+        
+              &.focused {
+                .label {
+                  top: 0px;
+                  color: inherit;
+                }
+                
+                .number {
+                  border: 1px solid #8fcfff;
+                }
+              }
+            }
+          .label{
+            position: relative;
+            z-index: 1;
+            background-color: white;
+            top: 18px;
+            left: 30px;
+            width:100px;
+            font-size: 14px;
+            color: #cccccc;
+            -webkit-transition: top 0.25s;
+            transition: top 0.25s;
+            pointer-events: none;
+          }
+
+        .number {
+            width: 250px;
+            border: 1px solid #d2d6d9;
+            padding: 16px 8px;
+            font-size: 14px;
+            margin-bottom:30px;
+          }
+        }
+    }
     
     .calling {
       padding: 14px 12px;
@@ -206,10 +255,7 @@
         margin-left: 10px;
       }
       
-      .dialpad {
-        border: 1px solid #0d657a;
-        color: black;
-      }
+
         
       .callbtn {
         background-color: #80D798;
@@ -221,6 +267,8 @@
         }
       }
     }
+
+
   }
 
   #recentTitle{
@@ -399,6 +447,7 @@
 
   #dialpad, #transfer {
     height: 400px;
+    margin-top: -30px;
     
     .banner {
       height: 40px;

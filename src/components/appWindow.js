@@ -571,100 +571,49 @@ export default class AppWindow extends Component {
 			var screen = this.state.screen.split(':')[1];
 			var title = screen == 'add' ? 'Add Call' : 'Dialpad';
 			var input, actionBtn, backBtn;
+			var formCSS = 'form' + (this.state.focused ? ' focused' : '');
 			
 			// not on a call, so dialpad is just a glorified whatever
 			if (!mycall || screen) {
 				input = (
 					<input 
-						className="input" 
+						className="number" 
 						type="text" 
-						placeholder="Enter Number or Ext." 
 						value={this.state.phone} 
 						onChange={(e) => this._updateValue(e, 'phone')} 
 						onKeyPress={(e) => this._callNumber(e)}
 						onInput={(e) => this._restrictInput(e)}
+		                onFocus={(e) => this._setFocus(true)}
+                		onBlur={(e) => this._setFocus(false)}
 					/>
 				);
 				
 				actionBtn = (<i className="material-icons answer" onClick={() => this._callNumber()}>call</i>);
 			}
-			else {
-				input = (
-					<input 
-						className="input" 
-						type="text" 
-						placeholder="Enter #" 
-						value={this.state.phone} 
-						onChange={(e) => this._updateValue(e, 'phone')}
-						onInput={(e) => this._restrictInput(e)}
-						onKeyPress={(e) => this._dial(e.key, true)}
-					/>
-				);
-				
-				actionBtn = (<i className="material-icons end" onClick={() => this._sendAction('end', mycall)}>call_end</i>);
-			}
+
 			
 			body = (
+				<div id="basic">
 				<div id="dialpad">
 					<div className="banner">
 						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
-						<span>Dialpad</span>
+						<span>Add Call</span>
 					</div>
-					
+
+          <div className="calling">
+            <div className={formCSS}>
+            <div id="addText">Enter the number or extension you would like to call</div>
+              <div className="label">NUMBER/EXTENSION</div>
 					{input}
-					
-					<div className="controls">
-						<div className="key" onClick={() => this._dial(1)}>
-							<div className="number">1</div>
-						</div>
-						<div className="key" onClick={() => this._dial(2)}>
-							<div className="number">2</div>
-							<div className="label">ABC</div>
-						</div>
-						<div className="key" onClick={() => this._dial(3)}>
-							<div className="number">3</div>
-							<div className="label">DEF</div>
-						</div>
-						<div className="key" onClick={() => this._dial(4)}>
-							<div className="number">4</div>
-							<div className="label">GHI</div>
-						</div>
-						<div className="key" onClick={() => this._dial(5)}>
-							<div className="number">5</div>
-							<div className="label">JKL</div>
-						</div>
-						<div className="key" onClick={() => this._dial(6)}>
-							<div className="number">6</div>
-							<div className="label">MNO</div>
-						</div>
-						<div className="key" onClick={() => this._dial(7)}>
-							<div className="number">7</div>
-							<div className="label">PQRS</div>
-						</div>
-						<div className="key" onClick={() => this._dial(8)}>
-							<div className="number">8</div>
-							<div className="label">TUV</div>
-						</div>
-						<div className="key" onClick={() => this._dial(9)}>
-							<div className="number">9</div>
-							<div className="label">WXYZ</div>
-						</div>
-						<div className="key special" onClick={() => this._dial('*')}>
-							<div className="number">*</div>
-						</div>
-						<div className="key" onClick={() => this._dial(0)}>
-							<div className="number">0</div>
-							<div className="label">+</div>
-						</div>
-						<div className="key special" onClick={() => this._dial('#')}>
-							<div className="number">#</div>
-						</div>
-					</div>
+				
+			</div>
+		</div>	
 					
 					<div className="buttons">
-						<i className="material-icons" onClick={() => this._changeScreen('default')}>dialpad</i>
+						
 						{actionBtn}
 					</div>
+				</div>
 				</div>
 			);
 
@@ -849,23 +798,7 @@ export default class AppWindow extends Component {
 								<span className="label">hold</span>
 							</div>
 							
-							<div 
-								className="button"
-								onClick={() => this._changeScreen('dialpad')}
-								disabled={disablePhone}
-							>
-								<i className="material-icons">dialpad</i>
-								<span className="label">dialpad</span>
-							</div>
-							
-							<div 
-								className="button" 
-								onClick={() => this._openPopup('audio')}
-								disabled={disablePhone}
-							>
-								<i className={audioBtnCSS}>volume_up</i>
-								<span className="label">audio</span>
-							</div>
+
 							
 							<div 
 								className="button"
@@ -886,14 +819,7 @@ export default class AppWindow extends Component {
 								<span className="label">transfer</span>
 							</div>
 							
-							<div 
-								className="button" 
-								disabled={disableFDP}
-								onClick={() => this._openPopup('move')}
-							>
-								<i className={moveBtnCSS}>call_split</i>
-								<span className="label">move</span>
-							</div>
+
 						</div>
 						
 						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
