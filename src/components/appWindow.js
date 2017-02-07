@@ -627,6 +627,7 @@ export default class AppWindow extends Component {
 			// disable buttons based on length of input value
 			var disableNum = false;
 			var disableVM = false;
+			var formCSS = 'form' + (this.state.focused ? ' focused' : '');
 			
 			if (this.state.phone == '') {
 				disableNum = true;
@@ -641,33 +642,30 @@ export default class AppWindow extends Component {
 			}
 			
 			body = (
+				<div id="basic">
 				<div id="transfer">
 					<div className="banner">
 						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
 						<span>Transfer</span>
 					</div>
 					
-					<div className="info">
-						<div className="alert">
-							{this._getAvatar(mycall)}
-							<div className="details">
-								<div className="name">{mycall.displayName}</div>
-								{this._getStatus(mycall)}
-							</div>
-						</div>
+
 						
-						<div className="to">
-							<span>To:</span>
+          <div className="calling">
+            <div className={formCSS}>
+            <div id="addText">Enter the number or extension you would like to call</div>
+              <div className="label">NUMBER/EXTENSION</div>
 							<input 
 								className="number" 
 								type="text" 
-								placeholder="Enter Ext or Number" 
 								value={this.state.phone} 
 								onChange={(e) => this._updateValue(e, 'phone')}
 								onInput={(e) => this._restrictInput(e)}
+		                		onFocus={(e) => this._setFocus(true)}
+                				onBlur={(e) => this._setFocus(false)}
 							/>
-						</div>
-					</div>
+							</div>
+							</div>
 					
 					<div className="controls">
 						<div>
@@ -691,6 +689,7 @@ export default class AppWindow extends Component {
 						
 						<div className="cancel" onClick={() => this._changeScreen('default')}>cancel</div>
 					</div>
+				</div>
 				</div>
 			);
 		}
@@ -834,14 +833,20 @@ export default class AppWindow extends Component {
     }
 
     		// add remaining alerts to bottom of template
-		if (this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add')) {
+		if (this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add') || (this.state.screen == 'transfer')) {
+			
+			if(this.state.screen == "dialpad:add")
 			var index = mycall && this.state.screen == 'dialpad:add' ? 0 : 1;
-			console.log("DIALPAD:ADD");
+
+			else if(this.state.screen)
+			var index = mycall && this.state.screen == 'transfer' ? 0 : 1;
+
 
 
 			footer = (
 				<div id="footer">
 					{this.props.mycalls.slice(index, this.props.mycalls.length).map((call, key) => {
+						console.log("CALL",call);
 						var actionBtn;
 						
 						// on hold
