@@ -105,6 +105,7 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
+		console.log("MY CALLs",this.state.mycalls);
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -258,16 +259,20 @@ export default class AppWindow extends Component {
      		client.invoke('resize', { width: '320px', height:"512px" });
  		}
  	if(type == "dialpad:add"){
-     		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"460px" });
-     		if(this.props.mycalls.length == 3)
+      		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"462px" });		
+     		if(this.props.mycalls.length == 2)
      		client.invoke('resize', { width: '320px', height:"512px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"562px" });
  	}
  	 	if(type == "transfer"){
-     		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"460px" });
-     		if(this.props.mycalls.length == 3)
+      		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"462px" });
+     		if(this.props.mycalls.length == 2)
      		client.invoke('resize', { width: '320px', height:"512px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"562px" });
  	}
 
 
@@ -733,6 +738,12 @@ export default class AppWindow extends Component {
 		// [ON CALL SCREEN] (full view) {body}
     else if (this.props.mycalls.length > 0) {
 
+    	     		if(this.props.mycalls.length == 1)
+		     		client.invoke('resize', { width: '320px', height:"440px" });
+		     		if(this.props.mycalls.length == 2)
+		     		client.invoke('resize', { width: '320px', height:"485px" });
+		     		if(this.props.mycalls.length == 3)
+		     		client.invoke('resize', { width: '320px', height:"535px" });
 
 			var answerBtn, muteBtn;
 			
