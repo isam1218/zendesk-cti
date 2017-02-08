@@ -374,8 +374,10 @@ export default class AppWindow extends Component {
 	}
 
 	_holdCall(call) {
+
 		// if call is not on hold
 		if (call.state !== 3){
+			console.log("HOLD CALL",call);
 			// fdp request to hold call...
 			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid});
 		} else if (call.state === 3){
@@ -467,19 +469,20 @@ export default class AppWindow extends Component {
 	_switch(call) {
 		if (this.props.mycalls.length < 2)
 			this._changeScreen();
-		for(var i =0; i<this.props.mycalls.length;i++){
+/*		for(var i =0; i<this.props.mycalls.length;i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid});
 			}
-		}
+		}*/
 		
 		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid});
 	}
 
 	_add(mycall) {
 
-
+		if (mycall.state !== 3){
 		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid});
+		}
 	//this._sendAction('hold', mycall);
 		
 		this._changeScreen('dialpad:add');
