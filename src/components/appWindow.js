@@ -38,7 +38,6 @@ export default class AppWindow extends Component {
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
 				.then((status, err) => {
-					 console.log('&aw: grabMyAgentObj -> ', status);
 					this.setState({
 						myZendeskAgent: status.user
 					});
@@ -133,7 +132,6 @@ export default class AppWindow extends Component {
 							if (this.state.myZendeskAgent.id && this.state.otherCallerEndUser.id){
 								zendesk.profilePop(this.state.myZendeskAgent.id, this.state.otherCallerEndUser.id)
 									.then((status, err) => {
-										 console.log('IN HOME MODULE SUCCESSFUL SCREEN POP? - ', status, err);
 									});
 							}
 						}
@@ -148,7 +146,6 @@ export default class AppWindow extends Component {
 								return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
 							};
 							var callerPhoneNumber = getRandom(10);
-							console.log('random phone # generated - ', callerPhoneNumber);
 							var userData = {
 								"user": {
 									"name": `Caller-${callerPhoneNumber}`,
@@ -174,7 +171,6 @@ export default class AppWindow extends Component {
 							zendesk.createUser(userData)
 								.then((status, err) => {
 									var createdUser = status.user
-									console.log("CREATED USER",createdUser);
 									// grab call info...
 									var incomingCall = this.props.mycalls[0].incoming;
 									// incoming call -> ID == 45
@@ -187,7 +183,6 @@ export default class AppWindow extends Component {
 									// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
 									zendesk.createNewTicket(createdUser, via_id, this.state.myZendeskAgent)
 										.then((status, err) => {
-											// console.log("TICKET CREATED SUCCESSFULLY BACK IN HOME MODULE - ", status);
 											var lastCreatedTicket = status.ticket;
 											this.setState({
 												createdTicket: lastCreatedTicket
@@ -199,7 +194,6 @@ export default class AppWindow extends Component {
 										// otherwise, working version is...
 										zendesk.openCreatedTicket(this.state.myZendeskAgent.id, this.state.createdTicket.id)
 											.then((status, err) => {
-												// console.log("NEW TICKET POP SHOULD SUCCESSFULLY HAPPEN (BACK IN HOME MODULE) - ", status);
 											});
 										});
 								});
@@ -216,7 +210,6 @@ export default class AppWindow extends Component {
 
 
 	_answerCall(call) {
-		console.log("ANSWER",call);
 		// fdp postFeed
 		
 		for(var i = 0; i < this.props.mycalls.length; i++){
@@ -237,7 +230,6 @@ export default class AppWindow extends Component {
     
     if (this.state.phone != '') {      
       // logic if no other call is already in progress (using this.state.phone as the phone # to dial)
-			// console.log('about to call this number - ', this.state.phone);
 
 			fdp.postFeed('me', 'callTo', {phoneNumber: this.state.phone});
 
@@ -257,7 +249,6 @@ export default class AppWindow extends Component {
       screen: type,
       phone: ''
     });
-     console.log('_changeScreen to ', type);
      if(type == "default"){
      		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"440px" });
@@ -294,15 +285,18 @@ export default class AppWindow extends Component {
   }
 
 	_endCall(call,ticketNumber) {
-		console.log("CALL",call);
-		console.log("STATE",this.state);
+
 		var call_num = call.phone;
 		var call_type = call.incoming;
 		var start_time = call.created;
 		var currentTime = new Date().getTime();
 		var duration = (currentTime - call.created);
-		zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status,err)=>{
-			console.log("ADD CALL LOG",status);
+
+		zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
+
+			      this.setState({
+			        ticketNumber: ""
+			      });
 		});
 		// hang up current call
 		// fdp post request to end call

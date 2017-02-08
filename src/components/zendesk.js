@@ -33,7 +33,6 @@ const zendesk = {
 
 	addCallLog(ticketNumber,phoneNumber,callType,startTime,duration){
 		// https://developer.zendesk.com/rest_api/docs/core/users#show-the-currently-authenticated-user
-		console.log("DURATION",duration);
 		var grabCall = {
 		  url: `/api/v2/users/search.json?query=*${phoneNumber}`,
 		  type: 'GET',
@@ -47,6 +46,7 @@ const zendesk = {
 		var agentNo;
 		var agentName;
 		var duration = moment(duration).format("mm:ss");
+		var message = "Looks like the ticket number you entered in the Fonality App is badly formatted or does not exist. Please make sure you are entering the correct ticket number to log an internal note for this call.";
 
 		if(callType == true)
 			callType = "Incoming";
@@ -57,14 +57,12 @@ const zendesk = {
 		return new Promise((resolve, reject) => {
 
 		client.request(grabCall).then(info =>{
-				console.log("GRAB CALL ID DATA",info);
 				 contactID = info.users[0].id;
 				 dialNum = info.users[0].phone;
 				 callFrom = info.users[0].name;
 
 		client.get("currentUser").then((user)=>{
 
-			console.log("CURRENT USER",user);
 			agentNo = user.currentUser.id;
 			agentName = user.currentUser.name;
 
@@ -86,8 +84,12 @@ const zendesk = {
 		  data: data
 		};
 		
-		client.request(fetchData).then(data => {
+		client.request(fetchData).then((data) => {
 			  resolve(data);
+				},
+				(error)=> {
+					resolve(error);
+					client.invoke('notify', message, "error", 12000);
 				});
 			});
 
@@ -124,7 +126,6 @@ const zendesk = {
 		return new Promise((resolve, reject) => {
 			client.request(grabCall).then(data =>{
 				resolve(data);
-				console.log("GRAB CALL ID DATA",data);
 			});
 		});
 	},
@@ -141,7 +142,6 @@ const zendesk = {
 		};
 		return new Promise((resolve, reject) => {
 		client.request(createUser).then(user => {
-			  console.log("DATA",user);
 			  resolve(user);
 			});
 		});
@@ -199,7 +199,6 @@ const zendesk = {
 		};
 		return new Promise((resolve, reject) => {
 		client.request(openCreatedTicket).then(data => {
-			  console.log("DATA",data);
 			  resolve(data);
 			});
 		});
@@ -211,12 +210,8 @@ const zendesk = {
 		settings.dataType = "text";
 				return new Promise((resolve, reject) => {
 			$.ajax(settings).done((res) => {
-				 console.log('USER DATA SUCCESS', res);
 				resolve(res);
 			}).fail((res,err,body) => {
-				console.log('zd: get user fail - res -', res);
-				console.log('err - ', err);
-				console.log('body - ', body);
 				resolve(res,err,body);
 			});	
 

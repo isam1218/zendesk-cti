@@ -253,9 +253,7 @@ const fdp =  {
 	
 	// call fdp api
 	postFeed(feed, action, data) {
-		console.log("FEED",feed);
-		console.log("ACTION",action);
-		console.log("DATA",data);
+
 		var params = {
 			t: 'web',
 			action: action

@@ -29,7 +29,6 @@ this.state = {
   }
 
   componentWillReceiveProps() {
-    // console.log('app.js: 2a componentWillReceiveProps, this.props - ', this.props);
   }
 
   componentDidMount() {
@@ -76,7 +75,6 @@ this.state = {
       // ***Uncomment below and comment above to enable refresh..
     // if (localStorage.node || localStorage.auth || this.state.app){
       // fdp.init();
-      // console.log('have tokens already! - ', localStorage.node, localStorage.auth);
       return (
         <div>
           <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} />
@@ -84,7 +82,6 @@ this.state = {
       )
     }
     if (this.state.login){
-      // console.log('1, localStorage - ', localStorage.node, localStorage.auth);
       return <LoginWindow login={this.loginToApp} />
     }
     return (<LoginWindow login={this.loginToApp} />)
