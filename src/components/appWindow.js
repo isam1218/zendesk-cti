@@ -107,7 +107,6 @@ export default class AppWindow extends Component {
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
-			// console.log('call info - ', this.props.mycalls[0]);
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 			// set newCallerFlag to false since we have a new call...
@@ -122,7 +121,6 @@ export default class AppWindow extends Component {
 					.then((status, err) => {
 
 						
-						// console.log('@aw: call id grabbed -> ', status, err);
 						
 						// set the end user profile object
 						this.setState({
@@ -175,7 +173,6 @@ export default class AppWindow extends Component {
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
 							zendesk.createUser(userData)
 								.then((status, err) => {
-									// console.log("USER CREATED SUCCESFFULY BACK IN HOME MODULE - ", status);
 									var createdUser = status.user
 									console.log("CREATED USER",createdUser);
 									// grab call info...
@@ -265,15 +262,21 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"440px" });
      		if(this.props.mycalls.length == 2)
-     		client.invoke('resize', { width: '320px', height:"490px" });
+     		client.invoke('resize', { width: '320px', height:"460px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"540px" });
+     		client.invoke('resize', { width: '320px', height:"512px" });
  		}
  	if(type == "dialpad:add"){
      		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"490px" });
+     		client.invoke('resize', { width: '320px', height:"460px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"540px" });
+     		client.invoke('resize', { width: '320px', height:"512px" });
+ 	}
+ 	 	if(type == "transfer"){
+     		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"460px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"512px" });
  	}
 
 
@@ -290,10 +293,18 @@ export default class AppWindow extends Component {
     }
   }
 
-	_endCall(call) {
-
+	_endCall(call,ticketNumber) {
+		console.log("CALL",call);
+		console.log("STATE",this.state);
+		var call_num = call.phone;
+		var call_type = call.incoming;
+		var start_time = call.created;
+		var currentTime = new Date().getTime();
+		var duration = (currentTime - call.created);
+		zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status,err)=>{
+			console.log("ADD CALL LOG",status);
+		});
 		// hang up current call
-		// console.log('in _endCall w/ xpid - ', call);
 		// fdp post request to end call
 		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid});
 		// change screen back to default
@@ -343,7 +354,6 @@ export default class AppWindow extends Component {
 			
 				break;
 			case 2:
-				// console.log('getstatus case 2, call.created is  - ', parseInt(call.created));
 				return (
 					<div className="status">
 						On call for (<Timer start={call.created} />)
@@ -365,7 +375,6 @@ export default class AppWindow extends Component {
 	}
 
 	_holdCall(call) {
-		// console.log('in hold call! - ', call);
 		// if call is not on hold
 		if (call.state !== 3){
 			// fdp request to hold call...
@@ -379,7 +388,6 @@ export default class AppWindow extends Component {
   // calls relevant popup
   _openPopup(type) {
     // make sure this only used in necessary areas
-    // console.log('in _openPopup - ', type);
     this.setState({
       popup: type
     });
@@ -488,14 +496,12 @@ export default class AppWindow extends Component {
   
   render() {
     var mycall = this.props.mycalls[0];
-		// console.log('mycall - ', mycall);
     var popup, overlay, body, footer;
     var barCSS = '';
 
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} 
 		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
     if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name && this.props.calllog.length >= 0){
-      // console.error('default screen - ', this.state, this.props);
       var audioBtn, body, call_style, call_type;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
@@ -696,7 +702,6 @@ export default class AppWindow extends Component {
 
 		// [INCOMING CALL SCREEN]
 		else if (this.props.mycalls.length == 1 && this.props.mycalls[0].state === 0){
-			// console.log("CALL RINGING INCOMING !!!! - ", this.props.mycalls[0]);
 
 
 			var answerBtn;
@@ -733,7 +738,6 @@ export default class AppWindow extends Component {
 
 		// [ON CALL SCREEN] (full view) {body}
     else if (this.props.mycalls.length > 0) {
-			// console.error('ON CALL screen - ', this.state, this.props);
 
 
 			var answerBtn, muteBtn;
@@ -820,8 +824,13 @@ export default class AppWindow extends Component {
 							
 
 						</div>
+
+						<div className="associateZendesk">
+							<div id="associateText">Associate call with a Zendesk ticket</div>
+							<input id="associateTicket" type="text" placeholder="Ticket Number" value={this.state.ticketNumber} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
+						</div>
 						
-						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
+						<i className="material-icons end" onClick={() => this._endCall(mycall,this.state.ticketNumber)}>call_end</i>
 						
 						
 						{answerBtn}
@@ -846,7 +855,6 @@ export default class AppWindow extends Component {
 			footer = (
 				<div id="footer">
 					{this.props.mycalls.slice(index, this.props.mycalls.length).map((call, key) => {
-						console.log("CALL",call);
 						var actionBtn;
 						
 						// on hold
@@ -862,6 +870,7 @@ export default class AppWindow extends Component {
 									<div className="name">{call.displayName}</div>
 									{this._getStatus(call)}
 								</div>
+
 								<div>
 									<i className="material-icons end" onClick={() => this._endCall(call)}>call_end</i>
 									
