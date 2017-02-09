@@ -57,12 +57,15 @@ const zendesk = {
 		return new Promise((resolve, reject) => {
 
 		client.request(grabCall).then(info =>{
+			console.log("INFO",info);
+
+			if(info.users.length > 0){
 				 contactID = info.users[0].id;
 				 dialNum = info.users[0].phone;
 				 callFrom = info.users[0].name;
+				}
 
 		client.get("currentUser").then((user)=>{
-
 			agentNo = user.currentUser.id;
 			agentName = user.currentUser.name;
 
@@ -142,6 +145,7 @@ const zendesk = {
 		};
 		return new Promise((resolve, reject) => {
 		client.request(createUser).then(user => {
+			console.log("USER",user)
 			  resolve(user);
 			});
 		});
@@ -154,18 +158,18 @@ const zendesk = {
 			"display_to_agent": meAgent.id,
 			"ticket": {
 				"via_id": via_id,
-				"created_at": endUser.created_at,
-				"requester_id": endUser.id,
+				"created_at": "",
+				"requester_id":"" ,
 				"submitter_id": meAgent.id,
 				"description": `New ticket for new end user created. Origin phone number is: ${endUser.phone}`,
 				"requester": {
-					"name": endUser.name,
-					"phone": endUser.phone
+					"name": endUser,
+					"phone": endUser
 				},
 				"custom_fields": [
 					{
 						"id": 22060945,
-						"value": endUser.phone
+						"value": endUser
 					}
 				]
 			}

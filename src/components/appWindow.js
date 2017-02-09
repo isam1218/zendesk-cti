@@ -157,21 +157,22 @@ export default class AppWindow extends Component {
 
 
 							// **** SWAP IN THIS LOGIC!!! IN PLACE of code above ^^^ **** -> use caller's real phone # rather than randomly generated phone number
-							 var userData = {
+						/*	 var userData = {
 							 	"user": {
 							 		"name": `Caller: ${endUserNumber}`,
 							 		"phone": endUserNumber + ""
 							 	}
-							 };
+							 };*/
 							// **** SWAP IN!!! THIS LOGIC IN PLACE ****
 
 
 							// IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
 							// 1. create new end user profile..
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
-							zendesk.createUser(userData)
+				/*			zendesk.createUser(userData)
 								.then((status, err) => {
-									var createdUser = status.user
+									console.log("CREATE USER",status);
+									var createdUser = status.user*/
 									// grab call info...
 									var incomingCall = this.props.mycalls[0].incoming;
 									// incoming call -> ID == 45
@@ -182,7 +183,7 @@ export default class AppWindow extends Component {
 
 									// 2. create new ticket w/ prepopulated data
 									// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
-									zendesk.createNewTicket(createdUser, via_id, this.state.myZendeskAgent)
+									zendesk.createNewTicket(endUserNumber, via_id, this.state.myZendeskAgent)
 										.then((status, err) => {
 											var lastCreatedTicket = status.ticket;
 											this.setState({
@@ -197,7 +198,7 @@ export default class AppWindow extends Component {
 											.then((status, err) => {
 											});
 										});
-								});
+								//});
 						}
 
 					});
@@ -297,12 +298,14 @@ export default class AppWindow extends Component {
 		var currentTime = new Date().getTime();
 		var duration = (currentTime - call.created);
 
-		zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
+		if(ticketNumber){
+			zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 
-			      this.setState({
-			        ticketNumber: ""
-			      });
-		});
+				      this.setState({
+				        ticketNumber: ""
+				      });
+			});
+		}
 		// hang up current call
 		// fdp post request to end call
 		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid});
