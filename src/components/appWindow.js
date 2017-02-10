@@ -53,10 +53,21 @@ export default class AppWindow extends Component {
       calllog: this.props.calllog,
       avatars: this.props.avatars,
       ticketPhone: this.props.ticketPhone,
+      queue_members: this.props.queue_members,
+      queue_members_status: this.props.queue_members_status,
+      queues: this.props.queues,
+      queuelogoutreasons: this.props.queuelogoutreasons,
 			my_pid: this.props.settings.my_pid,
 			display_name: this.props.settings.display_name
     });
-		
+
+    	var myLoggedIn = 0;
+    	
+		//console.log("QUEUE MEMBERS",this.props.queue_members);
+		//console.log("QUEUEs",this.props.queues);
+		//console.log("MEEEE",this.props.settings);
+		//console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
+		//console.log("QUEUE LOGOUT REASONS",this.props.queuelogoutreasons);
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
 			this.setState({
@@ -65,6 +76,9 @@ export default class AppWindow extends Component {
 			})
 			
 		}
+
+
+
 
 
       window.addEventListener('storage', (e)=> {  
@@ -491,6 +505,17 @@ export default class AppWindow extends Component {
 		this._changeScreen('dialpad:add');
 	}
 
+	_openQueue(){
+		this._changeScreen('queue');
+	}
+
+	_getMyQueues() {
+		return {
+			queues: mine,
+			loggedIn: myLoggedIn
+		};
+	};
+
   // handles input event.target.value
   _updateValue(e, property) {
 		this.setState({
@@ -701,6 +726,77 @@ export default class AppWindow extends Component {
 						<div className="cancel" onClick={() => this._changeScreen('default')}>cancel</div>
 					</div>
 				</div>
+				</div>
+			);
+		}
+
+		//MANAGE QUEUES SECTION
+
+else if (this.state.screen == 'queue') {
+
+	var myqueues = [];
+	
+
+			for(var q = 0; q < this.props.queues.length; q++){
+			for(var m = 0; m < this.props.queue_members.length; m++){
+					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
+						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
+							myqueues.push({"name":this.props.queues[q].name});
+							console.log("MINEEEEE",myqueues);
+							for(var s = 0; s < this.props.queue_members_status.length; s++){
+								if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
+
+									if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login")
+									myqueues.push({"status": "Logged In"});
+									else
+										myqueues.push({"status": "Logged Out"});
+
+									//console.log("LOGGED IN",queueStatus);
+								}
+							}
+						}
+					
+				}
+			}
+		}
+
+		
+			
+			body = (
+				<div id="queues">
+					<div className="banner">
+						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
+						<span>Manage Queue Status</span>
+					</div>
+					<div id="queueBlock">
+						<div id="selectAll">
+							<input id="allCheckbox" type="checkbox"/><label id="allLabel">Select All</label>
+						</div>
+
+
+					</div>
+					<div id="queueContent">
+							{
+								myqueues.map(data =>{
+
+									
+								
+									console.log("MAP DATA",data);
+									return (
+										<div>
+										<h3>{data.name}</h3>
+										<p>{data.status}</p>
+										</div>
+										);
+
+								})
+							}
+					</div>
+					
+
+						
+          
+            
 				</div>
 			);
 		}
@@ -918,7 +1014,7 @@ export default class AppWindow extends Component {
         <div id="header">
           <div>
             <div ></div>
-						<img className="agent-login" src="./queue-off.png" />
+						<img className="agent-login" src="./queue-off.png" onClick={() => this._openQueue()} />
           </div>
         
           <div className="buttons">            

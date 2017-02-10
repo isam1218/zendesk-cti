@@ -29,6 +29,11 @@ var locations = {};
 var avatars = {};
 var mycalls = [];
 var calllog = [];
+var queue_members_status = [];
+var queues = [];
+var queue_members = [];
+var queuelogoutreasons = [];
+
  // must be array to facilitate sorting
 
 // managing data changed by sync to update state which will be passed down
@@ -45,6 +50,23 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	if(data['calllog']){
 		for (let i = 0; i < data['calllog'].length; i++)
 			calllog.push(data['calllog'][i]);
+	}
+
+	if(data['queue_members_status']){
+		for (let i = 0; i < data['queue_members_status'].length; i++)
+			queue_members_status.push(data['queue_members_status'][i]);
+	}
+	if(data['queues']){
+		for (let i = 0; i < data['queues'].length; i++)
+			queues.push(data['queues'][i]);
+	}
+	if(data['queue_members']){
+		for (let i = 0; i < data['queue_members'].length; i++)
+			queue_members.push(data['queue_members'][i]);
+	}
+	if(data['queuelogoutreasons']){
+		for (let i = 0; i < data['queuelogoutreasons'].length; i++)
+			queuelogoutreasons.push(data['queuelogoutreasons'][i]);
 	}
 	
 	if (data['settings']) {		
@@ -137,12 +159,12 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 
-  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} />, document.querySelector('.container'));
 });
 
 
 
-ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} />, document.querySelector('.container'));
+ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} />, document.querySelector('.container'));
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;
