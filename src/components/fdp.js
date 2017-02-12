@@ -205,7 +205,7 @@ const fdp =  {
 					data[i] = merged;
 				}
 			}
-
+			console.log("FDP SYNC DATA",data);
 			// emit synced data...
 			fdp.emitter.emit('data_sync_update', data);
 

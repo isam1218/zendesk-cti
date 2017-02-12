@@ -61,7 +61,6 @@ export default class AppWindow extends Component {
 			display_name: this.props.settings.display_name
     });
 
-    	var myLoggedIn = 0;
     	
 		//console.log("QUEUE MEMBERS",this.props.queue_members);
 		//console.log("QUEUEs",this.props.queues);
@@ -119,7 +118,6 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
-		console.log("MY CALLs",this.state.mycalls);
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -185,7 +183,6 @@ export default class AppWindow extends Component {
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
 				/*			zendesk.createUser(userData)
 								.then((status, err) => {
-									console.log("CREATE USER",status);
 									var createdUser = status.user*/
 									// grab call info...
 									var incomingCall = this.props.mycalls[0].incoming;
@@ -222,6 +219,50 @@ export default class AppWindow extends Component {
 			
 		} // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 
+			    	var myqueues = [];
+	
+
+		for(var q = 0; q < this.props.queues.length; q++){
+			for(var m = 0; m < this.props.queue_members.length; m++){
+					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
+						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
+							
+							myqueues.push({"name":this.props.queues[q].name});
+							//myqueues[q].name = this.props.queues[q].name;
+							
+							for(var s = 0; s < this.props.queue_members_status.length; s++){
+								if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
+
+									if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login"){
+										//myqueues[q].status = "Logged In";
+										var queue_status = "Logged In";
+										//this._removeByAttr(myqueues,"status","Logged Out");
+										myqueues.push({"status": queue_status});
+
+										
+									}
+									if(this.props.queue_members_status[s].status == "logout"){
+										//myqueues[q].status = "Logged Out";
+										var queue_status = "Logged Out";
+										//this._removeByAttr(myqueues,"status","Logged In");
+										myqueues.push({"status": queue_status});
+
+										
+									}
+
+								}
+							}
+						}
+					
+				}
+			}
+		}
+
+		this.setState({
+			myqueues: myqueues
+		});
+		console.log("WILL MOUNT",myqueues);
+
   } // CLOSE BRACKET OF: componentWillReceiveProps
 
 
@@ -237,6 +278,12 @@ export default class AppWindow extends Component {
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
 		
 	}
+
+/*	_setQueues(){
+		this.setState({
+			myqueues: this.state.myqueues
+		});
+	}*/
 
   // press enter or green call button to call
   _callNumber(e) {
@@ -394,7 +441,6 @@ export default class AppWindow extends Component {
 
 		// if call is not on hold
 		if (call.state !== 3){
-			console.log("HOLD CALL",call);
 			// fdp request to hold call...
 			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid});
 		} else if (call.state === 3){
@@ -523,6 +569,20 @@ export default class AppWindow extends Component {
     	})
   }
 
+  _removeByAttr(arr, attr, value){
+    var i = arr.length;
+    while(i--){
+       if( arr[i] 
+           && arr[i].hasOwnProperty(attr) 
+           && (arguments.length > 2 && arr[i][attr] === value ) ){ 
+
+           arr.splice(i,1);
+
+       }
+    }
+    return arr;
+}
+
   
   render() {
     var mycall = this.props.mycalls[0];
@@ -538,6 +598,9 @@ export default class AppWindow extends Component {
 	var sorted = this.props.calllog.sort(function(a, b) {
         return a.startedAt - b.startedAt;
     });
+
+
+
 
       body = (
       	<div>
@@ -734,36 +797,9 @@ export default class AppWindow extends Component {
 
 else if (this.state.screen == 'queue') {
 
-	var myqueues = [];
-	
-
-			for(var q = 0; q < this.props.queues.length; q++){
-			for(var m = 0; m < this.props.queue_members.length; m++){
-					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
-						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
-							myqueues.push({"name":this.props.queues[q].name});
-							console.log("MINEEEEE",myqueues);
-							for(var s = 0; s < this.props.queue_members_status.length; s++){
-								if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
-
-									if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login")
-									myqueues.push({"status": "Logged In"});
-									else
-										myqueues.push({"status": "Logged Out"});
-
-									//console.log("LOGGED IN",queueStatus);
-								}
-							}
-						}
-					
-				}
-			}
-		}
-
-		
 			
 			body = (
-				<div id="queues">
+				<div id="transfer">
 					<div className="banner">
 						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
 						<span>Manage Queue Status</span>
@@ -772,26 +808,26 @@ else if (this.state.screen == 'queue') {
 						<div id="selectAll">
 							<input id="allCheckbox" type="checkbox"/><label id="allLabel">Select All</label>
 						</div>
-
-
 					</div>
+
 					<div id="queueContent">
-							{
-								myqueues.map(data =>{
+					{
+						this.state.myqueues.map(data =>{
 
-									
-								
-									console.log("MAP DATA",data);
-									return (
-										<div>
-										<h3>{data.name}</h3>
-										<p>{data.status}</p>
-										</div>
-										);
+							console.log("MYQUEUES STATE",data);
+						
+							return (
+								<div>
+								<h3>{data.name}</h3>
+								<p>{data.status}</p>
+								</div>
+								);
 
-								})
-							}
+						})
+					}
 					</div>
+					
+
 					
 
 						

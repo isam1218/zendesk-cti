@@ -53,20 +53,29 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['queue_members_status']){
-		for (let i = 0; i < data['queue_members_status'].length; i++)
-			queue_members_status.push(data['queue_members_status'][i]);
+		for (let i = 0; i < data['queue_members_status'].length; i++){
+		var members_status = data["queue_members_status"][i];
+		queue_members_status[i] = members_status;
+		}
+
 	}
 	if(data['queues']){
-		for (let i = 0; i < data['queues'].length; i++)
-			queues.push(data['queues'][i]);
+		for (let i = 0; i < data['queues'].length; i++){
+			var queueList = data['queues'][i];
+		queues[i] = queueList;
+		}
 	}
 	if(data['queue_members']){
-		for (let i = 0; i < data['queue_members'].length; i++)
-			queue_members.push(data['queue_members'][i]);
+		for (let i = 0; i < data['queue_members'].length; i++){
+			var members = data['queue_members'][i];
+			queue_members[i] = members;
+		}
 	}
 	if(data['queuelogoutreasons']){
-		for (let i = 0; i < data['queuelogoutreasons'].length; i++)
-			queuelogoutreasons.push(data['queuelogoutreasons'][i]);
+		for (let i = 0; i < data['queuelogoutreasons'].length; i++){
+			var logoutreasons = data['queuelogoutreasons'][i];
+			queuelogoutreasons[i] = logoutreasons;
+		}
 	}
 	
 	if (data['settings']) {		
