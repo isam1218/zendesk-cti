@@ -27,7 +27,8 @@ export default class AppWindow extends Component {
 			myZendeskAgent: null,
 			otherCallerEndUser: null,
 			createdTicket: null,
-			newCallerFlag: true
+			newCallerFlag: true,
+			isChecked: false
     }
 
   }
@@ -62,10 +63,10 @@ export default class AppWindow extends Component {
     });
 
     	
-		console.log("QUEUE MEMBERS",this.props.queue_members);
+		//console.log("QUEUE MEMBERS",this.props.queue_members);
 		//console.log("QUEUEs",this.props.queues);
 		//console.log("MEEEE",this.props.settings);
-		console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
+		//console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
 		//console.log("QUEUE LOGOUT REASONS",this.props.queuelogoutreasons);
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
@@ -254,7 +255,6 @@ export default class AppWindow extends Component {
 							}
 
 							myqueues[i].status = queue_status;
-							console.log("QUEUENAME",myqueues);
 
 
 						}
@@ -561,12 +561,15 @@ export default class AppWindow extends Component {
 		this._changeScreen('queue');
 	}
 
-	_getMyQueues() {
-		return {
-			queues: mine,
-			loggedIn: myLoggedIn
-		};
-	};
+	_queueLogin(event){
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+    console.log("CHECKBOX",target,value,name);
+    this.setState({
+      [name]: value
+    });
+	}
 
   // handles input event.target.value
   _updateValue(e, property) {
@@ -820,12 +823,13 @@ else if (this.state.screen == 'queue') {
 					{
 						this.state.myqueues.map(data =>{
 
-							console.log("MYQUEUES STATE",data);
 						
 							return (
-								<div>
-								<h3>{data.name}</h3>
-								<p>{data.status}</p>
+								<div className="myQueueList">
+								<input className="queueCheckbox" type="checkbox" name="isChecked"  onChange={this._queueLogin} />
+								<div className="queueTitle">{data.name}</div>	
+								<p className="queueStatus">{data.status}</p>
+								
 								</div>
 								);
 

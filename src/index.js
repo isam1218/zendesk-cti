@@ -69,15 +69,11 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 				if(members_status[i].xpid == members_status[z].xpid){
 					
 					members_status.splice(z,1);
-					console.log("DUUUPE",members_status[i]);
 					 
 				}
 			}
 					 queue_members_status = members_status;
-		 			console.log("MEMBER STATUS",queue_members_status);
-		 /*if(members_status[i].xpid == members_status[i+1].xpid){
-		 	delete members_status[i];
-		 }*/
+
 		
 
 
