@@ -62,10 +62,10 @@ export default class AppWindow extends Component {
     });
 
     	
-		//console.log("QUEUE MEMBERS",this.props.queue_members);
+		console.log("QUEUE MEMBERS",this.props.queue_members);
 		//console.log("QUEUEs",this.props.queues);
 		//console.log("MEEEE",this.props.settings);
-		//console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
+		console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
 		//console.log("QUEUE LOGOUT REASONS",this.props.queuelogoutreasons);
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		if (this.props.mycalls.length == 0){
@@ -219,49 +219,55 @@ export default class AppWindow extends Component {
 			
 		} // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 
-			    	var myqueues = [];
-	
+			    	
+	var myqueues = [];
 
 		for(var q = 0; q < this.props.queues.length; q++){
+
 			for(var m = 0; m < this.props.queue_members.length; m++){
 					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
 						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
-							
-							myqueues.push({"name":this.props.queues[q].name});
-							//myqueues[q].name = this.props.queues[q].name;
-							
-							for(var s = 0; s < this.props.queue_members_status.length; s++){
-								if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
+									myqueues.push(this.props.queues[q]);
 
-									if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login"){
-										//myqueues[q].status = "Logged In";
-										var queue_status = "Logged In";
-										//this._removeByAttr(myqueues,"status","Logged Out");
-										myqueues.push({"status": queue_status});
 
-										
-									}
-									if(this.props.queue_members_status[s].status == "logout"){
-										//myqueues[q].status = "Logged Out";
-										var queue_status = "Logged Out";
-										//this._removeByAttr(myqueues,"status","Logged In");
-										myqueues.push({"status": queue_status});
-
-										
-									}
-
-								}
-							}
 						}
 					
 				}
 			}
 		}
 
+
+	for(var i = 0; i < myqueues.length; i++){
+		for(var m = 0; m < this.props.queue_members.length; m++){
+				if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
+					if(myqueues[i].xpid == this.props.queue_members[m].queueId){
+				for(var s = 0; s < this.props.queue_members_status.length; s++){
+					if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
+
+
+							if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login"){
+								var queue_status = "Logged In";										
+							}
+							if(this.props.queue_members_status[s].status == "logout"){
+								var queue_status = "Logged Out";
+								
+							}
+
+							myqueues[i].status = queue_status;
+							console.log("QUEUENAME",myqueues);
+
+
+						}
+					}
+				}
+			}
+		}
+	}
+
 		this.setState({
 			myqueues: myqueues
 		});
-		console.log("WILL MOUNT",myqueues);
+		
 
   } // CLOSE BRACKET OF: componentWillReceiveProps
 

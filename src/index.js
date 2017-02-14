@@ -33,6 +33,8 @@ var queue_members_status = [];
 var queues = [];
 var queue_members = [];
 var queuelogoutreasons = [];
+var members_status = [];
+
 
  // must be array to facilitate sorting
 
@@ -41,6 +43,8 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
 	*/
+	console.log("INDEX DATA", data);
+
 	if (data['me']) {		
 		for (let i = 0; i < data['me'].length; i++)
 			settings[data['me'][i].propertyKey] = data['me'][i].propertyValue;
@@ -53,10 +57,32 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['queue_members_status']){
+		
+			
+		
 		for (let i = 0; i < data['queue_members_status'].length; i++){
-		var members_status = data["queue_members_status"][i];
-		queue_members_status[i] = members_status;
+			members_status[i] = data["queue_members_status"][i];
+			for (let z = 1; z < members_status.length-1;z++){
+				var members_status2 = [];
+				members_status2[z] = members_status[z];
+
+				if(members_status[i].xpid == members_status[z].xpid){
+					
+					members_status.splice(z,1);
+					console.log("DUUUPE",members_status[i]);
+					 
+				}
+			}
+					 queue_members_status = members_status;
+		 			console.log("MEMBER STATUS",queue_members_status);
+		 /*if(members_status[i].xpid == members_status[i+1].xpid){
+		 	delete members_status[i];
+		 }*/
+		
+
+
 		}
+
 
 	}
 	if(data['queues']){
@@ -66,6 +92,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		}
 	}
 	if(data['queue_members']){
+
 		for (let i = 0; i < data['queue_members'].length; i++){
 			var members = data['queue_members'][i];
 			queue_members[i] = members;
