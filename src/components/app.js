@@ -23,6 +23,7 @@ this.state = {
 
 
     this.loginToApp = this._changeLoginToApp.bind(this);
+    this.logoutOfApp = this._logout.bind(this);
     // need to include pkg.json module
     this.server = "https://dev4.fon9.com:8081";
     this.configName = "Fonality CTI";
@@ -42,7 +43,7 @@ this.state = {
               ticketPhone: ''
             });
 
-            fdp.versionCheck();
+            fdp.init();
     
     }
 
@@ -62,12 +63,23 @@ this.state = {
 
   // handles initialization of app upon login...
   _changeLoginToApp() {
+    //fdp.versionCheck();
     this.setState({
       login: false,
-      app: true
+      app: true,
+      ticketPhone: ''
     });
     // versionCheck calls -> syncRequest -> syncRequest calls syncStatus + emits data to listener here in componentDidMount 
-    fdp.versionCheck();
+    
+  }
+
+    _logout() {
+    this.setState({
+      login: true,
+      app: false,
+      ticketPhone: ''
+    });
+    // versionCheck calls -> syncRequest -> syncRequest calls syncStatus + emits data to listener here in componentDidMount 
   }
 
   render() {
@@ -77,13 +89,13 @@ this.state = {
       // fdp.init();
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} logout={this.logoutOfApp} />
         </div>
       )
     }
-    if (this.state.login){
-      return <LoginWindow login={this.loginToApp} />
+    else if (this.state.login){
+      return (<LoginWindow login={this.loginToApp} />)
     }
-    return (<LoginWindow login={this.loginToApp} />)
+    return (<div></div>)
   }
 }

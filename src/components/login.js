@@ -39,6 +39,7 @@ export default class LoginWindow extends Component {
 		if (username != '' && password != '') {
 			// send creds to node context
 				fdp.login(username, password).then((status,err)=>{
+					console.log("STATUS",status);
 					 //some type of error
 					let msgObj = {};
 					 //status is set by resolve in index.js...

@@ -4,6 +4,8 @@ import Popup from './popup.js';
 import Timer from './timer.js';
 import fdp from './fdp.js';
 import zendesk from './zendesk.js';
+import LoginWindow from './login.js';
+import App from './app.js';
 
 export default class AppWindow extends Component {
   // data requirements
@@ -69,11 +71,21 @@ export default class AppWindow extends Component {
 		//console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
 		//console.log("QUEUE LOGOUT REASONS",this.props.queuelogoutreasons);
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
+		
 		if (this.props.mycalls.length == 0){
-			this.setState({
-				screen: 'default',
-				newCallerFlag: true
-			})
+			if(localStorage.queueScreen != 'queue'){
+				this.setState({
+					screen: 'default',
+					newCallerFlag: true
+				})
+			}
+			else{
+				this.setState({
+					screen: 'queue',
+					newCallerFlag: true
+				})
+			}
+
 			
 		}
 
@@ -262,11 +274,14 @@ export default class AppWindow extends Component {
 				}
 			}
 		}
-	}
 
 		this.setState({
 			myqueues: myqueues
 		});
+
+	}
+
+		
 		
 
   } // CLOSE BRACKET OF: componentWillReceiveProps
@@ -283,6 +298,10 @@ export default class AppWindow extends Component {
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
 		
+	}
+
+	_getQueues(){
+
 	}
 
 /*	_setQueues(){
@@ -319,6 +338,7 @@ export default class AppWindow extends Component {
       phone: ''
     });
      if(type == "default"){
+     	localStorage.queueScreen = "";
      		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"440px" });
      		if(this.props.mycalls.length == 2)
@@ -327,6 +347,7 @@ export default class AppWindow extends Component {
      		client.invoke('resize', { width: '320px', height:"512px" });
  		}
  	if(type == "dialpad:add"){
+ 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"462px" });		
      		if(this.props.mycalls.length == 2)
@@ -335,6 +356,7 @@ export default class AppWindow extends Component {
      		client.invoke('resize', { width: '320px', height:"562px" });
  	}
  	 	if(type == "transfer"){
+ 	 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"462px" });
      		if(this.props.mycalls.length == 2)
@@ -559,16 +581,69 @@ export default class AppWindow extends Component {
 
 	_openQueue(){
 		this._changeScreen('queue');
+		localStorage.queueScreen = "queue";
 	}
 
-	_queueLogin(event){
+	_queueLogin(event,queue,myqueues){
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log("CHECKBOX",target,value,name);
+    console.log("queueLogin-CHECKBOX ",value);
+    console.log("queueLogin-VALUE ",queue);
+    console.log("queueLogin-MYQUEUES ",myqueues);
+    var queue = queue;
+    var myqueue = myqueue;
+
+    for (var i=0;i < myqueues.length;i++){
+    		if(queue.xpid == myqueues[i].xpid){
+    			myqueues[i].checkStatus = value;
+
+    		}
+    		
+
+    }
+
+	this.setState({
+		myqueues: myqueues
+	})
+
+	console.log("STATE QUEUES",this.state.myqueues);
+    
+/*
     this.setState({
-      [name]: value
-    });
+      checkedQueues: checkedArr
+    });*/
+
+
+	}
+
+	_loginQueues(queues){
+		console.log("LOGIN",queues);
+		for(var q = 0; q < queues.length; q++){
+			if(queues[q].checkStatus == true){
+				var data ={};
+				data.contactId = this.state.my_pid;
+				data.queues = queues[q].xpid;
+
+				fdp.postFeed("queues","queueLogin",data);
+
+			}
+		}
+
+
+
+	}
+
+	_logoutQueues(data){
+		console.log("LOGOUT",data);
+	}
+
+	_logout(){
+
+		this.props.logout();
+		fdp.logout();
+
+		console.log("LOGOUT");
 	}
 
   // handles input event.target.value
@@ -804,7 +879,7 @@ export default class AppWindow extends Component {
 
 		//MANAGE QUEUES SECTION
 
-else if (this.state.screen == 'queue') {
+else if (this.state.screen == 'queue' && this.state.myqueues) {
 
 			
 			body = (
@@ -826,7 +901,7 @@ else if (this.state.screen == 'queue') {
 						
 							return (
 								<div className="myQueueList">
-								<input className="queueCheckbox" type="checkbox" name="isChecked"  onChange={this._queueLogin} />
+								<input className="queueCheckbox" type="checkbox" name="isChecked"  onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
 								<div className="queueTitle">{data.name}</div>	
 								<p className="queueStatus">{data.status}</p>
 								
@@ -835,6 +910,10 @@ else if (this.state.screen == 'queue') {
 
 						})
 					}
+					</div>
+					<div className="queueBtns">
+						<button className="queueLogin" onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN</button>
+						<button className="queueLogout" onClick={() => this._logoutQueues(this.state.myqueues)}>LOG OUT</button>
 					</div>
 					
 
@@ -1067,7 +1146,7 @@ else if (this.state.screen == 'queue') {
           </div>
 
           
-          <i className="material-icons" onClick={() => this._openPopup('preferences')}>power_settings_new</i>
+          <i className="material-icons" onClick={() => this._logout()}>power_settings_new</i>
         </div>
         
         {body}

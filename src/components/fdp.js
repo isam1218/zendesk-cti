@@ -11,7 +11,15 @@ const fdp =  {
 	refresh: null,
 	status: 0,
 	init: () => {
-		fdp.versionCheck();
+		fdp.login();
+	},
+	logout: ()=>{
+		localStorage.auth = null;
+		localStorage.node = null;
+		localStorage.refresh = null;
+
+		fdp.synced = false;
+
 	},
 	login: (username, password) => {
 		var params = {
@@ -52,7 +60,7 @@ const fdp =  {
 					localStorage.refresh = refresh;
 					//login resolves in a promise instead of automatically starting sync process...
 					// start syncing
-					 //fdp.versionCheck();
+					 fdp.versionCheck();
 
 					// return promise
 					resolve(1);
@@ -66,11 +74,10 @@ const fdp =  {
 					fdp.login();
 				}
 				*/
-				
+
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
-					console.log("ERR",res.status);
-					localStorage.refresh = '';
+
 					resolve(res.status);
 				}
 				else{
@@ -151,6 +158,7 @@ const fdp =  {
 		}).fail((res,err,body)=>{
 			var result = {};
 			if(res){
+				console.log("FAIL");
 				// result.status = res.status;
 				// fail - restart sync...
 				fdp.syncStatus(res.status);
@@ -179,6 +187,7 @@ const fdp =  {
 				// first time success
 				if (!fdp.synced) {
 					fdp.synced = true;
+					console.log("FDP SYNCED",fdp.synced);
 					fdp.emitter.emit('data_sync_update', {});
 					//this.emit('success', {});
 				}
@@ -229,7 +238,8 @@ const fdp =  {
 				// reset creds
 				localStorage.auth = null;
 				localStorage.node = null;
-				
+				fdp.synced = true;
+				console.log("403 ERROR");
 				// call client login for new auth token
 				fdp.login();
 			
