@@ -595,14 +595,25 @@ export default class AppWindow extends Component {
     var queue = queue;
     var myqueue = myqueue;
 
-    for (var i=0;i < myqueues.length;i++){
-    		if(queue.xpid == myqueues[i].xpid){
-    			myqueues[i].checkStatus = value;
+	if(queue != "checkAll"){
+	    for (var i=0;i < myqueues.length;i++){
+	    		if(queue.xpid == myqueues[i].xpid){
+	    			myqueues[i].checkStatus = value;
 
-    		}
-    		
+	    		}
+	    		
 
-    }
+	    }
+	}
+	else{
+
+	    for (var i=0;i < myqueues.length;i++){
+	    			myqueues[i].checkStatus = value;
+
+	    }
+	}
+
+	
 
 	this.setState({
 		myqueues: myqueues
@@ -891,7 +902,7 @@ else if (this.state.screen == 'queue' && this.state.myqueues) {
 					</div>
 					<div id="queueBlock">
 						<div id="selectAll">
-							<input id="allCheckbox" type="checkbox"/><label id="allLabel">Select All</label>
+							<input id="allCheckbox" type="checkbox" onChange={(e)=> this._queueLogin(e,"checkAll",this.state.myqueues)} /><label id="allLabel">Select All</label>
 						</div>
 					</div>
 
@@ -902,7 +913,7 @@ else if (this.state.screen == 'queue' && this.state.myqueues) {
 						
 							return (
 								<div className="myQueueList">
-								<input className="queueCheckbox" type="checkbox" name="isChecked"  onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
+								<input className="queueCheckbox" type="checkbox" checked={data.checkStatus} onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
 								<div className="queueTitle">{data.name}</div>	
 								<p className="queueStatus">{data.status}</p>
 								
