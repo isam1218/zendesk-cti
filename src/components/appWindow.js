@@ -581,8 +581,17 @@ export default class AppWindow extends Component {
 	}
 
 	_openQueue(){
+		var message = "You do not belong to any queues. Contact your Fonality Administrator.";
+		if(this.state.myqueues){
 		this._changeScreen('queue');
 		localStorage.queueScreen = "queue";
+		}
+		else{
+
+			client.invoke('notify', message, "error", 5000);
+		}
+
+		
 	}
 
 	_queueLogin(event,queue,myqueues){
@@ -891,7 +900,7 @@ export default class AppWindow extends Component {
 
 		//MANAGE QUEUES SECTION
 
-else if (this.state.screen == 'queue' && this.state.myqueues) {
+else if (this.state.screen == 'queue') {
 
 			
 			body = (
