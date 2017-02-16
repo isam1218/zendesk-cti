@@ -21,7 +21,10 @@ export default class Popup extends Component {
 		// internal unique state
 		this.state = {
 			className: props.className,
-			custom: props.settings.chat_custom_status
+			custom: props.settings.chat_custom_status,
+			queues: props.queues,
+			queuelogoutreasons: props.queuelogoutreasons,
+			settings:props.settings
 		};
 		
 		// for remembering slider positions
@@ -134,6 +137,26 @@ export default class Popup extends Component {
 		// close popup...
 		this.props.callback(null);
 	}
+
+	_logoutQueues(reason){
+		var logoutReason = reason;
+		for(var i = 0; i < this.props.queues.length;i++){
+			if(this.props.queues[i].checkStatus == true){
+				var data = {};
+				
+					data.contactId = this.state.settings.my_pid;
+					data.queues = this.state.queues[i].xpid;
+					data.reason = logoutReason;
+					console.log("C",data.contactId);
+					console.log("Q",data.queues);
+					console.log("R",data.reason);
+				
+				fdp.postFeed("queues","queueLogout",data);
+			}
+		}
+
+		this.props.callback(null);
+	}
 	
 	render() {
 		var content;
@@ -216,6 +239,25 @@ export default class Popup extends Component {
 						<hr className="divider" />
 						
 						<div className="option" onClick={() => this._sendAction('quit')}>Quit</div>
+					</div>
+				);
+				
+				break;
+			case 'logoutreasons':
+				content = (
+					<div>
+					<h4 className="selectTitle">SELECT LOGOUT REASON</h4>
+						<ul className="logoutList">
+							{
+								this.state.queuelogoutreasons.map(items =>{
+									console.log("LOGOUT ITEMS",items);
+									return(
+										<li className="logoutOptions" onClick={() => this._logoutQueues(items.xpid)} >{items.name}</li>
+										)
+								})
+
+							}
+						</ul>
 					</div>
 				);
 				

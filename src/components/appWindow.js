@@ -479,6 +479,7 @@ export default class AppWindow extends Component {
 
   // calls relevant popup
   _openPopup(type) {
+  	console.log("TYPE",type);
     // make sure this only used in necessary areas
     this.setState({
       popup: type
@@ -913,7 +914,7 @@ else if (this.state.screen == 'queue' && this.state.myqueues) {
 					</div>
 					<div className="queueBtns">
 						<button className="queueLogin" onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN</button>
-						<button className="queueLogout" onClick={() => this._logoutQueues(this.state.myqueues)}>LOG OUT</button>
+						<button className="queueLogout" onClick={() => this._openPopup('logoutreasons')}>LOG OUT</button>
 					</div>
 					
 
