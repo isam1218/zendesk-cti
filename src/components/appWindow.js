@@ -30,7 +30,8 @@ export default class AppWindow extends Component {
 			otherCallerEndUser: null,
 			createdTicket: null,
 			newCallerFlag: true,
-			isChecked: false
+			isChecked: false,
+			disableButton:true
     }
 
   }
@@ -258,15 +259,21 @@ export default class AppWindow extends Component {
 					if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
 
 
-							if(this.props.queue_members_status[s].status == "login-permanent" || this.props.queue_members_status[s].status == "login"){
-								var queue_status = "Logged In";										
+							if(this.props.queue_members_status[s].status == "login"){
+								var queue_status = "Logged In";
+								var disableQueue = false;										
 							}
 							if(this.props.queue_members_status[s].status == "logout"){
 								var queue_status = "Logged Out";
-								
+								var disableQueue = false;
+							}
+							if(this.props.queue_members_status[s].status == "login-permanent"){
+								var queue_status = "Logged In";	
+								var disableQueue = true;
 							}
 
 							myqueues[i].status = queue_status;
+							myqueues[i].disableQueue = disableQueue;
 
 
 						}
@@ -598,11 +605,10 @@ export default class AppWindow extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log("queueLogin-CHECKBOX ",value);
-    console.log("queueLogin-VALUE ",queue);
-    console.log("queueLogin-MYQUEUES ",myqueues);
+
     var queue = queue;
     var myqueue = myqueue;
+    var match = 0;
 
 	if(queue != "checkAll"){
 	    for (var i=0;i < myqueues.length;i++){
@@ -610,6 +616,12 @@ export default class AppWindow extends Component {
 	    			myqueues[i].checkStatus = value;
 
 	    		}
+	    		if(myqueues[i].checkStatus == true){
+	    			match++;
+	    			console.log("MATCH",match);
+
+	    		}
+
 	    		
 
 	    }
@@ -619,7 +631,25 @@ export default class AppWindow extends Component {
 	    for (var i=0;i < myqueues.length;i++){
 	    			myqueues[i].checkStatus = value;
 
+	    		if(myqueues[i].checkStatus == true){
+
+	    			match++;
+	    			console.log("MATCH",match);
+	    		}
+
+
 	    }
+	}
+
+	if(match > 0){
+		this.setState({
+			disableButton: false
+		})
+	}
+	else{
+		this.setState({
+			disableButton:true
+		})
 	}
 
 	
@@ -922,9 +952,9 @@ else if (this.state.screen == 'queue') {
 						
 							return (
 								<div className="myQueueList">
-								<input className="queueCheckbox" type="checkbox" checked={data.checkStatus} onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
-								<div className="queueTitle">{data.name}</div>	
-								<p className="queueStatus">{data.status}</p>
+								<input className="queueCheckbox" type="checkbox" disabled={data.disableQueue} checked={data.checkStatus} onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
+								<div className={"queueTitle "+ data.disableQueue}>{data.name}</div>	
+								<p className={"queueStatus"+ data.disableQueue}>{data.status}</p>
 								
 								</div>
 								);
@@ -933,8 +963,10 @@ else if (this.state.screen == 'queue') {
 					}
 					</div>
 					<div className="queueBtns">
-						<button className="queueLogin" onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN</button>
-						<button className="queueLogout" onClick={() => this._openPopup('logoutreasons')}>LOG OUT</button>
+					
+						<button className={"queueLogin "+this.state.disableButton} disabled={this.state.disableButton} onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN</button>
+						<button className={"queueLogout "+this.state.disableButton} disabled={this.state.disableButton} onClick={() => this._openPopup('logoutreasons')}>LOG OUT</button>
+					
 					</div>
 					
 

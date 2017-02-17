@@ -447,17 +447,27 @@
   .queueTitle{
     padding:0;
     margin:0 0 5px 0;
+    color:#4A4A4A;
     font-size:15px;
     font-weight:bold;
     width:200px;
     overflow-x:ellipsis;
+
+      &.true{
+      color:#9C9C9C;
+    }
   }
 
   .queueStatus{
+    color:#4A4A4A;
     margin:0;
     padding:0;
     font-size:12px;
     width:100px;
+
+    &.true{
+      color:#9C9C9C;
+    }
   }
 
   .queueCheckbox{
@@ -468,23 +478,37 @@
   }
 
   .queueLogin{
-    background-color: green;
+    background-color: #00AD33;
     border: none;
     font-size: 19px;
     color: white;
     border-radius: 7px;
     padding: 6px 20px 6px 20px;
     margin: 10px 10px 0px 10px;
+
+    &.true{
+      background-color:#9C9C9C;
+    }
+        &.false{
+      background-color:#00AD33;
+    }
   }
 
   .queueLogout{
-    background-color: green;
+    background-color: #00AD33;
     border: none;
     font-size: 19px;
     color: white;
     border-radius: 7px;
     padding: 6px 10px 6px 10px;
     margin: 10px 10px 0px 10px;
+
+    &.false{
+      background-color:#00AD33;
+    }
+        &.true{
+      background-color:#9C9C9C;
+    }
   }
 
   #full, #footer, #transfer {
