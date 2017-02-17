@@ -34,6 +34,7 @@ var queues = [];
 var queue_members = [];
 var queuelogoutreasons = [];
 var members_status = [];
+var match = false;
 
 
  // must be array to facilitate sorting
@@ -44,6 +45,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		USER SETTINGS
 	*/
 	console.log("INDEX DATA", data);
+	
 
 	if (data['me']) {		
 		for (let i = 0; i < data['me'].length; i++)
@@ -61,20 +63,26 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			
 		
 		for (let i = 0; i < data['queue_members_status'].length; i++){
-			members_status[i] = data["queue_members_status"][i];
-			for (let z = 1; z < members_status.length-1;z++){
-				var members_status2 = [];
-				members_status2[z] = members_status[z];
+			
+			
+			//members_status[i] = data["queue_members_status"][i];
+			for (let z = 0; z < members_status.length;z++){
 
-				if(members_status[i].xpid == members_status[z].xpid){
+
+			if(members_status[z].xpid == data['queue_members_status'][i].xpid){
 					
-					members_status.splice(z,1);
-					 
+					members_status[z] = data['queue_members_status'][i];
+				 	match = true;
 				}
-			}
-					 queue_members_status = members_status;
 
-		
+
+			}
+					 
+
+			if (!match) {
+				members_status.push(data['queue_members_status'][i]);
+				queue_members_status = members_status;
+			}
 
 
 		}
@@ -153,7 +161,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		LOCATIONS
 	*/
 	if (data['locations']) {
-
+		locations = {};
 		for (let i = 0; i < data['locations'].length; i++) {
 			var location = data['locations'][i];
 			

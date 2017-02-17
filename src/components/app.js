@@ -35,7 +35,7 @@ this.state = {
   componentDidMount() {
 
 
-    if(localStorage.refresh){
+    if(localStorage.refresh != null && localStorage.refresh != undefined){
       
             this.setState({
               login: false,
@@ -44,6 +44,7 @@ this.state = {
             });
 
             fdp.init();
+
     
     }
 
@@ -63,7 +64,6 @@ this.state = {
 
   // handles initialization of app upon login...
   _changeLoginToApp() {
-    //fdp.versionCheck();
     this.setState({
       login: false,
       app: true,
@@ -86,7 +86,6 @@ this.state = {
     if (this.state.app){
       // ***Uncomment below and comment above to enable refresh..
     // if (localStorage.node || localStorage.auth || this.state.app){
-      // fdp.init();
       return (
         <div>
           <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} logout={this.logoutOfApp} />

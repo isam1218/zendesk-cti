@@ -11,6 +11,7 @@ export default class LoginWindow extends Component {
 			error: null
 		};
 
+
 	}
 
 	componentDidMount () {

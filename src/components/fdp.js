@@ -10,22 +10,26 @@ const fdp =  {
 	synced: false,
 	refresh: null,
 	status: 0,
+	xhr:'',
 	init: () => {
 		fdp.login();
 	},
 	logout: ()=>{
-		localStorage.auth = null;
-		localStorage.node = null;
-		localStorage.refresh = null;
-
+		setTimeout(()=>{fdp.xhr.abort()},3000);
+		localStorage.clear("auth");
+		localStorage.clear("node");
+		localStorage.clear("refresh");
 		fdp.synced = false;
-
+		
+	
 	},
 	login: (username, password) => {
 		var params = {
 			auto: true,
 			t: 'webNative'
 		};
+
+
 		
 		if (username && password) {
 			params.Email = username;
@@ -38,7 +42,7 @@ const fdp =  {
 		
 		// login resolves in a promise
 		return new Promise((resolve, reject) => {
-			$.ajax({
+		$.ajax({
 				rejectUnauthorized: false,
 				url: "https://dev4.fon9.com:8081/accounts/ClientLogin",
 				method: 'POST',
@@ -61,7 +65,6 @@ const fdp =  {
 					//login resolves in a promise instead of automatically starting sync process...
 					// start syncing
 					 fdp.versionCheck();
-
 					// return promise
 					resolve(1);
 				}
@@ -96,7 +99,7 @@ const fdp =  {
 		else
 			url = `https://dev4.fon9.com:8081/v1/versionscache?t=web`;
 
-		$.ajax({
+		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
 			url: url,
 			method: 'POST',
@@ -166,7 +169,7 @@ const fdp =  {
 		});
 	},
 	syncRequest: (updates) => {
-		$.ajax({
+		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
 			url: `https://dev4.fon9.com:8081/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
@@ -238,7 +241,6 @@ const fdp =  {
 				// reset creds
 				localStorage.auth = null;
 				localStorage.node = null;
-				fdp.synced = true;
 				console.log("403 ERROR");
 				// call client login for new auth token
 				fdp.login();
