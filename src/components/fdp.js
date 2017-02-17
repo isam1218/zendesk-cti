@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import {EventEmitter} from 'fbemitter';
 import config from '../config.js';
+import server from './properties.js';
 
 const emitter = new EventEmitter();
 
@@ -44,7 +45,7 @@ const fdp =  {
 		return new Promise((resolve, reject) => {
 		$.ajax({
 				rejectUnauthorized: false,
-				url: "https://dev4.fon9.com:8081/accounts/ClientLogin",
+				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
 				timeout: 90000,
 				data:params,
@@ -95,9 +96,9 @@ const fdp =  {
 		
 		// first time vs every other time
 		if (!fdp.synced)
-			url = `https://dev4.fon9.com:8081/v1/versions?t=web&${fdp.feeds.join('=&')}=`;
+			url = `${server.serverURL}/v1/versions?t=web&${fdp.feeds.join('=&')}=`;
 		else
-			url = `https://dev4.fon9.com:8081/v1/versionscache?t=web`;
+			url = `${server.serverURL}/v1/versionscache?t=web`;
 
 		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
@@ -171,7 +172,7 @@ const fdp =  {
 	syncRequest: (updates) => {
 		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
-			url: `https://dev4.fon9.com:8081/v1/sync?t=web&${updates.join('=&')}=`,
+			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
 			timeout: 90000,
 			headers: {
@@ -281,7 +282,7 @@ const fdp =  {
 		// checking the fdp call before it's made...
 		$.ajax({
 			rejectUnauthorized: false,
-			url: `https://dev4.fon9.com:8081/v1/${feed}`,
+			url: `${server.serverURL}/v1/${feed}`,
 			method: 'POST',
 			timeout: 90000,
 			headers: {
