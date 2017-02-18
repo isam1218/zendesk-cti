@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import {EventEmitter} from 'fbemitter';
 import config from '../config.js';
-import server from './properties.js';
+import server from '../properties.js';
 
 const emitter = new EventEmitter();
 

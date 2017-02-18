@@ -132,21 +132,24 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
-		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
+		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
+			console.log("PROPS CALL",this.props.mycalls);
 			var endUserCallNumber = this.props.mycalls[0].phone;
+			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
+
 			// set newCallerFlag to false since we have a new call...
-			if (this.state.newCallerFlag == true) {
-				this.setState({
+			//if (this.state.newCallerFlag == true) {
+				/*this.setState({
 					newCallerFlag: false
-				});
+				});*/
 				
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
 				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
-
-						
+						console.log("ENDUSER",endUserNumber);
+						console.log("STATUS",status);
 						
 						// set the end user profile object
 						this.setState({
@@ -164,40 +167,15 @@ export default class AppWindow extends Component {
 						}
 						
 						// NO MATCH OF END USERS, create a user w/ random phone number (for now)...
-						else if (status.users.length < 1){
+						else {
 							
-							// NOTE TO ISAM:
-							/***SWAP OUT THIS LOGIC!!! WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***/
-							// this logic helps w/ testing new end users by storing a random phone number into zd database in place of # that's actually calling...
-					/*		var getRandom = function(length) {
-								return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
-							};
-							var callerPhoneNumber = getRandom(10);
-							var userData = {
-								"user": {
-									"name": `Caller-${callerPhoneNumber}`,
-									"phone": callerPhoneNumber + ""
-								}
-							};*/
-							/***SWAP OUT!!! THIS LOGIC WHEN NO LONGER TESTING AND DON'T NEED TO USE RANDOM PHONE NUMBERS FOR NEW END USERS***/
 
-
-							// **** SWAP IN THIS LOGIC!!! IN PLACE of code above ^^^ **** -> use caller's real phone # rather than randomly generated phone number
-						/*	 var userData = {
-							 	"user": {
-							 		"name": `Caller: ${endUserNumber}`,
-							 		"phone": endUserNumber + ""
-							 	}
-							 };*/
-							// **** SWAP IN!!! THIS LOGIC IN PLACE ****
 
 
 							// IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
 							// 1. create new end user profile..
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
-				/*			zendesk.createUser(userData)
-								.then((status, err) => {
-									var createdUser = status.user*/
+
 									// grab call info...
 									var incomingCall = this.props.mycalls[0].incoming;
 									// incoming call -> ID == 45
@@ -223,15 +201,16 @@ export default class AppWindow extends Component {
 											.then((status, err) => {
 											});
 										});
-								//});
+								
 						}
 
 					});
 				/*****SCREEN POP LOGIC END******/
 
-			} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
+			//} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
 			
-		} // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
+		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
+	}
 
 			    	
 	var myqueues = [];

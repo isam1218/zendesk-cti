@@ -120,7 +120,7 @@ const zendesk = {
 
 	grabCallId(phoneNumber) {
 		// https://developer.zendesk.com/rest_api/docs/core/search#search
-
+		console.log("PHONENUMBER",phoneNumber);
 		var grabCall = {
 		  url: `/api/v2/users/search.json?query=*${phoneNumber}`,
 		  type: 'GET',
@@ -128,6 +128,7 @@ const zendesk = {
 		};
 		return new Promise((resolve, reject) => {
 			client.request(grabCall).then(data =>{
+				console.log("GRAB CALL ID",data);
 				resolve(data);
 			});
 		});
