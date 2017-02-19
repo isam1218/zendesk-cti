@@ -933,7 +933,7 @@ else if (this.state.screen == 'queue') {
 								<div className="myQueueList">
 								<input className="queueCheckbox" type="checkbox" disabled={data.disableQueue} checked={data.checkStatus} onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
 								<div className={"queueTitle "+ data.disableQueue}>{data.name}</div>	
-								<p className={"queueStatus"+ data.disableQueue}>{data.status}</p>
+								<p className={"queueStatus "+ data.disableQueue}>{data.status}</p>
 								
 								</div>
 								);
