@@ -1106,7 +1106,7 @@ else if (this.state.screen == 'queue') {
     }
 
     		// add remaining alerts to bottom of template
-		if (this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add') || (this.state.screen == 'transfer')) {
+		if ((this.props.mycalls.length > 1 || (mycall && this.state.screen == 'dialpad:add') || (this.state.screen == 'transfer')) && this.state.screen != "queue") {
 			
 			if(this.state.screen == "dialpad:add")
 			var index = mycall && this.state.screen == 'dialpad:add' ? 0 : 1;
