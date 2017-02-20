@@ -401,11 +401,22 @@
       &:hover{
         background-color:#454545;
           z-index:1;
-         background-image: url(/returnCall.png);
+/*         background-image: url(/returnCall.png);
           background-repeat:no-repeat;
           background-position: center center;
-          background-size:75px 50px;
+          background-size:75px 50px;*/
       }
+  }
+
+  .recentItems .returnCall{
+    visibility:hidden;
+    position: absolute;
+    top: 0;
+    left: 120px;
+  }
+
+  .recentItems:hover .returnCall{
+    visibility:visible;
   }
 
   #selectAll{

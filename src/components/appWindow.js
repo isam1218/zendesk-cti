@@ -788,6 +788,7 @@ export default class AppWindow extends Component {
 			        	return( 
 			        		<li className="recentItems" onClick={() => this._callRecent(items.phone)}>
 			        		<i className={call_style}>{call_type}</i>
+			        		<img className="returnCall" src="./returnCall.png" />
 			        		<div className="recentDisplayName">{items.displayName}<br/><p className="displayPhone">{items.phone}</p></div>
 			        		<div className="recentTimeAgo">{moment(items.startedAt).startOf().fromNow()}</div>
 			        		</li>
