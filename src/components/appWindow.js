@@ -90,6 +90,34 @@ export default class AppWindow extends Component {
 			
 		}
 
+		     if(this.state.screen == "default"){
+     	localStorage.queueScreen = "";
+     		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"440px" });
+     		if(this.props.mycalls.length == 2)
+     		client.invoke('resize', { width: '320px', height:"460px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"512px" });
+ 		}
+ 	if(this.state.screen == "dialpad:add"){
+ 		localStorage.queueScreen = "";
+      		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"462px" });		
+     		if(this.props.mycalls.length == 2)
+     		client.invoke('resize', { width: '320px', height:"512px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"562px" });
+ 	}
+ 	 	if(this.state.screen == "transfer"){
+ 	 		localStorage.queueScreen = "";
+      		if(this.props.mycalls.length == 1)
+     		client.invoke('resize', { width: '320px', height:"462px" });
+     		if(this.props.mycalls.length == 2)
+     		client.invoke('resize', { width: '320px', height:"512px" });
+     		if(this.props.mycalls.length == 3)
+     		client.invoke('resize', { width: '320px', height:"562px" });
+ 	}
+
 
 
 
@@ -1003,6 +1031,8 @@ else if (this.state.screen == 'queue') {
 		     		client.invoke('resize', { width: '320px', height:"485px" });
 		     		if(this.props.mycalls.length == 3)
 		     		client.invoke('resize', { width: '320px', height:"535px" });
+
+
 
 			var answerBtn, muteBtn;
 			
