@@ -88,6 +88,8 @@ const fdp =  {
 					// last ditch catch-all -> not success and not 403 bad auth...
 					resolve(0);
 				}
+
+				fdp.logout();
 			});
 		});
 	},
