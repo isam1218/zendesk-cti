@@ -103,6 +103,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		}
 	}
 	if(data['queuelogoutreasons']){
+		queuelogoutreasons = [];
 		for (let i = 0; i < data['queuelogoutreasons'].length; i++){
 			var logoutreasons = data['queuelogoutreasons'][i];
 			queuelogoutreasons[i] = logoutreasons;
