@@ -273,7 +273,7 @@ export default class AppWindow extends Component {
 								var disableQueue = false;
 							}
 							if(this.props.queue_members_status[s].status == "login-permanent"){
-								var queue_status = "Logged In";	
+								var queue_status = "Permanently Logged In";	
 								var disableQueue = true;
 							}
 
@@ -1020,9 +1020,9 @@ else if (this.state.screen == 'queue') {
     	     		if(this.props.mycalls.length == 1)
 		     		client.invoke('resize', { width: '320px', height:"440px" });
 		     		if(this.props.mycalls.length == 2)
-		     		client.invoke('resize', { width: '320px', height:"485px" });
+		     		client.invoke('resize', { width: '320px', height:"495px" });
 		     		if(this.props.mycalls.length == 3)
-		     		client.invoke('resize', { width: '320px', height:"535px" });
+		     		client.invoke('resize', { width: '320px', height:"545px" });
 
 
 
