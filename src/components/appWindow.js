@@ -102,20 +102,20 @@ export default class AppWindow extends Component {
  	if(this.state.screen == "dialpad:add"){
  		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"462px" });		
+     		client.invoke('resize', { width: '320px', height:"495px" });		
      		if(this.props.mycalls.length == 2)
-     		client.invoke('resize', { width: '320px', height:"512px" });
+     		client.invoke('resize', { width: '320px', height:"545px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"562px" });
+     		client.invoke('resize', { width: '320px', height:"595px" });
  	}
  	 	if(this.state.screen == "transfer"){
  	 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"462px" });
+     		client.invoke('resize', { width: '320px', height:"495px" });
      		if(this.props.mycalls.length == 2)
-     		client.invoke('resize', { width: '320px', height:"512px" });
+     		client.invoke('resize', { width: '320px', height:"545px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"562px" });
+     		client.invoke('resize', { width: '320px', height:"595px" });
  	}
 
 
@@ -361,21 +361,25 @@ export default class AppWindow extends Component {
  	if(type == "dialpad:add"){
  		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"462px" });		
+     		client.invoke('resize', { width: '320px', height:"495px" });		
      		if(this.props.mycalls.length == 2)
-     		client.invoke('resize', { width: '320px', height:"512px" });
+     		client.invoke('resize', { width: '320px', height:"545px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"562px" });
+     		client.invoke('resize', { width: '320px', height:"595px" });
  	}
- 	 	if(type == "transfer"){
+ 	if(type == "transfer"){
  	 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
-     		client.invoke('resize', { width: '320px', height:"462px" });
+     		client.invoke('resize', { width: '320px', height:"495px" });		
      		if(this.props.mycalls.length == 2)
-     		client.invoke('resize', { width: '320px', height:"512px" });
+     		client.invoke('resize', { width: '320px', height:"545px" });
      		if(this.props.mycalls.length == 3)
-     		client.invoke('resize', { width: '320px', height:"562px" });
+     		client.invoke('resize', { width: '320px', height:"595px" });
  	}
+ 	if(type == "queue"){
+     		client.invoke('resize', { width: '320px', height:"440px" });		
+
+ 	} 	
 
 
 
@@ -1020,9 +1024,9 @@ else if (this.state.screen == 'queue') {
     	     		if(this.props.mycalls.length == 1)
 		     		client.invoke('resize', { width: '320px', height:"440px" });
 		     		if(this.props.mycalls.length == 2)
-		     		client.invoke('resize', { width: '320px', height:"495px" });
+		     		client.invoke('resize', { width: '320px', height:"490px" });
 		     		if(this.props.mycalls.length == 3)
-		     		client.invoke('resize', { width: '320px', height:"545px" });
+		     		client.invoke('resize', { width: '320px', height:"540px" });
 
 
 
