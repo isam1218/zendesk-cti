@@ -161,7 +161,6 @@ export default class AppWindow extends Component {
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
-			console.log("PROPS CALL",this.props.mycalls);
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -176,8 +175,7 @@ export default class AppWindow extends Component {
 					// grab call object and link to end user...
 				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
-						console.log("ENDUSER",endUserNumber);
-						console.log("STATUS",status);
+
 						
 						// set the end user profile object
 						this.setState({
@@ -493,7 +491,6 @@ export default class AppWindow extends Component {
 
   // calls relevant popup
   _openPopup(type) {
-  	console.log("TYPE",type);
     // make sure this only used in necessary areas
     this.setState({
       popup: type
@@ -625,7 +622,6 @@ export default class AppWindow extends Component {
 	    		}
 	    		if(myqueues[i].checkStatus == true){
 	    			match++;
-	    			console.log("MATCH",match);
 
 	    		}
 
@@ -641,7 +637,6 @@ export default class AppWindow extends Component {
 	    		if(myqueues[i].checkStatus == true){
 
 	    			match++;
-	    			console.log("MATCH",match);
 	    		}
 
 
@@ -665,7 +660,6 @@ export default class AppWindow extends Component {
 		myqueues: myqueues
 	})
 
-	console.log("STATE QUEUES",this.state.myqueues);
     
 /*
     this.setState({
@@ -676,7 +670,6 @@ export default class AppWindow extends Component {
 	}
 
 	_loginQueues(queues){
-		console.log("LOGIN",queues);
 		for(var q = 0; q < queues.length; q++){
 			if(queues[q].checkStatus == true){
 				var data ={};
@@ -693,7 +686,6 @@ export default class AppWindow extends Component {
 	}
 
 	_logoutQueues(data){
-		console.log("LOGOUT",data);
 	}
 
 	_logout(){
@@ -701,7 +693,6 @@ export default class AppWindow extends Component {
 		this.props.logout();
 		fdp.logout();
 
-		console.log("LOGOUT");
 	}
 
   // handles input event.target.value

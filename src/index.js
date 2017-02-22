@@ -44,7 +44,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
 	*/
-	console.log("INDEX DATA", data);
 	
 
 	if (data['me']) {		
