@@ -57,12 +57,17 @@ const zendesk = {
 		return new Promise((resolve, reject) => {
 
 		client.request(grabCall).then(info =>{
-			console.log("INFO",info);
 
 			if(info.users.length > 0){
 				 contactID = info.users[0].id;
 				 dialNum = info.users[0].phone;
 				 callFrom = info.users[0].name;
+				}
+			else{
+				contactID = "Unknown";
+				dialNum = phoneNumber;
+				callFrom = phoneNumber;
+
 				}
 
 		client.get("currentUser").then((user)=>{
