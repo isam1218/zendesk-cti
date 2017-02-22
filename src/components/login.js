@@ -30,7 +30,6 @@ export default class LoginWindow extends Component {
 		if (e && e.key != 'Enter')
 			return;
 		
-		// console.log('login commenced');
 		var username = this.state.username;
 		var password = this.state.password;
 
@@ -40,13 +39,11 @@ export default class LoginWindow extends Component {
 		if (username != '' && password != '') {
 			// send creds to node context
 				fdp.login(username, password).then((status,err)=>{
-					console.log("STATUS",status);
 					 //some type of error
 					let msgObj = {};
 					 //status is set by resolve in index.js...
 						if (status == 1){
 							// called passed in function that changes parent component's state to change view from login -> app
-							console.log('1successful login - back to app.js and running fdp.versionCheck()');
 							this.props.login();
 							// DISPLAY APP!!!
 							// pass state back up to app.js so app js can display appWindow

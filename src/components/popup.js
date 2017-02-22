@@ -32,7 +32,6 @@ export default class Popup extends Component {
 	}
 	
 	componentDidMount() {
-    console.log('in POPUP COMPONENT!, props is - ', this.props);
 		switch(this.props.className) {
 			case 'move full':
 				// re-position pop-up since we don't know the height until render time
@@ -147,9 +146,7 @@ export default class Popup extends Component {
 					data.contactId = this.state.settings.my_pid;
 					data.queues = this.state.queues[i].xpid;
 					data.reason = logoutReason;
-					console.log("C",data.contactId);
-					console.log("Q",data.queues);
-					console.log("R",data.reason);
+
 				
 				fdp.postFeed("queues","queueLogout",data);
 			}
@@ -250,7 +247,6 @@ export default class Popup extends Component {
 						<ul className="logoutList">
 							{
 								this.state.queuelogoutreasons.map(items =>{
-									console.log("LOGOUT ITEMS",items);
 									return(
 										<li className="logoutOptions" onClick={() => this._logoutQueues(items.xpid)} >{items.name}</li>
 										)

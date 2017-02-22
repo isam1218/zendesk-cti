@@ -21,7 +21,7 @@ const fdp =  {
 		localStorage.clear("node");
 		localStorage.clear("refresh");
 		fdp.synced = false;
-		
+		fdp.emitter.emit('logout');
 	
 	},
 	login: (username, password) => {

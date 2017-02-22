@@ -40,6 +40,18 @@ var match = false;
  // must be array to facilitate sorting
 
 // managing data changed by sync to update state which will be passed down
+var reset = fdp.emitter.addListener('logout', () => {
+	locations = {};
+	avatars = {};
+	mycalls = [];
+	calllog = [];
+	queue_members_status = [];
+	queues = [];
+	queue_members = [];
+	queuelogoutreasons = [];
+	members_status = [];
+	match = false;
+	});
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
@@ -59,7 +71,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 	if(data['queue_members_status']){
 		
-			
 		
 		for (let i = 0; i < data['queue_members_status'].length; i++){
 			
@@ -95,7 +106,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		}
 	}
 	if(data['queue_members']){
-
 		for (let i = 0; i < data['queue_members'].length; i++){
 			var members = data['queue_members'][i];
 			queue_members[i] = members;
