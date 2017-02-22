@@ -689,8 +689,6 @@ export default class AppWindow extends Component {
 
 	}
 
-	_logoutQueues(data){
-	}
 
 	_logout(){
 
