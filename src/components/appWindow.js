@@ -617,9 +617,9 @@ export default class AppWindow extends Component {
     var queue = queue;
     var myqueue = myqueue;
     var match = 0;
+	    for (var i=0;i < myqueues.length;i++){
 
 	if(queue != "checkAll"){
-	    for (var i=0;i < myqueues.length;i++){
 	    		if(queue.xpid == myqueues[i].xpid){
 	    			myqueues[i].checkStatus = value;
 
@@ -631,11 +631,10 @@ export default class AppWindow extends Component {
 
 	    		
 
-	    }
+	    
 	}
-	else{
+	else if(myqueues[i].status != "Permanently Logged In"){
 
-	    for (var i=0;i < myqueues.length;i++){
 	    			myqueues[i].checkStatus = value;
 
 	    		if(myqueues[i].checkStatus == true){
@@ -644,8 +643,9 @@ export default class AppWindow extends Component {
 	    		}
 
 
-	    }
+	    
 	}
+}
 
 	if(match > 0){
 		this.setState({
