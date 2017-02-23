@@ -734,7 +734,7 @@ export default class AppWindow extends Component {
         return a.startedAt - b.startedAt;
     });
 
-
+	client.invoke('resize', { width: '320px', height:"440px" });
 
 
       body = (
