@@ -1153,7 +1153,7 @@ else if (this.state.screen == 'queue') {
 						
 						return (
 							<div className={`alert type${call.type}`} key={key}>
-								{this._getAvatar(call)}
+					
 								<div className="details">
 									<div className="name">{call.displayName}</div>
 									{this._getStatus(call)}
