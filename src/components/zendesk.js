@@ -167,7 +167,7 @@ const zendesk = {
 				"created_at": "",
 				"requester_id":"" ,
 				"submitter_id": meAgent.id,
-				"description": `New ticket for new end user created. Origin phone number is: ${endUser.phone}`,
+				"description": `New ticket for new end user created. Origin phone number is: ${endUser}`,
 				"requester": {
 					"name": endUser,
 					"phone": endUser
