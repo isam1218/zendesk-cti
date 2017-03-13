@@ -418,6 +418,19 @@ export default class AppWindow extends Component {
 		this._changeScreen('default');
 	}
 
+	_formatPhoneNumber(number){
+		var regStr = /^(9-|91-|1-)/;
+		if(number.indexOf('@') != -1)
+		{	
+			var start = number.substring(0, number.indexOf('@') + 2);
+			number = number.substring(number.indexOf('@') + 2);	
+			return start + number.replace(regStr, '');
+		}	
+		else{
+			return number.replace(regStr, '');	 
+			}  
+		}
+
 	// get avatar of person calling in (for [CALL SCREEN])
 	_getAvatar(call) {
 		// internal user
@@ -784,7 +797,7 @@ export default class AppWindow extends Component {
 			        		<li className="recentItems" onClick={() => this._callRecent(items.phone)}>
 			        		<i className={call_style}>{call_type}</i>
 			        		<img className="returnCall" src="./returnCall.png" />
-			        		<div className="recentDisplayName">{items.displayName}<br/><p className="displayPhone">{items.phone}</p></div>
+			        		<div className="recentDisplayName">{this._formatPhoneNumber(items.displayName)}<br/><p className="displayPhone">{items.phone}</p></div>
 			        		<div className="recentTimeAgo">{moment(items.startedAt).startOf().fromNow()}</div>
 			        		</li>
 			        		)
