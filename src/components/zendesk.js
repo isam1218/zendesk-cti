@@ -49,10 +49,10 @@ const zendesk = {
 		var message = "Looks like the ticket number you entered in the Fonality App is badly formatted or does not exist. Please make sure you are entering the correct ticket number to log an internal note for this call.";
 
 		if(callType == true)
-			callType = "Incoming";
+			callType = "Inbound";
 
 		if(callType == false)
-			callType = "Outgoing";
+			callType = "Outbound";
 
 		return new Promise((resolve, reject) => {
 
@@ -79,7 +79,7 @@ const zendesk = {
 			{"status": "open", "comment": 
 			{
 			 "body": 
-			 "ContactId: "+contactID+"\r\nDialNum: "+dialNum+"\r\nCallFrom: "+callFrom+"\r\nAgent No: "+agentNo+"\r\nAgent Name: "+agentName+"\r\nCall Type: "+callType+"\r\nStart Time: "+startTime+"\r\nDuration: "+duration+""
+			 "Contact Id: "+contactID+"\r\nDial Num: "+dialNum+"\r\nCall From: "+callFrom+"\r\nAgent No: "+agentNo+"\r\nAgent Name: "+agentName+"\r\nCall Type: "+callType+"\r\nStart Time: "+startTime+"\r\nDuration: "+duration+""
 			}
 		}
 		};
