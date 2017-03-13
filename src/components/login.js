@@ -78,7 +78,20 @@ export default class LoginWindow extends Component {
 								error: msgObj.error
 							});
 		}
-
+		else if(username == '' && password != ''){
+			let msgObj = {};
+			msgObj.error = 'Enter your username.';
+							this.setState({
+								error: msgObj.error
+							});
+		}
+		else{
+			let msgObj = {};
+			msgObj.error = 'Please enter your username and password.';
+			this.setState({
+				error: msgObj.error
+			});
+		}
 
 
 	}
