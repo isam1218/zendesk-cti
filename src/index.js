@@ -64,17 +64,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['calllog']){
-		var log1 = calllog[0];
-		var log2 = calllog[1];
-		var log3 = calllog[2];
-		var log4 = calllog[3];
-		var log5 = calllog[4];
-
-		calllog[1] = log1;
-		calllog[2] = log2;
-		calllog[3] = log3;
-		calllog[4] = log4;
-		calllog[5] = log5;
 		for (let i = 0; i < data['calllog'].length; i++){
 			var logs = data['calllog'][i];
 			calllog[i] = logs;
