@@ -159,17 +159,21 @@ const zendesk = {
 
 	createNewTicket(endUser, via_id, meAgent) {
 		//https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+			var end_user = endUser;
+			if(end_user == ""){
+				end_user = "Anonymous";
+			}
 
-				var data = {
+			var data = {
 			"display_to_agent": meAgent.id,
 			"ticket": {
 				"via_id": via_id,
 				"created_at": "",
 				"requester_id":"" ,
 				"submitter_id": meAgent.id,
-				"description": `New ticket for new end user created. Origin phone number is: ${endUser}`,
+				"description": `New ticket for new end user created. Origin phone number is: ${end_user}`,
 				"requester": {
-					"name": endUser,
+					"name": end_user,
 					"phone": endUser
 				},
 				"custom_fields": [
@@ -183,6 +187,7 @@ const zendesk = {
 
 		var ticketData = JSON.stringify(data);
 
+
 		var createNewTicket = {
 		  url: '/api/v2/channels/voice/tickets.json',
 		  type: 'POST',
@@ -191,7 +196,6 @@ const zendesk = {
 		};
 		return new Promise((resolve, reject) => {
 		client.request(createNewTicket).then(data => {
-
 			  resolve(data);
 			});
 		});

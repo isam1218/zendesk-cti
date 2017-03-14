@@ -160,7 +160,7 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
-		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system" && this.props.mycalls[0].phone != "")) {
+		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -176,14 +176,13 @@ export default class AppWindow extends Component {
 				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
 
-						
 						// set the end user profile object
 						this.setState({
 							otherCallerEndUser: status.users[0]
 						});
 
 						// if end user is found -> scren pop end user profile...
-						if (status.users.length > 0){
+						if (status.users.length > 0 && endUserNumber != ""){
 							// screen pop the end user..
 							if (this.state.myZendeskAgent.id && this.state.otherCallerEndUser.id){
 								zendesk.profilePop(this.state.myZendeskAgent.id, this.state.otherCallerEndUser.id)
@@ -195,7 +194,6 @@ export default class AppWindow extends Component {
 						// NO MATCH OF END USERS, create a user w/ random phone number (for now)...
 						else {
 							
-
 
 
 							// IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
