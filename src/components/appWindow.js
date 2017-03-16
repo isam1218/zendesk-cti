@@ -787,7 +787,6 @@ export default class AppWindow extends Component {
 
 			        	sorted.reverse().slice(0,5).map(items =>{
 			        		if(items){
-			        		console.log("ITEMS",items);
 			        		call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        		call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 			        	

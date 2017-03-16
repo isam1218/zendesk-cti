@@ -51,7 +51,7 @@ export default class LoginWindow extends Component {
 						else if (status == 403){
 							console.log('1BAD LOGIN INCORRECT CREDS');
 							// incorrect username/pw
-							msgObj.error = 'incorrect username or password';
+							msgObj.error = 'Incorrect username or password';
 							this.setState({
 								error: msgObj.error
 							});

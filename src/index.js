@@ -29,12 +29,14 @@ var locations = {};
 var avatars = {};
 var mycalls = [];
 var calllog = [];
+var new_log = [];
 var queue_members_status = [];
 var queues = [];
 var queue_members = [];
 var queuelogoutreasons = [];
 var members_status = [];
 var match = false;
+var logMatch = false;
 
 
  // must be array to facilitate sorting
@@ -45,12 +47,14 @@ var reset = fdp.emitter.addListener('logout', () => {
 	avatars = {};
 	mycalls = [];
 	calllog = [];
+	new_log = [];
 	queue_members_status = [];
 	queues = [];
 	queue_members = [];
 	queuelogoutreasons = [];
 	members_status = [];
 	match = false;
+	logMatch = false;
 	});
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
@@ -64,9 +68,25 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['calllog']){
+		
 		for (let i = 0; i < data['calllog'].length; i++){
-			var logs = data['calllog'][i];
-			calllog[i] = logs;
+
+			for (let z = 0; z < new_log.length;z++){
+	
+				if(new_log[z].xef001id == data['calllog'][i].xef001id){
+					
+					new_log[z] = data['calllog'][i];
+				 	logMatch = true;
+				}
+
+
+
+			}
+
+			if (!logMatch) {
+				new_log.push(data['calllog'][i]);
+				calllog = new_log;
+			}
 		}
 	}
 
@@ -151,6 +171,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	*/
 	if (data['mycalls']) {
 		processCalls(data['mycalls']);
+		logMatch = false;
 	}
 	
 	if (data['mycalldetails']) {		
