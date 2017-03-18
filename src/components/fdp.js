@@ -15,6 +15,9 @@ const fdp =  {
 	init: () => {
 		fdp.login();
 	},
+	clearCalls: ()=>{
+		fdp.emitter.emit('clearCalls');
+	},
 	logout: ()=>{
 		setTimeout(()=>{fdp.xhr.abort()},3000);
 		localStorage.clear("auth");
@@ -220,7 +223,7 @@ const fdp =  {
 			}
 			// emit synced data...
 			fdp.emitter.emit('data_sync_update', data);
-
+			console.log("DATA",data);
 			// then resync...
 			fdp.syncStatus();
 

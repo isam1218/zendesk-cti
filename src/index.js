@@ -28,6 +28,7 @@ var server = "https://dev4.fon9.com:8081";
 var locations = {};
 var avatars = {};
 var mycalls = [];
+var calls = [];
 var calllog = [];
 var new_log = [];
 var queue_members_status = [];
@@ -46,6 +47,7 @@ var reset = fdp.emitter.addListener('logout', () => {
 	locations = {};
 	avatars = {};
 	mycalls = [];
+	calls = [];
 	calllog = [];
 	new_log = [];
 	queue_members_status = [];
@@ -56,6 +58,11 @@ var reset = fdp.emitter.addListener('logout', () => {
 	match = false;
 	logMatch = false;
 	});
+
+var clearCalls = fdp.emitter.addListener('clearCalls',()=>{
+	calls = [];
+	console.log("CALL CLEARED",calls);
+});
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
@@ -170,6 +177,15 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		CALLS
 	*/
 	if (data['mycalls']) {
+		for(let i=0; i < data['mycalls'].length; i++){
+			if((data['mycalls'][i].displayName != "Call menu" && data['mycalls'][i].state == 2) || data['mycalls'][i].xef001type == 'delete'){
+				calls.push(data['mycalls'][i]);
+				if(data['mycalls'][i].xef001type == 'delete'){
+					break;
+				}
+			}
+		}
+		
 		processCalls(data['mycalls']);
 		logMatch = false;
 	}
@@ -231,12 +247,12 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 
-  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 });
 
 
 
-ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} />, document.querySelector('.container'));
+ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;

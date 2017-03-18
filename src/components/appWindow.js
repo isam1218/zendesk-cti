@@ -31,7 +31,8 @@ export default class AppWindow extends Component {
 			createdTicket: null,
 			newCallerFlag: true,
 			isChecked: false,
-			disableButton:true
+			disableButton:true,
+			callObj:[]
     }
 
   }
@@ -62,10 +63,48 @@ export default class AppWindow extends Component {
       queues: this.props.queues,
       queuelogoutreasons: this.props.queuelogoutreasons,
 			my_pid: this.props.settings.my_pid,
-			display_name: this.props.settings.display_name
+			display_name: this.props.settings.display_name,
+			deletedCalls: this.props.deletedCalls
     });
+    	//ADD CALL LOG ON END OF CALL FROM USER
+    	if(this.props.deletedCalls){
 
-    	
+    	for(var d = 0; d < this.props.deletedCalls.length; d++){
+
+	    	if(this.props.deletedCalls[this.state.deletedCalls.length - 1].xef001type == 'delete'){
+	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
+	    				
+	    				var callEnded = this.props.deletedCalls[d];
+	    			
+	    			if(callEnded){
+	    					var call_num = "";
+							var call_type = "";
+							var start_time = "";
+							var currentTime = "";
+							var duration = "";
+
+	    					 call_num = callEnded.phone;
+							 call_type = callEnded.incoming;
+							 start_time = callEnded.created;
+							 currentTime = new Date().getTime();
+							 duration = (parseInt(currentTime) - parseInt(callEnded.created));
+							duration.toString();
+
+					if(this.state.ticketNumber){
+					zendesk.addCallLog(this.state.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
+						     this.setState({
+						        ticketNumber: ""
+						      });
+						     fdp.clearCalls();
+					});
+					}
+				}
+	    		}
+	    		
+	    	}
+
+    	}
+    }
 		//console.log("QUEUE MEMBERS",this.props.queue_members);
 		//console.log("QUEUEs",this.props.queues);
 		//console.log("MEEEE",this.props.settings);
@@ -122,7 +161,7 @@ export default class AppWindow extends Component {
 
 
 
-      window.addEventListener('storage', (e)=> {  
+      window.addEventListener('storage', (e)=> { 
 		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
 		  	this.setState({
 		  		phone: e.newValue
@@ -133,6 +172,10 @@ export default class AppWindow extends Component {
 		  }
 		  localStorage.removeItem("ticketPhone"); 
 		});
+
+      //add call log
+
+
 
 		// if user mutes thru hudn softphone, need to change mute button anyways
 		if (this.props.settings.hudmw_webphone_mic == "0"){
@@ -297,6 +340,8 @@ export default class AppWindow extends Component {
   } // CLOSE BRACKET OF: componentWillReceiveProps
 
 
+
+
 	_answerCall(call) {
 		// fdp postFeed
 		
@@ -405,7 +450,8 @@ export default class AppWindow extends Component {
 			zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 
 				      this.setState({
-				        ticketNumber: ""
+				        ticketNumber: "",
+				        callEnded: ""
 				      });
 			});
 		}
