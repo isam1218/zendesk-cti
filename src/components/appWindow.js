@@ -624,8 +624,15 @@ export default class AppWindow extends Component {
 	}
 
 	_transfer(call, isVM) {
+		var number = "";
+		if (isVM && this.state.phone.indexOf('*86') != 0){
+			number = '*86' + this.state.phone;
+		}
+		else{
+			number = this.state.phone;
+		}
 		// call FDP API to transfer call (either regular or to VM transfer)
-		fdp.postFeed('mycalls', 'transferTo', {mycallId: call.xpid, toNumber: this.state.phone});
+		fdp.postFeed('mycalls', 'transferTo', {mycallId: call.xpid, toNumber: number});
 		// clear screen
 		this._changeScreen('default');
 	}
@@ -977,7 +984,7 @@ export default class AppWindow extends Component {
 							<div
 								className="button" 
 								disabled={disableVM}
-								onClick={() => this._transfer(mycall)}
+								onClick={() => this._transfer(mycall, true)}
 							>
 								<i className="material-icons">voicemail</i>
 								<span className="label">voicemail</span>
