@@ -934,7 +934,7 @@ export default class AppWindow extends Component {
 				var num = this.state.phone;
 				
 				// reserved numbers
-				if (num.length >= 10 || num == 0 || num == 911 || num == 8555 || (num >= 8500 && num <= 8520) || (num >= 9000 && num <= 9050))
+				if (num.length >= 10 || num == 0 || num == 911 || num == 311 || num == 411 || num == 8555 || (num >= 8500 && num <= 8520) || (num >= 9000 && num <= 9050))
 					disableVM = true;
 			}
 			
