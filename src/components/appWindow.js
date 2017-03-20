@@ -1097,7 +1097,7 @@ else if (this.state.screen == 'queue') {
 			var holdBtnCSS = 'material-icons';
 			
 			// disable certain buttons based on context
-      var disableConf = false;
+      var disableConf = mycall.type == 0 ? true : false;
       var disablePhone = false;
       var disableMute = false;
       var disableFDP = false;
