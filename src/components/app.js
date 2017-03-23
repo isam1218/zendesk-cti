@@ -30,6 +30,18 @@ this.state = {
   }
 
   componentWillReceiveProps() {
+         localStorage.setItem("avatars",JSON.stringify(this.props.avatars));
+
+    localStorage.setItem("calllog", JSON.stringify(this.props.calllog));
+    localStorage.setItem("deletedCalls", JSON.stringify(this.props.deletedCalls));
+    localStorage.setItem("locations", JSON.stringify(this.props.locations));
+    localStorage.setItem("mycalls", JSON.stringify(this.props.mycalls));
+    localStorage.setItem("queue_members", JSON.stringify(this.props.queue_members));
+    localStorage.setItem("queue_members_status", JSON.stringify(this.props.queue_members_status));
+    localStorage.setItem("queuelogoutreasons", JSON.stringify(this.props.queuelogoutreasons));
+    localStorage.setItem("queues", JSON.stringify(this.props.queues));
+    localStorage.setItem("settings", JSON.stringify(this.props.settings));
+    localStorage.setItem("ticketPhone", JSON.stringify(this.state.ticketPhone));
   }
 
   componentDidMount() {
