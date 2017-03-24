@@ -30,18 +30,9 @@ this.state = {
   }
 
   componentWillReceiveProps() {
-         localStorage.setItem("avatars",JSON.stringify(this.props.avatars));
 
-    localStorage.setItem("calllog", JSON.stringify(this.props.calllog));
-    localStorage.setItem("deletedCalls", JSON.stringify(this.props.deletedCalls));
-    localStorage.setItem("locations", JSON.stringify(this.props.locations));
-    localStorage.setItem("mycalls", JSON.stringify(this.props.mycalls));
-    localStorage.setItem("queue_members", JSON.stringify(this.props.queue_members));
-    localStorage.setItem("queue_members_status", JSON.stringify(this.props.queue_members_status));
-    localStorage.setItem("queuelogoutreasons", JSON.stringify(this.props.queuelogoutreasons));
-    localStorage.setItem("queues", JSON.stringify(this.props.queues));
-    localStorage.setItem("settings", JSON.stringify(this.props.settings));
-    localStorage.setItem("ticketPhone", JSON.stringify(this.state.ticketPhone));
+    //localStorage.setItem("ticketPhone", JSON.stringify(this.state.ticketPhone));
+
   }
 
   componentDidMount() {
@@ -95,12 +86,26 @@ this.state = {
   }
 
   render() {
+
+
+
     if (this.state.app){
       // ***Uncomment below and comment above to enable refresh..
     // if (localStorage.node || localStorage.auth || this.state.app){
+
+    localStorage.setItem("avatars",JSON.stringify(this.props.avatars));
+    localStorage.setItem("calllog", JSON.stringify(this.props.calllog));
+    localStorage.setItem("deletedCalls", JSON.stringify(this.props.deletedCalls));
+    localStorage.setItem("locations", JSON.stringify(this.props.locations));
+    localStorage.setItem("mycalls", JSON.stringify(this.props.mycalls));
+    localStorage.setItem("queue_members", JSON.stringify(this.props.queue_members));
+    localStorage.setItem("queue_members_status", JSON.stringify(this.props.queue_members_status));
+    localStorage.setItem("queuelogoutreasons", JSON.stringify(this.props.queuelogoutreasons));
+    localStorage.setItem("queues", JSON.stringify(this.props.queues));
+    localStorage.setItem("settings", JSON.stringify(this.props.settings));
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.state.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} deletedCalls={this.props.deletedCalls} logout={this.logoutOfApp} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.props.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} deletedCalls={this.props.deletedCalls} logout={this.logoutOfApp} />
         </div>
       )
     }

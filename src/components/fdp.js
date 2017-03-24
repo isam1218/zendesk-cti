@@ -17,7 +17,7 @@ function WindowController () {
     } else {
         this.loseMaster();
     }
-    window.addEventListener( 'storage', this, false );
+    //window.addEventListener( 'storage', this, false );
     window.addEventListener( 'unload', this, false );
 }
 
@@ -28,7 +28,7 @@ WindowController.prototype.destroy = function () {
             localStorage.setItem( 'ping', 0 );
         } catch ( error ) {}
     }
-    window.removeEventListener( 'storage', this, false );
+    //window.removeEventListener( 'storage', this, false );
     window.removeEventListener( 'unload', this, false );
 };
 
@@ -100,6 +100,8 @@ WindowController.prototype.masterDidChange = function () {
 };
 
 WindowController.prototype.broadcast = function ( type, event ) {
+	console.log("TYPE",type);
+	console.log("EVENT",event);
     try {
         localStorage.setItem( 'broadcast',
             JSON.stringify({
@@ -114,8 +116,6 @@ var obj = new WindowController();
 
 var master = obj.masterDidChange();
 
-console.log("MASTER",master);
-
 const emitter = new EventEmitter();
 
 const fdp =  {
@@ -124,6 +124,11 @@ const fdp =  {
 	synced: false,
 	refresh: null,
 	status: 0,
+	checkMaster:()=>{
+		if(!fdp.isMaster){
+			ReactDOM.render(<App settings={JSON.parse(localStorage.settings)} avatars={JSON.parse(localStorage.avatars)} mycalls={JSON.parse(localStorage.mycalls)} locations={JSON.parse(localStorage.locations)} calllog={JSON.parse(localStorage.calllog)} queue_members={JSON.parse(localStorage.queue_members)} queue_members_status={JSON.parse(localStorage.queue_members_status)} queues={JSON.parse(localStorage.queues)} queuelogoutreasons={JSON.parse(localStorage.queuelogoutreasons)} deletedCalls={JSON.parse(localStorage.deletedCalls)} />, document.querySelector('.container'));
+		}
+	},
 	isMaster:master,
 	xhr:'',
 	init: () => {
@@ -324,6 +329,7 @@ console.log("FDP MASTER",fdp.isMaster);
 				if (!fdp.synced) {
 					fdp.synced = true;
 					fdp.emitter.emit('data_sync_update', {});
+
 					//this.emit('success', {});
 				}
 				// format sync data
@@ -354,6 +360,7 @@ console.log("FDP MASTER",fdp.isMaster);
 
 			fdp.emitter.emit('data_sync_update', data);
 			console.log("DATA",data);
+			obj.broadcast("new_event",data);
 			// then resync...
 			fdp.syncStatus();
 

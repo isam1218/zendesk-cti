@@ -41,20 +41,21 @@ export default class AppWindow extends Component {
 	componentDidMount() {
 		 console.log("Did WINDOW THIS PROPS",this.props);
 
-		     this.setState({
-      settings: this.props.settings,
-      locations: this.props.locations,
-      mycalls: this.props.mycalls,
-      calllog: this.props.calllog,
-      avatars: this.props.avatars,
+		 fdp.checkMaster();
+     this.setState({
+      settings: JSON.parse(localStorage.settings),
+      locations: JSON.parse(localStorage.locations),
+      mycalls: JSON.parse(localStorage.mycalls),
+      calllog: JSON.parse(localStorage.calllog),
+      avatars: JSON.parse(localStorage.avatars),
       ticketPhone: this.props.ticketPhone,
-      queue_members: this.props.queue_members,
-      queue_members_status: this.props.queue_members_status,
-      queues: this.props.queues,
-      queuelogoutreasons: this.props.queuelogoutreasons,
-			my_pid: this.props.settings.my_pid,
-			display_name: this.props.settings.display_name,
-			deletedCalls: this.props.deletedCalls
+      queue_members: JSON.parse(localStorage.queue_members),
+      queue_members_status: JSON.parse(localStorage.queue_members_status),
+      queues: JSON.parse(localStorage.queues),
+      queuelogoutreasons: JSON.parse(localStorage.queuelogoutreasons),
+			my_pid: JSON.parse(localStorage.settings).my_pid,
+			display_name: JSON.parse(localStorage.settings).display_name,
+			deletedCalls: JSON.parse(localStorage.deletedCalls)
     });
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
@@ -398,15 +399,16 @@ export default class AppWindow extends Component {
 
       this._changeScreen('call');
 
-      localStorage.getItem("mycalls");
 
       // e.target.blur();
+      fdp.checkMaster();
     }
   }
 
   _callRecent(data){
   	localStorage.getItem("mycalls");
   	fdp.postFeed('me', 'callTo', {phoneNumber: data});
+  	fdp.checkMaster();
   }
 
   // change view
