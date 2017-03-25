@@ -6,114 +6,6 @@ import {EventEmitter} from 'fbemitter';
 import config from '../config.js';
 import server from '../properties.js';
 
-function WindowController () {
-    var now = Date.now(),
-        ping = 0;
-    try {
-        ping = +localStorage.getItem( 'ping' ) || 0;
-    } catch ( error ) {}
-    if ( now - ping > 45000 ) {
-        this.becomeMaster();
-    } else {
-        this.loseMaster();
-    }
-    window.addEventListener( 'storage', this, false );
-    window.addEventListener( 'unload', this, false );
-}
-
-WindowController.prototype.isMaster = false;
-WindowController.prototype.destroy = function () {
-    if ( this.isMaster ) {
-        try {
-            localStorage.setItem( 'ping', 0 );
-        } catch ( error ) {}
-    }
-    window.removeEventListener( 'storage', this, false );
-    window.removeEventListener( 'unload', this, false );
-};
-
-WindowController.prototype.handleEvent = function ( event ) {
-    if ( event.type === 'unload' ) {
-        this.destroy();
-    } else {
-        var type = event.key,
-            ping = 0,
-            data;
-        if ( type === 'ping' ) {
-            try {
-                ping = +localStorage.getItem( 'ping' ) || 0;
-            } catch ( error ) {}
-            if ( ping ) {
-                this.loseMaster();
-            } else {
-                // We add a random delay to try avoid the race condition in 
-                // Chrome, which doesn't take out a mutex on local storage. It's
-                // imperfect, but will eventually work out.
-                clearTimeout( this._ping );
-                this._ping = setTimeout(
-                    this.becomeMaster.bind( this ),
-                    ~~( Math.random() * 1000 )
-                );
-            }
-        } else if ( type === 'broadcast' ) {
-            try {
-                data = JSON.parse(
-                    localStorage.getItem( 'broadcast' )
-                );
-                this[ data.type ]( data.event );
-            } catch ( error ) {}
-        }
-    }
-};
-
-WindowController.prototype.becomeMaster = function () {
-    try {
-        localStorage.setItem( 'ping', Date.now() );
-    } catch ( error ) {}
-
-    clearTimeout( this._ping );
-    this._ping = setTimeout( this.becomeMaster.bind( this ),
-        20000 + ~~( Math.random() * 10000 ) );
-
-    var wasMaster = this.isMaster;
-    this.isMaster = true;
-    if ( !wasMaster ) {
-        this.masterDidChange();
-    }
-};
-
-WindowController.prototype.loseMaster = function () {
-    clearTimeout( this._ping );
-    this._ping = setTimeout( this.becomeMaster.bind( this ),
-        35000 + ~~( Math.random() * 20000 ) );
-
-    var wasMaster = this.isMaster;
-    this.isMaster = false;
-    if ( wasMaster ) {
-        this.masterDidChange();
-    }
-};
-
-WindowController.prototype.masterDidChange = function () {
-	console.log("MASTER PROTO",this.isMaster);
-	return this.isMaster;
-};
-
-WindowController.prototype.broadcast = function ( type, event ) {
-	
-    try {
-        localStorage.setItem( 'broadcast',
-            JSON.stringify({
-                type: type,
-                event: event
-            })
-        );
-    } catch ( error ) {}
-};
-
-var obj = new WindowController();
-
-var master = obj.masterDidChange();
 
 const emitter = new EventEmitter();
 
@@ -123,8 +15,18 @@ const fdp =  {
 	synced: false,
 	refresh: null,
 	status: 0,
+	master:false,
+	isMaster:(master)=>{
+		console.log("ISMASTER",master);
+		fdp.master = master;
+		if(fdp.synced == false && fdp.master == true){
+			fdp.init();
+		}
+	 		
+
+	},
 	checkMaster:()=>{
-		if(!fdp.isMaster){
+		if(!fdp.master){
 			       var avatars= JSON.parse(localStorage.avatars);
 			      var calllog= JSON.parse(localStorage.calllog);
 			      var locations= JSON.parse(localStorage.locations);
@@ -138,7 +40,6 @@ const fdp =  {
 			ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 		}
 	},
-	isMaster:master,
 	xhr:'',
 	init: () => {
 		fdp.login();
@@ -161,7 +62,7 @@ const fdp =  {
 			t: 'webNative'
 		};
 
-console.log("FDP MASTER",fdp.isMaster);
+console.log("FDP MASTER",fdp.master);
 		
 		if (username && password) {
 			params.Email = username;
@@ -173,7 +74,7 @@ console.log("FDP MASTER",fdp.isMaster);
 			return;
 		
 		// login resolves in a promise
-		if(fdp.isMaster){
+		if(fdp.master){
 		return new Promise((resolve, reject) => {
 		$.ajax({
 				rejectUnauthorized: false,
@@ -447,8 +348,115 @@ console.log("FDP MASTER",fdp.isMaster);
 	}
 };
 
-
-
-
-
 export default fdp;
+
+
+function WindowController () {
+    var now = Date.now(),
+        ping = 0;
+    try {
+        ping = +localStorage.getItem( 'ping' ) || 0;
+    } catch ( error ) {}
+    if ( now - ping > 45000 ) {
+        this.becomeMaster();
+    } else {
+        this.loseMaster();
+    }
+    window.addEventListener( 'storage', this, false );
+    window.addEventListener( 'unload', this, false );
+}
+
+WindowController.prototype.isMaster = false;
+WindowController.prototype.destroy = function () {
+    if ( this.isMaster ) {
+        try {
+            localStorage.setItem( 'ping', 0 );
+        } catch ( error ) {}
+    }
+    window.removeEventListener( 'storage', this, false );
+    window.removeEventListener( 'unload', this, false );
+};
+
+WindowController.prototype.handleEvent = function ( event ) {
+    if ( event.type === 'unload' ) {
+        this.destroy();
+    } else {
+        var type = event.key,
+            ping = 0,
+            data;
+        if ( type === 'ping' ) {
+            try {
+                ping = +localStorage.getItem( 'ping' ) || 0;
+            } catch ( error ) {}
+            if ( ping ) {
+                this.loseMaster();
+            } else {
+                // We add a random delay to try avoid the race condition in 
+                // Chrome, which doesn't take out a mutex on local storage. It's
+                // imperfect, but will eventually work out.
+                clearTimeout( this._ping );
+                this._ping = setTimeout(
+                    this.becomeMaster.bind( this ),
+                    ~~( Math.random() * 1000 )
+                );
+            }
+        } else if ( type === 'broadcast' ) {
+            try {
+                data = JSON.parse(
+                    localStorage.getItem( 'broadcast' )
+                );
+                this[ data.type ]( data.event );
+            } catch ( error ) {}
+        }
+    }
+};
+
+WindowController.prototype.becomeMaster = function () {
+	console.log("BECAME MASTER");
+    try {
+        localStorage.setItem( 'ping', Date.now() );
+    } catch ( error ) {}
+
+    clearTimeout( this._ping );
+    this._ping = setTimeout( this.becomeMaster.bind( this ),
+        20000 + ~~( Math.random() * 10000 ) );
+
+    var wasMaster = this.isMaster;
+    this.isMaster = true;
+    if ( !wasMaster ) {
+        this.masterDidChange();
+    }
+};
+
+WindowController.prototype.loseMaster = function () {
+	console.log("LOST MASTER");
+    clearTimeout( this._ping );
+    this._ping = setTimeout( this.becomeMaster.bind( this ),
+        35000 + ~~( Math.random() * 20000 ) );
+
+    var wasMaster = this.isMaster;
+    this.isMaster = false;
+    if ( wasMaster ) {
+        this.masterDidChange();
+    }
+};
+
+WindowController.prototype.masterDidChange = function () {
+	console.log("MASTER PROTO",this.isMaster);
+	fdp.isMaster(this.isMaster);
+};
+
+WindowController.prototype.broadcast = function ( type, event ) {
+	
+    try {
+        localStorage.setItem( 'broadcast',
+            JSON.stringify({
+                type: type,
+                event: event
+            })
+        );
+    } catch ( error ) {}
+};
+
+var obj = new WindowController();
+obj.masterDidChange();

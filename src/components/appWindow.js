@@ -40,7 +40,6 @@ export default class AppWindow extends Component {
 
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
-		 console.log("Did WINDOW THIS PROPS",this.props);
 
 		 
 /*     this.setState({
@@ -86,7 +85,6 @@ export default class AppWindow extends Component {
 			deletedCalls: this.props.deletedCalls
     });
 
-    console.log("WILL WINDOW THIS PROPS",this.props);
     	  setTimeout(function(){fdp.checkMaster()},500);
 
     
