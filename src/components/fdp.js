@@ -17,7 +17,7 @@ function WindowController () {
     } else {
         this.loseMaster();
     }
-    //window.addEventListener( 'storage', this, false );
+    window.addEventListener( 'storage', this, false );
     window.addEventListener( 'unload', this, false );
 }
 
@@ -28,7 +28,7 @@ WindowController.prototype.destroy = function () {
             localStorage.setItem( 'ping', 0 );
         } catch ( error ) {}
     }
-    //window.removeEventListener( 'storage', this, false );
+    window.removeEventListener( 'storage', this, false );
     window.removeEventListener( 'unload', this, false );
 };
 
@@ -100,8 +100,7 @@ WindowController.prototype.masterDidChange = function () {
 };
 
 WindowController.prototype.broadcast = function ( type, event ) {
-	console.log("TYPE",type);
-	console.log("EVENT",event);
+	
     try {
         localStorage.setItem( 'broadcast',
             JSON.stringify({
@@ -126,7 +125,17 @@ const fdp =  {
 	status: 0,
 	checkMaster:()=>{
 		if(!fdp.isMaster){
-			ReactDOM.render(<App settings={JSON.parse(localStorage.settings)} avatars={JSON.parse(localStorage.avatars)} mycalls={JSON.parse(localStorage.mycalls)} locations={JSON.parse(localStorage.locations)} calllog={JSON.parse(localStorage.calllog)} queue_members={JSON.parse(localStorage.queue_members)} queue_members_status={JSON.parse(localStorage.queue_members_status)} queues={JSON.parse(localStorage.queues)} queuelogoutreasons={JSON.parse(localStorage.queuelogoutreasons)} deletedCalls={JSON.parse(localStorage.deletedCalls)} />, document.querySelector('.container'));
+			       var avatars= JSON.parse(localStorage.avatars);
+			      var calllog= JSON.parse(localStorage.calllog);
+			      var locations= JSON.parse(localStorage.locations);
+			      var mycalls= JSON.parse(localStorage.mycalls);
+			      var calls= JSON.parse(localStorage.deletedCalls);
+			      var queue_members= JSON.parse(localStorage.queue_members);
+			      var queue_members_status= JSON.parse(localStorage.queue_members_status);
+			      var queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
+			      var queues= JSON.parse(localStorage.queues);
+			      var settings= JSON.parse(localStorage.settings);
+			ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 		}
 	},
 	isMaster:master,
@@ -360,7 +369,7 @@ console.log("FDP MASTER",fdp.isMaster);
 
 			fdp.emitter.emit('data_sync_update', data);
 			console.log("DATA",data);
-			obj.broadcast("new_event",data);
+			
 			// then resync...
 			fdp.syncStatus();
 

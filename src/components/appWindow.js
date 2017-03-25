@@ -19,6 +19,7 @@ export default class AppWindow extends Component {
   constructor(props) {
     super(props);
     // this.state.phone is the phone # dialed into form input
+    fdp.checkMaster();
     this.state = {
       screen: 'default',
       phone: '',
@@ -41,8 +42,8 @@ export default class AppWindow extends Component {
 	componentDidMount() {
 		 console.log("Did WINDOW THIS PROPS",this.props);
 
-		 fdp.checkMaster();
-     this.setState({
+		 
+/*     this.setState({
       settings: JSON.parse(localStorage.settings),
       locations: JSON.parse(localStorage.locations),
       mycalls: JSON.parse(localStorage.mycalls),
@@ -56,7 +57,7 @@ export default class AppWindow extends Component {
 			my_pid: JSON.parse(localStorage.settings).my_pid,
 			display_name: JSON.parse(localStorage.settings).display_name,
 			deletedCalls: JSON.parse(localStorage.deletedCalls)
-    });
+    });*/
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
@@ -86,12 +87,15 @@ export default class AppWindow extends Component {
     });
 
     console.log("WILL WINDOW THIS PROPS",this.props);
+    	  setTimeout(function(){fdp.checkMaster()},500);
+
+    
     	//ADD CALL LOG ON END OF CALL FROM USER
     	if(this.props.deletedCalls){
 
     	for(var d = 0; d < this.props.deletedCalls.length; d++){
 
-	    	if(this.props.deletedCalls[this.state.deletedCalls.length - 1].xef001type == 'delete'){
+	    	if(this.props.deletedCalls[this.props.deletedCalls.length - 1].xef001type == 'delete'){
 	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
 	    				
 	    				var callEnded = this.props.deletedCalls[d];
@@ -179,10 +183,18 @@ export default class AppWindow extends Component {
 
 
 
-
+/*window.addEventListener("focus", function(event) { 
+	console.log("FOCUSED");
+	fdp.checkMaster(); 
+}, false);*/
 
       window.addEventListener('storage', (e)=> { 
-      	console.log("STORAGE DATA",e);
+      	
+      	/*if(e.key == "mycalls"){
+      		console.log("STORAGE DATA ",e);
+      		setTimeout(function(){fdp.checkMaster()},1);
+      	}*/
+     	
 		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
 		  	this.setState({
 		  		phone: e.newValue
@@ -401,14 +413,11 @@ export default class AppWindow extends Component {
 
 
       // e.target.blur();
-      fdp.checkMaster();
     }
   }
 
   _callRecent(data){
-  	localStorage.getItem("mycalls");
   	fdp.postFeed('me', 'callTo', {phoneNumber: data});
-  	fdp.checkMaster();
   }
 
   // change view
@@ -809,6 +818,7 @@ export default class AppWindow extends Component {
 
   
   render() {
+
     var mycall = this.props.mycalls[0];
     var popup, overlay, body, footer;
     var barCSS = '';

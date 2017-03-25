@@ -67,7 +67,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
 	*/
-	
 	if (data['me']) {		
 		for (let i = 0; i < data['me'].length; i++)
 			settings[data['me'][i].propertyKey] = data['me'][i].propertyValue;
@@ -247,12 +246,33 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 
+	 localStorage.setItem("avatars",JSON.stringify(avatars));
+    localStorage.setItem("calllog", JSON.stringify(calllog));
+    localStorage.setItem("deletedCalls", JSON.stringify(calls));
+    localStorage.setItem("locations", JSON.stringify(locations));
+    localStorage.setItem("mycalls", JSON.stringify(mycalls));
+    localStorage.setItem("queue_members", JSON.stringify(queue_members));
+    localStorage.setItem("queue_members_status", JSON.stringify(queue_members_status));
+    localStorage.setItem("queuelogoutreasons", JSON.stringify(queuelogoutreasons));
+    localStorage.setItem("queues", JSON.stringify(queues));
+    localStorage.setItem("settings", JSON.stringify(settings));
+       avatars= JSON.parse(localStorage.avatars);
+      calllog= JSON.parse(localStorage.calllog);
+      locations= JSON.parse(localStorage.locations);
+      mycalls= JSON.parse(localStorage.mycalls);
+      calls= JSON.parse(localStorage.deletedCalls);
+      queue_members= JSON.parse(localStorage.queue_members);
+      queue_members_status= JSON.parse(localStorage.queue_members_status);
+      queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
+      queues= JSON.parse(localStorage.queues);
+      settings= JSON.parse(localStorage.settings);
   ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 });
 
 
 
 ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;
