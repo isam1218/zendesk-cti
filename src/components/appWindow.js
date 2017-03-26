@@ -41,22 +41,6 @@ export default class AppWindow extends Component {
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
 
-		 
-/*     this.setState({
-      settings: JSON.parse(localStorage.settings),
-      locations: JSON.parse(localStorage.locations),
-      mycalls: JSON.parse(localStorage.mycalls),
-      calllog: JSON.parse(localStorage.calllog),
-      avatars: JSON.parse(localStorage.avatars),
-      ticketPhone: this.props.ticketPhone,
-      queue_members: JSON.parse(localStorage.queue_members),
-      queue_members_status: JSON.parse(localStorage.queue_members_status),
-      queues: JSON.parse(localStorage.queues),
-      queuelogoutreasons: JSON.parse(localStorage.queuelogoutreasons),
-			my_pid: JSON.parse(localStorage.settings).my_pid,
-			display_name: JSON.parse(localStorage.settings).display_name,
-			deletedCalls: JSON.parse(localStorage.deletedCalls)
-    });*/
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
@@ -181,17 +165,9 @@ export default class AppWindow extends Component {
 
 
 
-/*window.addEventListener("focus", function(event) { 
-	console.log("FOCUSED");
-	fdp.checkMaster(); 
-}, false);*/
 
       window.addEventListener('storage', (e)=> { 
-      	
-      	/*if(e.key == "mycalls"){
-      		console.log("STORAGE DATA ",e);
-      		setTimeout(function(){fdp.checkMaster()},1);
-      	}*/
+
      	
 		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
 		  	this.setState({
@@ -203,10 +179,6 @@ export default class AppWindow extends Component {
 		  }
 		  localStorage.removeItem("ticketPhone"); 
 		});
-
-      //add call log
-
-
 
 		// if user mutes thru hudn softphone, need to change mute button anyways
 		if (this.props.settings.hudmw_webphone_mic == "0"){

@@ -71,7 +71,6 @@ this.state = {
               ticketPhone: ''
             });
 
-            fdp.init();
 
     
     }

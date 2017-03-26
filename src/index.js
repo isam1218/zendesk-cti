@@ -57,6 +57,17 @@ var reset = fdp.emitter.addListener('logout', () => {
 	members_status = [];
 	match = false;
 	logMatch = false;
+
+	localStorage.setItem("avatars","");
+    localStorage.setItem("calllog", "");
+    localStorage.setItem("deletedCalls", "");
+    localStorage.setItem("locations", "");
+    localStorage.setItem("mycalls", "");
+    localStorage.setItem("queue_members", "");
+    localStorage.setItem("queue_members_status", "");
+    localStorage.setItem("queuelogoutreasons", "");
+    localStorage.setItem("queues", "");
+    localStorage.setItem("settings", "");
 	});
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{

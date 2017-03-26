@@ -17,7 +17,6 @@ const fdp =  {
 	status: 0,
 	master:false,
 	isMaster:(master)=>{
-		console.log("ISMASTER",master);
 		fdp.master = master;
 		if(fdp.synced == false && fdp.master == true){
 			fdp.init();
@@ -62,7 +61,6 @@ const fdp =  {
 			t: 'webNative'
 		};
 
-console.log("FDP MASTER",fdp.master);
 		
 		if (username && password) {
 			params.Email = username;
@@ -128,10 +126,7 @@ console.log("FDP MASTER",fdp.master);
 			});
 		});
 	}
-	else{
-		ReactDOM.render(<App settings={JSON.parse(localStorage.settings)} avatars={JSON.parse(localStorage.avatars)} mycalls={JSON.parse(localStorage.mycalls)} locations={JSON.parse(localStorage.locations)} calllog={JSON.parse(localStorage.calllog)} queue_members={JSON.parse(localStorage.queue_members)} queue_members_status={JSON.parse(localStorage.queue_members_status)} queues={JSON.parse(localStorage.queues)} queuelogoutreasons={JSON.parse(localStorage.queuelogoutreasons)} deletedCalls={JSON.parse(localStorage.deletedCalls)} />, document.querySelector('.container'));
-		//fdp.emitter.emit('data_sync_update');
-	}
+
 
 
 		
@@ -214,6 +209,7 @@ console.log("FDP MASTER",fdp.master);
 				// fail - restart sync...
 				fdp.syncStatus(res.status);
 			}
+
 		});
 	},
 	syncRequest: (updates) => {
