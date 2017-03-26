@@ -69,7 +69,7 @@ export default class AppWindow extends Component {
 			deletedCalls: this.props.deletedCalls
     });
 
-    	  setTimeout(function(){fdp.checkMaster()},500);
+    	  setTimeout(function(){fdp.checkMaster()},1);
 
     
     	//ADD CALL LOG ON END OF CALL FROM USER

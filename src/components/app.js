@@ -31,33 +31,7 @@ this.state = {
 
   componentWillReceiveProps() {
 
-    //localStorage.setItem("ticketPhone", JSON.stringify(this.state.ticketPhone));
-/*    localStorage.setItem("avatars",JSON.stringify(this.props.avatars));
-    localStorage.setItem("calllog", JSON.stringify(this.props.calllog));
-    localStorage.setItem("deletedCalls", JSON.stringify(this.props.deletedCalls));
-    localStorage.setItem("locations", JSON.stringify(this.props.locations));
-    localStorage.setItem("mycalls", JSON.stringify(this.props.mycalls));
-    localStorage.setItem("queue_members", JSON.stringify(this.props.queue_members));
-    localStorage.setItem("queue_members_status", JSON.stringify(this.props.queue_members_status));
-    localStorage.setItem("queuelogoutreasons", JSON.stringify(this.props.queuelogoutreasons));
-    localStorage.setItem("queues", JSON.stringify(this.props.queues));
-    localStorage.setItem("settings", JSON.stringify(this.props.settings));
 
-          window.addEventListener('storage', (e)=> { 
-        console.log("STORAGE DATA",e);
-        this.setState({
-          avatars: JSON.parse(e.storageArea.avatars),
-          calllog: JSON.parse(e.storageArea.calllog),
-          locations: JSON.parse(e.storageArea.locations),
-          mycalls: JSON.parse(e.storageArea.mycalls),
-          deletedCalls: JSON.parse(e.storageArea.deletedCalls),
-          queue_members: JSON.parse(e.storageArea.queue_members),
-          queue_members_status: JSON.parse(e.storageArea.queue_members_status),
-          queuelogoutreasons: JSON.parse(e.storageArea.queuelogoutreasons),
-          queues: JSON.parse(e.storageArea.queues),
-          settings: JSON.parse(e.storageArea.settings)
-        })
-      });*/
   }
 
   componentDidMount() {
