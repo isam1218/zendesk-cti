@@ -26,6 +26,7 @@ const fdp =  {
 	},
 	checkMaster:()=>{
 		if(!fdp.master){
+		if(localStorage.auth != undefined && localStorage.node != undefined && localStorage.refresh != undefined){
 			       var avatars= JSON.parse(localStorage.avatars);
 			      var calllog= JSON.parse(localStorage.calllog);
 			      var locations= JSON.parse(localStorage.locations);
@@ -38,6 +39,10 @@ const fdp =  {
 			      var settings= JSON.parse(localStorage.settings);
 			ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 		}
+		else{
+			fdp.logout();
+		}
+	}
 	},
 	xhr:'',
 	init: () => {
