@@ -53,14 +53,14 @@ const fdp =  {
 		localStorage.clear("refresh");
 		fdp.synced = false;
 		fdp.emitter.emit('logout');
-	
+
 	},
 	login: (username, password) => {
 		var params = {
 			auto: true,
 			t: 'webNative'
 		};
-
+		console.log("LOGIN");
 		
 		if (username && password) {
 			params.Email = username;
@@ -72,13 +72,14 @@ const fdp =  {
 			return;
 		
 		// login resolves in a promise
-		if(fdp.master){
+		
 		return new Promise((resolve, reject) => {
+			if(fdp.master){
 		$.ajax({
 				rejectUnauthorized: false,
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
-				timeout: 90000,
+				timeout: 1000,
 				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
@@ -124,8 +125,12 @@ const fdp =  {
 
 				fdp.logout();
 			});
+		}
+		else{
+			resolve(1);
+		}
 		});
-	}
+	
 
 
 
@@ -134,7 +139,7 @@ const fdp =  {
 	},
 	versionCheck: () => {
 		var url;
-		
+		console.log("VERSION CHECK");
 		// first time vs every other time
 		if (!fdp.synced)
 			url = `${server.serverURL}/v1/versions?t=web&${fdp.feeds.join('=&')}=`;
@@ -145,7 +150,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: url,
 			method: 'POST',
-			timeout: 90000,
+			timeout: 1000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -213,11 +218,12 @@ const fdp =  {
 		});
 	},
 	syncRequest: (updates) => {
+		console.log("SYNC REQUEST");
 		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
-			timeout: 90000,
+			timeout: 1000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -278,6 +284,7 @@ const fdp =  {
 		})
 	},
 	syncStatus: (status = 200) => {
+		console.log("SYNC STATUS");
 		fdp.status = status;
 		switch(status) {
 			// auth error
@@ -288,7 +295,12 @@ const fdp =  {
 				localStorage.auth = null;
 				localStorage.node = null;
 				// call client login for new auth token
+				if(localStorage.refresh == null || localStorage.refresh == undefined){
+					fdp.logout();
+				}
+				else{
 				fdp.login();
+				}
 			
 				break;
 			// network failure
@@ -328,7 +340,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/${feed}`,
 			method: 'POST',
-			timeout: 90000,
+			timeout: 1000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,

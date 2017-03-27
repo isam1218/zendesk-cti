@@ -68,6 +68,10 @@ var reset = fdp.emitter.addListener('logout', () => {
     localStorage.setItem("queuelogoutreasons", "");
     localStorage.setItem("queues", "");
     localStorage.setItem("settings", "");
+
+
+
+    ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true}  />, document.querySelector('.container'));
 	});
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{

@@ -45,6 +45,7 @@ export default class LoginWindow extends Component {
 						if (status == 1){
 							// called passed in function that changes parent component's state to change view from login -> app
 							this.props.login();
+
 							// DISPLAY APP!!!
 							// pass state back up to app.js so app js can display appWindow
 						}

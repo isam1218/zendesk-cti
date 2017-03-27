@@ -8,8 +8,8 @@ export default class App extends Component {
     super(props);
 
 this.state = {
-      login: '',
-      app: '',
+      login: true,
+      app: false,
       ticketPhone: ''
     }
           // Initialise the Zendesk JavaScript API client
@@ -29,13 +29,14 @@ this.state = {
     this.configName = "Fonality CTI";
   }
 
-  componentWillReceiveProps() {
-
+  componentWillReceiveProps(props) {
+    if(props.logout){
+          this._logout();
+    }
 
   }
 
   componentDidMount() {
-
 
     if(localStorage.refresh != null && localStorage.refresh != undefined){
       

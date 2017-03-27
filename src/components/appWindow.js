@@ -41,6 +41,8 @@ export default class AppWindow extends Component {
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
 
+
+
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
@@ -71,7 +73,7 @@ export default class AppWindow extends Component {
 
     	  setTimeout(function(){fdp.checkMaster()},1);
 
-    
+
     	//ADD CALL LOG ON END OF CALL FROM USER
     	if(this.props.deletedCalls){
 
@@ -759,9 +761,10 @@ export default class AppWindow extends Component {
 
 
 	_logout(){
-
+		
 		this.props.logout();
 		fdp.logout();
+
 
 	}
 
