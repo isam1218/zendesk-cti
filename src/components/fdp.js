@@ -15,6 +15,11 @@ const fdp =  {
 	synced: false,
 	refresh: null,
 	status: 0,
+	becomeMaster:()=>{
+
+		obj.becomeMaster();
+		console.log("BECOME MASTER",fdp.master);
+	},
 	master:false,
 	isMaster:(master)=>{
 		fdp.master = master;
@@ -27,7 +32,7 @@ const fdp =  {
 	checkMaster:()=>{
 		if(!fdp.master){
 		if(localStorage.auth != undefined && localStorage.node != undefined && localStorage.refresh != undefined){
-			       var avatars= JSON.parse(localStorage.avatars);
+			      var avatars= JSON.parse(localStorage.avatars);
 			      var calllog= JSON.parse(localStorage.calllog);
 			      var locations= JSON.parse(localStorage.locations);
 			      var mycalls= JSON.parse(localStorage.mycalls);
@@ -65,7 +70,7 @@ const fdp =  {
 			auto: true,
 			t: 'webNative'
 		};
-		console.log("LOGIN");
+		console.log("MASTER",fdp.master);
 		
 		if (username && password) {
 			params.Email = username;
@@ -144,7 +149,6 @@ const fdp =  {
 	},
 	versionCheck: () => {
 		var url;
-		console.log("VERSION CHECK");
 		// first time vs every other time
 		if (!fdp.synced)
 			url = `${server.serverURL}/v1/versions?t=web&${fdp.feeds.join('=&')}=`;
@@ -223,7 +227,6 @@ const fdp =  {
 		});
 	},
 	syncRequest: (updates) => {
-		console.log("SYNC REQUEST");
 		fdp.xhr = $.ajax({
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
@@ -276,7 +279,6 @@ const fdp =  {
 			
 
 			fdp.emitter.emit('data_sync_update', data);
-			console.log("DATA",data);
 			
 			// then resync...
 			fdp.syncStatus();
@@ -289,7 +291,6 @@ const fdp =  {
 		})
 	},
 	syncStatus: (status = 200) => {
-		console.log("SYNC STATUS");
 		fdp.status = status;
 		switch(status) {
 			// auth error

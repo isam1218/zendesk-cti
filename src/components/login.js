@@ -38,11 +38,14 @@ export default class LoginWindow extends Component {
 		
 		if (username != '' && password != '') {
 			// send creds to node context
+			fdp.becomeMaster();
+			
 				fdp.login(username, password).then((status,err)=>{
 					 //some type of error
 					let msgObj = {};
 					 //status is set by resolve in index.js...
 						if (status == 1){
+
 							// called passed in function that changes parent component's state to change view from login -> app
 							this.props.login();
 
