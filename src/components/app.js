@@ -33,6 +33,9 @@ this.state = {
     if(props.logout){
           this._logout();
     }
+    else{
+      this._changeLoginToApp();
+    }
 
   }
 

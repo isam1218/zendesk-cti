@@ -76,7 +76,6 @@ var reset = fdp.emitter.addListener('logout', () => {
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{
 	calls = [];
-	console.log("CALL CLEARED",calls);
 });
 var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**

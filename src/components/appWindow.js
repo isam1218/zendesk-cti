@@ -71,7 +71,7 @@ export default class AppWindow extends Component {
 			deletedCalls: this.props.deletedCalls
     });
 
-    	  setTimeout(function(){fdp.checkMaster()},1);
+    	  /*setTimeout(function(){fdp.checkMaster()},1);*/
 
 
     	//ADD CALL LOG ON END OF CALL FROM USER
@@ -208,6 +208,7 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
+		if(fdp.master){
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			
@@ -283,6 +284,7 @@ export default class AppWindow extends Component {
 			
 		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 	}
+}
 
 			    	
 	var myqueues = [];

@@ -18,7 +18,6 @@ const fdp =  {
 	becomeMaster:()=>{
 
 		obj.becomeMaster();
-		console.log("BECOME MASTER",fdp.master);
 	},
 	master:false,
 	isMaster:(master)=>{
@@ -70,7 +69,6 @@ const fdp =  {
 			auto: true,
 			t: 'webNative'
 		};
-		console.log("MASTER",fdp.master);
 		
 		if (username && password) {
 			params.Email = username;
@@ -89,7 +87,7 @@ const fdp =  {
 				rejectUnauthorized: false,
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
-				timeout: 1000,
+				timeout: 2000,
 				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
@@ -159,7 +157,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: url,
 			method: 'POST',
-			timeout: 1000,
+			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -231,7 +229,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
-			timeout: 1000,
+			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -346,7 +344,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/${feed}`,
 			method: 'POST',
-			timeout: 1000,
+			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -376,8 +374,12 @@ function WindowController () {
     } else {
         this.loseMaster();
     }
+
+
     window.addEventListener( 'storage', this, false );
     window.addEventListener( 'unload', this, false );
+
+
 }
 
 WindowController.prototype.isMaster = false;
@@ -392,6 +394,7 @@ WindowController.prototype.destroy = function () {
 };
 
 WindowController.prototype.handleEvent = function ( event ) {
+
     if ( event.type === 'unload' ) {
         this.destroy();
     } else {
@@ -426,14 +429,13 @@ WindowController.prototype.handleEvent = function ( event ) {
 };
 
 WindowController.prototype.becomeMaster = function () {
-	console.log("BECAME MASTER");
     try {
         localStorage.setItem( 'ping', Date.now() );
     } catch ( error ) {}
 
     clearTimeout( this._ping );
     this._ping = setTimeout( this.becomeMaster.bind( this ),
-        20000 + ~~( Math.random() * 10000 ) );
+        2000 + ~~( Math.random() * 1000 ) );
 
     var wasMaster = this.isMaster;
     this.isMaster = true;
@@ -443,10 +445,12 @@ WindowController.prototype.becomeMaster = function () {
 };
 
 WindowController.prototype.loseMaster = function () {
-	console.log("LOST MASTER");
+		if(!fdp.master){
+		setTimeout(function(){fdp.checkMaster()},1);
+	}
     clearTimeout( this._ping );
     this._ping = setTimeout( this.becomeMaster.bind( this ),
-        35000 + ~~( Math.random() * 20000 ) );
+        3500 + ~~( Math.random() * 2000 ) );
 
     var wasMaster = this.isMaster;
     this.isMaster = false;
@@ -456,7 +460,6 @@ WindowController.prototype.loseMaster = function () {
 };
 
 WindowController.prototype.masterDidChange = function () {
-	console.log("MASTER PROTO",this.isMaster);
 	fdp.isMaster(this.isMaster);
 };
 
