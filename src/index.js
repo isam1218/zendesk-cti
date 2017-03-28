@@ -190,13 +190,12 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		CALLS
 	*/
 	if (data['mycalls']) {
+		
 		for(let i=0; i < data['mycalls'].length; i++){
-			if((data['mycalls'][i].displayName != "Call menu" && data['mycalls'][i].state == 2) || data['mycalls'][i].xef001type == 'delete'){
-				calls.push(data['mycalls'][i]);
-				if(data['mycalls'][i].xef001type == 'delete'){
-					break;
+				if(data['mycalls'][i].displayName != "Call menu" && data['mycalls'][i].state != 0){
+					calls.push(data['mycalls'][i]);
 				}
-			}
+					
 		}
 		
 		processCalls(data['mycalls']);

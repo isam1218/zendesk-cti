@@ -71,10 +71,14 @@ export default class AppWindow extends Component {
 			deletedCalls: this.props.deletedCalls
     });
 
-    	  /*setTimeout(function(){fdp.checkMaster()},1);*/
 
 
     	//ADD CALL LOG ON END OF CALL FROM USER
+
+
+    	if(this.props.mycalls.length == 0){
+
+
     	if(this.props.deletedCalls){
 
     	for(var d = 0; d < this.props.deletedCalls.length; d++){
@@ -82,8 +86,7 @@ export default class AppWindow extends Component {
 	    	if(this.props.deletedCalls[this.props.deletedCalls.length - 1].xef001type == 'delete'){
 	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
 	    				
-	    				var callEnded = this.props.deletedCalls[d];
-	    			
+	    			var callEnded = this.props.deletedCalls[d];
 	    			if(callEnded){
 	    					var call_num = "";
 							var call_type = "";
@@ -112,6 +115,7 @@ export default class AppWindow extends Component {
 	    	}
 
     	}
+    }
     }
 		//console.log("QUEUE MEMBERS",this.props.queue_members);
 		//console.log("QUEUEs",this.props.queues);
