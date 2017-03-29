@@ -72,7 +72,6 @@ export default class AppWindow extends Component {
     });
 
 
-
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 
@@ -568,6 +567,7 @@ export default class AppWindow extends Component {
     this.setState({
       popup: type
     });
+
   }
   // parse out unwanted inputs
   _restrictInput(e) {
@@ -1049,7 +1049,7 @@ else if (this.state.screen == 'queue') {
 					<div className="queueBtns">
 					
 						<button className={"queueLogin "+this.state.disableButton} disabled={this.state.disableButton} onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN</button>
-						<button className={"queueLogout "+this.state.disableButton} disabled={this.state.disableButton} onClick={() => this._openPopup('logoutreasons')}>LOG OUT</button>
+						<button className={"queueLogout "+this.state.disableButton} disabled={this.state.disableButton} onClick={() => this._openPopup('logoutreasons',this.state.myqueues)}>LOG OUT</button>
 					
 					</div>
 					
@@ -1264,6 +1264,7 @@ else if (this.state.screen == 'queue') {
           {...this.props}
           className={classy}
           callback={() => this._openPopup()}
+          myqueues={this.state.myqueues}
         />
       );
 

@@ -88,7 +88,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['calllog']){
-		
+		localStorage.removeItem("calllog");
 		for (let i = 0; i < data['calllog'].length; i++){
 
 			for (let z = 0; z < new_log.length;z++){
@@ -111,8 +111,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['queue_members_status']){
-		
-		
+
 		for (let i = 0; i < data['queue_members_status'].length; i++){
 			
 			
@@ -121,7 +120,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 
 			if(members_status[z].xpid == data['queue_members_status'][i].xpid){
-					
 					members_status[z] = data['queue_members_status'][i];
 				 	match = true;
 				}
@@ -133,8 +131,9 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			if (!match) {
 				members_status.push(data['queue_members_status'][i]);
 				queue_members_status = members_status;
-			}
 
+			}
+			
 
 		}
 
@@ -269,6 +268,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
     localStorage.setItem("queuelogoutreasons", JSON.stringify(queuelogoutreasons));
     localStorage.setItem("queues", JSON.stringify(queues));
     localStorage.setItem("settings", JSON.stringify(settings));
+    if(!data){
        avatars= JSON.parse(localStorage.avatars);
       calllog= JSON.parse(localStorage.calllog);
       locations= JSON.parse(localStorage.locations);
@@ -279,6 +279,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
       queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
       queues= JSON.parse(localStorage.queues);
       settings= JSON.parse(localStorage.settings);
+  }
   ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 });
 
