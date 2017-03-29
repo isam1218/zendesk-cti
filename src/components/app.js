@@ -31,7 +31,6 @@ this.state = {
 
   componentWillReceiveProps(props) {
 
-    console.log("APP PROPS",this.props);
     if(props.logout){
           this._logout();
     }

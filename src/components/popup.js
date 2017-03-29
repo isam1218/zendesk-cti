@@ -32,7 +32,6 @@ export default class Popup extends Component {
 	}
 	
 	componentDidMount() {
-		console.log("MYQUEUES POPUP",this.props.myqueues);
 		switch(this.props.className) {
 			case 'move full':
 				// re-position pop-up since we don't know the height until render time
@@ -140,18 +139,26 @@ export default class Popup extends Component {
 
 	_logoutQueues(reason){
 		var logoutReason = reason;
+		var data = {};
+		var toSend = [];
 		for(var i = 0; i < this.props.myqueues.length;i++){
 			if(this.props.myqueues[i].checkStatus == true){
-				var data = {};
 				
-					data.contactId = this.state.settings.my_pid;
-					data.queues = this.props.myqueues[i].xpid;
-					data.reason = logoutReason;
+				
+					
+					toSend.push(this.props.myqueues[i].xpid);
+					
 
 				
-				fdp.postFeed("queues","queueLogout",data);
+				
 			}
 		}
+
+		data.contactId = this.props.settings.my_pid;
+		data.queues = toSend.join(",");
+		data.reason = logoutReason;
+
+		fdp.postFeed("queues","queueLogout",data);
 
 		this.props.callback(null);
 	}

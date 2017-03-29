@@ -757,16 +757,18 @@ export default class AppWindow extends Component {
 	}
 
 	_loginQueues(queues){
+		var data ={};
+		var toSend = [];
 		for(var q = 0; q < queues.length; q++){
 			if(queues[q].checkStatus == true){
-				var data ={};
-				data.contactId = this.state.my_pid;
-				data.queues = queues[q].xpid;
-
-				fdp.postFeed("queues","queueLogin",data);
+				toSend.push(queues[q].xpid);
 
 			}
 		}
+		data.contactId = this.props.settings.my_pid;
+		data.queues = toSend.join(",");
+
+		fdp.postFeed("queues","queueLogin",data);
 
 
 
@@ -1279,7 +1281,7 @@ else if (this.state.screen == 'queue') {
     }
     var queueCount = 0;
     var queueIcon;
-    
+
     if(this.state.myqueues){
     for(var q = 0; q < this.state.myqueues.length; q++){
     	if(this.state.myqueues[q].status == "Logged In" || this.state.myqueues[q].status == "Permanently Logged In"){
