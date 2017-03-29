@@ -140,7 +140,7 @@ export default class AppWindow extends Component {
 			
 		}
 
-		     if(this.state.screen == "default"){
+     if(this.state.screen == "default"){
      	localStorage.queueScreen = "";
      		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"440px" });
@@ -149,7 +149,7 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"512px" });
  		}
- 	if(this.state.screen == "dialpad:add"){
+ 	else if(this.state.screen == "dialpad:add"){
  		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"495px" });		
@@ -158,7 +158,7 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"595px" });
  	}
- 	 	if(this.state.screen == "transfer"){
+ 	else if(this.state.screen == "transfer"){
  	 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"495px" });
@@ -167,6 +167,11 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"595px" });
  	}
+ 	else if(this.state.screen == "queue"){
+ 		localStorage.queueScreen = "queue";
+
+ 	} 
+
 
 
 
@@ -342,6 +347,8 @@ export default class AppWindow extends Component {
 			myqueues: myqueues
 		});
 
+
+
 	}
 
 		
@@ -412,7 +419,7 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"512px" });
  		}
- 	if(type == "dialpad:add"){
+ 	else if(type == "dialpad:add"){
  		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"495px" });		
@@ -421,7 +428,7 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"595px" });
  	}
- 	if(type == "transfer"){
+ 	else if(type == "transfer"){
  	 		localStorage.queueScreen = "";
       		if(this.props.mycalls.length == 1)
      		client.invoke('resize', { width: '320px', height:"495px" });		
@@ -430,7 +437,8 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"595px" });
  	}
- 	if(type == "queue"){
+ 	else if(type == "queue"){
+ 		localStorage.queueScreen = "queue";
      		client.invoke('resize', { width: '320px', height:"440px" });		
 
  	} 	
@@ -675,7 +683,6 @@ export default class AppWindow extends Component {
 		var message = "Looks like you are not part of any queues. Please contact your administrator if you wish to be added to queues and use this feature.";
 		if(this.state.myqueues){
 		this._changeScreen('queue');
-		localStorage.queueScreen = "queue";
 		}
 		else{
 
@@ -1015,7 +1022,7 @@ export default class AppWindow extends Component {
 		//MANAGE QUEUES SECTION
 
 else if (this.state.screen == 'queue') {
-
+			localStorage.queueScreen = "queue";
 			
 			body = (
 				<div id="transfer">
@@ -1270,6 +1277,27 @@ else if (this.state.screen == 'queue') {
 
       overlay = (<div className="overlay"></div>);
     }
+    var queueCount = 0;
+    var queueIcon;
+    
+    if(this.state.myqueues){
+    for(var q = 0; q < this.state.myqueues.length; q++){
+    	if(this.state.myqueues[q].status == "Logged In" || this.state.myqueues[q].status == "Permanently Logged In"){
+    		queueCount = parseInt(queueCount) +  1;
+
+    	}
+
+    }
+	}
+
+    if(queueCount > 0){
+       queueIcon = "./queue-on.png";
+    }
+    else{
+    	 queueIcon = "./queue-off.png";
+    }
+
+
 
     // RENDER COMPONENTS TOGETHER:
     return(
@@ -1279,7 +1307,7 @@ else if (this.state.screen == 'queue') {
         <div id="header">
           <div>
             <div ></div>
-						<img className="agent-login" src="./queue-off.png" onClick={() => this._openQueue()} />
+						<img className="agent-login" src={queueIcon} onClick={() => this._openQueue()} />
           </div>
         
           <div className="buttons">            
