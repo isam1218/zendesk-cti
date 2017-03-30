@@ -166,10 +166,7 @@ export default class AppWindow extends Component {
      		if(this.props.mycalls.length == 3)
      		client.invoke('resize', { width: '320px', height:"595px" });
  	}
- 	else if(this.state.screen == "queue"){
- 		localStorage.queueScreen = "queue";
 
- 	} 
 
 
 
