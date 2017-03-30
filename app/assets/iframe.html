@@ -7,13 +7,16 @@
   <div class="container"></div>
   <!-- https://github.com/zendesk/zendesk_app_framework_sdk -->
   <script type="text/javascript" src="https://assets.zendesk.com/apps/sdk/2.0/zaf_sdk.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.1.0/es6-promise.auto.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+<script src="/bundle.js"></script>
   <script>
     // Initialise the Zendesk JavaScript API client
     // https://developer.zendesk.com/apps/docs/apps-v2
     var client = ZAFClient.init();
     client.invoke('resize', { width: '100%', height: '440px' });
   </script>
+
 </body>
-<script src="/bundle.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/moment.min.js"></script>
+
 </html>
