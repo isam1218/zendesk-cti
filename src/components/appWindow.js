@@ -71,7 +71,6 @@ export default class AppWindow extends Component {
 			deletedCalls: this.props.deletedCalls
     });
 
-
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 

@@ -30,7 +30,7 @@ this.state = {
   }
 
   componentWillReceiveProps(props) {
-
+    
     if(props.logout){
           this._logout();
     }
@@ -41,6 +41,10 @@ this.state = {
   }
 
   componentDidMount() {
+    if(!fdp.master){
+      console.log("MOUNTED and CHECKED",fdp.master);
+    setTimeout(function(){fdp.checkMaster()},1);
+  }
 
     if(localStorage.refresh != null && localStorage.refresh != undefined){
       
