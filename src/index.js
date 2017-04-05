@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app';
@@ -69,10 +70,10 @@ var reset = fdp.emitter.addListener('logout', () => {
     localStorage.setItem("queues", "");
     localStorage.setItem("settings", "");
 
-
-
-    ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true}  />, document.querySelector('.container'));
-	});
+ // client.context().then((context)=>{
+  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+   //});
+});
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{
 	calls = [];
@@ -81,6 +82,8 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	/**
 		USER SETTINGS
 	*/
+
+
 	if (data['me']) {		
 		for (let i = 0; i < data['me'].length; i++)
 			settings[data['me'][i].propertyKey] = data['me'][i].propertyValue;
@@ -268,6 +271,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
     localStorage.setItem("queuelogoutreasons", JSON.stringify(queuelogoutreasons));
     localStorage.setItem("queues", JSON.stringify(queues));
     localStorage.setItem("settings", JSON.stringify(settings));
+    
     if(!data){
        avatars= JSON.parse(localStorage.avatars);
       calllog= JSON.parse(localStorage.calllog);
@@ -280,13 +284,17 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
       queues= JSON.parse(localStorage.queues);
       settings= JSON.parse(localStorage.settings);
   }
+
+  client.context().then((context)=>{
   ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+   });
 });
 
 
 
-ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
-
+ client.context().then((context)=>{
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+   });
 
 function processCalls(calls) {
 	var oldLength = mycalls.length;
@@ -369,4 +377,6 @@ function processCalls(calls) {
     // render call component
 		// openAppWindow();
   }
+
+
 }

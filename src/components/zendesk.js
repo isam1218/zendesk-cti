@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import $ from 'jquery';
 import config from '../config.js';
 

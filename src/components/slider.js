@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from 'react';
 // custom input to facilitate adding color to ranges //
 

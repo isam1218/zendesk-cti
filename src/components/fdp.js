@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
@@ -17,20 +18,31 @@ const fdp =  {
 	status: 0,
 	becomeMaster:()=>{
 
-		obj.becomeMaster();
+		obj.isMaster = true;
 	},
 	master:false,
 	isMaster:(master)=>{
 		fdp.master = master;
+		
 		if(fdp.synced == false && fdp.master == true){
+			console.log("FDP1",fdp.master);
+		console.log("SYNC1",fdp.synced);
 			fdp.init();
 		}
+
+		if(fdp.synced == true && fdp.master == false){
+			console.log("FDP2",fdp.master);
+		console.log("SYNC2",fdp.synced);
+			setTimeout(()=>{fdp.xhr.abort()},3000);
+		}
+
 	 		
 
 	},
 	checkMaster:()=>{
 		if(!fdp.master){
 		if(localStorage.auth != undefined && localStorage.node != undefined && localStorage.refresh != undefined){
+			      console.log("CHECK MASTER",fdp.master);
 			      var avatars= JSON.parse(localStorage.avatars);
 			      var calllog= JSON.parse(localStorage.calllog);
 			      var locations= JSON.parse(localStorage.locations);
@@ -81,7 +93,7 @@ const fdp =  {
 		
 		// login resolves in a promise
 		
-		return new Promise((resolve, reject) => {
+		var promise = new Promise((resolve, reject) => {
 			if(fdp.master){
 		$.ajax({
 				rejectUnauthorized: false,
@@ -139,6 +151,11 @@ const fdp =  {
 		}
 		});
 	
+	promise.then((success)=>{
+		console.log("SUCCESS",success);
+	}).catch((reason)=>{
+		console.log("Reason",reason);
+	});
 
 
 
@@ -277,9 +294,10 @@ const fdp =  {
 			
 
 			fdp.emitter.emit('data_sync_update', data);
-			
+	
 			// then resync...
 			fdp.syncStatus();
+
 
 		}).fail((res,err,body) => {
 			if (res) {
@@ -320,6 +338,7 @@ const fdp =  {
 					fdp.versionCheck();
 				}, 1500);
 				
+			
 				break;
 		}
 	},
@@ -364,97 +383,90 @@ export default fdp;
 
 
 function WindowController () {
-    var now = Date.now(),
-        ping = 0;
-    try {
-        ping = +localStorage.getItem( 'ping' ) || 0;
-    } catch ( error ) {}
-    if ( now - ping > 45000 ) {
-        this.becomeMaster();
-    } else {
-        this.loseMaster();
-    }
-
+    this.id = Math.random();
+    this.isMaster = false;
+    this.others = {};
 
     window.addEventListener( 'storage', this, false );
     window.addEventListener( 'unload', this, false );
 
+    this.broadcast( 'hello' );
 
+    var that = this;
+    var check = function check () {
+        that.check();
+        that._checkTimeout = setTimeout( check, 1000 );
+    };
+    var ping = function ping () {
+        that.sendPing();
+        that._pingTimeout = setTimeout( ping, 17000 );
+    };
+    this._checkTimeout = setTimeout( check, 500 );
+    this._pingTimeout = setTimeout( ping, 17000 );
 }
 
-WindowController.prototype.isMaster = false;
 WindowController.prototype.destroy = function () {
-    if ( this.isMaster ) {
-        try {
-            localStorage.setItem( 'ping', 0 );
-        } catch ( error ) {}
-    }
+    clearTimeout( this._pingTimeout );
+    clearTimeout( this._checkTimeout );
+
     window.removeEventListener( 'storage', this, false );
     window.removeEventListener( 'unload', this, false );
+
+    this.broadcast( 'bye' );
 };
 
 WindowController.prototype.handleEvent = function ( event ) {
-
     if ( event.type === 'unload' ) {
         this.destroy();
-    } else {
-        var type = event.key,
-            ping = 0,
-            data;
-        if ( type === 'ping' ) {
-            try {
-                ping = +localStorage.getItem( 'ping' ) || 0;
-            } catch ( error ) {}
-            if ( ping ) {
-                this.loseMaster();
-            } else {
-                // We add a random delay to try avoid the race condition in 
-                // Chrome, which doesn't take out a mutex on local storage. It's
-                // imperfect, but will eventually work out.
-                clearTimeout( this._ping );
-                this._ping = setTimeout(
-                    this.becomeMaster.bind( this ),
-                    ~~( Math.random() * 1000 )
-                );
+    } else if ( event.key === 'broadcast' ) {
+        try {
+            var data = JSON.parse( event.newValue );
+            if ( data.id !== this.id ) {
+                this[ data.type ]( data );
             }
-        } else if ( type === 'broadcast' ) {
-            try {
-                data = JSON.parse(
-                    localStorage.getItem( 'broadcast' )
-                );
-                this[ data.type ]( data.event );
-            } catch ( error ) {}
+        } catch ( error ) {}
+    }
+};
+
+WindowController.prototype.sendPing = function () {
+    this.broadcast( 'ping' );
+};
+
+WindowController.prototype.hello = function ( event ) {
+    this.ping( event );
+    if ( event.id < this.id ) {
+        this.check();
+    } else {
+        this.sendPing();
+    }
+};
+
+WindowController.prototype.ping = function ( event ) {
+    this.others[ event.id ] = +new Date();
+};
+
+WindowController.prototype.bye = function ( event ) {
+    delete this.others[ event.id ];
+    this.check();
+};
+
+WindowController.prototype.check = function ( event ) {
+	    if(!fdp.master){
+      console.log("SYNC CHECK");
+        setTimeout(function(){fdp.checkMaster()},1);
+    }
+    var now = +new Date(),
+        takeMaster = true,
+        id;
+    for ( id in this.others ) {
+        if ( this.others[ id ] + 23000 < now ) {
+            delete this.others[ id ];
+        } else if ( id < this.id ) {
+            takeMaster = false;
         }
     }
-};
-
-WindowController.prototype.becomeMaster = function () {
-    try {
-        localStorage.setItem( 'ping', Date.now() );
-    } catch ( error ) {}
-
-    clearTimeout( this._ping );
-    this._ping = setTimeout( this.becomeMaster.bind( this ),
-        2000 + ~~( Math.random() * 1000 ) );
-
-    var wasMaster = this.isMaster;
-    this.isMaster = true;
-    if ( !wasMaster ) {
-        this.masterDidChange();
-    }
-};
-
-WindowController.prototype.loseMaster = function () {
-		if(!fdp.master){
-		setTimeout(function(){fdp.checkMaster()},1);
-	}
-    clearTimeout( this._ping );
-    this._ping = setTimeout( this.becomeMaster.bind( this ),
-        3500 + ~~( Math.random() * 2000 ) );
-
-    var wasMaster = this.isMaster;
-    this.isMaster = false;
-    if ( wasMaster ) {
+    if ( this.isMaster !== takeMaster ) {
+        this.isMaster = takeMaster;
         this.masterDidChange();
     }
 };
@@ -463,17 +475,17 @@ WindowController.prototype.masterDidChange = function () {
 	fdp.isMaster(this.isMaster);
 };
 
-WindowController.prototype.broadcast = function ( type, event ) {
-	
+WindowController.prototype.broadcast = function ( type, data ) {
+    var event = {
+        id: this.id,
+        type: type
+    };
+    for ( var x in data ) {
+        event[x] = data[x];
+    }
     try {
-        localStorage.setItem( 'broadcast',
-            JSON.stringify({
-                type: type,
-                event: event
-            })
-        );
+        localStorage.setItem( 'broadcast', JSON.stringify( event ) );
     } catch ( error ) {}
 };
 
 var obj = new WindowController();
-obj.masterDidChange();

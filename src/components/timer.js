@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from 'react';
 // custom span to auto-increment a timestamp //
 

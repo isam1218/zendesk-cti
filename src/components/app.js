@@ -1,3 +1,4 @@
+import "babel-polyfill";
 import React, { Component } from 'react';
 import LoginWindow from './login.js';
 import fdp from './fdp.js';
