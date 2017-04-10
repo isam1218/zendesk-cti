@@ -1,4 +1,4 @@
-
+import "babel-polyfill";
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
@@ -7,7 +7,7 @@ import {EventEmitter} from 'fbemitter';
 import config from '../config.js';
 import server from '../properties.js';
 
-
+var obj;
 const emitter = new EventEmitter();
 
 const fdp =  {
@@ -17,23 +17,23 @@ const fdp =  {
 	refresh: null,
 	status: 0,
 	becomeMaster:()=>{
+		 
+		 	
+		 obj = new WindowController(true);
 
-		obj.isMaster = true;
+		
 	},
 	master:false,
+	xhr:'',
 	isMaster:(master)=>{
 		fdp.master = master;
-		
 		if(fdp.synced == false && fdp.master == true){
-			console.log("FDP1",fdp.master);
-		console.log("SYNC1",fdp.synced);
-			fdp.init();
+			console.log("Init");
+			fdp.login();
 		}
-
 		if(fdp.synced == true && fdp.master == false){
-			console.log("FDP2",fdp.master);
-		console.log("SYNC2",fdp.synced);
-			setTimeout(()=>{fdp.xhr.abort()},3000);
+			console.log("Abort");
+			setTimeout(function(){fdp.abort()},3000);
 		}
 
 	 		
@@ -58,9 +58,8 @@ const fdp =  {
 		else{
 			fdp.logout();
 		}
-	}
+		}
 	},
-	xhr:'',
 	init: () => {
 		fdp.login();
 	},
@@ -81,7 +80,7 @@ const fdp =  {
 			auto: true,
 			t: 'webNative'
 		};
-		
+
 		if (username && password) {
 			params.Email = username;
 			params.Passwd = password;
@@ -92,14 +91,17 @@ const fdp =  {
 			return;
 		
 		// login resolves in a promise
+
+		console.log("FDP MASTER",fdp.master);
 		
-		var promise = new Promise((resolve, reject) => {
+		return new Promise(function(resolve, reject){
 			if(fdp.master){
 		$.ajax({
 				rejectUnauthorized: false,
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
-				timeout: 2000,
+				cache:false,
+				timeout: 9000,
 				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
@@ -151,11 +153,7 @@ const fdp =  {
 		}
 		});
 	
-	promise.then((success)=>{
-		console.log("SUCCESS",success);
-	}).catch((reason)=>{
-		console.log("Reason",reason);
-	});
+
 
 
 
@@ -174,6 +172,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: url,
 			method: 'POST',
+			cache:false,
 			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
@@ -246,6 +245,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
+			cache:false,
 			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
@@ -363,6 +363,7 @@ const fdp =  {
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/${feed}`,
 			method: 'POST',
+			cache:false,
 			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
@@ -381,10 +382,20 @@ const fdp =  {
 
 export default fdp;
 
+function WindowController (newId) {
+	console.log("NEW ID",newId);
 
-function WindowController () {
-    this.id = Math.random();
+    if(!fdp.master && newId){
+    	this.id = Math.random();
+    	console.log("ID",this.id);
+    }
+    else{
+    	this.id = new Date().getTime();
+	}
+
     this.isMaster = false;
+	
+
     this.others = {};
 
     window.addEventListener( 'storage', this, false );
@@ -399,10 +410,10 @@ function WindowController () {
     };
     var ping = function ping () {
         that.sendPing();
-        that._pingTimeout = setTimeout( ping, 17000 );
+        that._pingTimeout = setTimeout( ping, 1700 );
     };
-    this._checkTimeout = setTimeout( check, 500 );
-    this._pingTimeout = setTimeout( ping, 17000 );
+    this._checkTimeout = setTimeout( check, 50 );
+    this._pingTimeout = setTimeout( ping, 1700 );
 }
 
 WindowController.prototype.destroy = function () {
@@ -451,10 +462,9 @@ WindowController.prototype.bye = function ( event ) {
 };
 
 WindowController.prototype.check = function ( event ) {
-	    if(!fdp.master){
-      console.log("SYNC CHECK");
-        setTimeout(function(){fdp.checkMaster()},1);
-    }
+    if(!fdp.master){
+	 setTimeout(function(){fdp.checkMaster()},1);
+	}
     var now = +new Date(),
         takeMaster = true,
         id;
@@ -465,13 +475,18 @@ WindowController.prototype.check = function ( event ) {
             takeMaster = false;
         }
     }
+	
+
     if ( this.isMaster !== takeMaster ) {
         this.isMaster = takeMaster;
         this.masterDidChange();
     }
+
+ 
 };
 
 WindowController.prototype.masterDidChange = function () {
+	console.log("IS Master",this.isMaster);
 	fdp.isMaster(this.isMaster);
 };
 
@@ -488,4 +503,4 @@ WindowController.prototype.broadcast = function ( type, data ) {
     } catch ( error ) {}
 };
 
-var obj = new WindowController();
+	 obj = new WindowController();

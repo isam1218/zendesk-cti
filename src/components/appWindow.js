@@ -75,7 +75,6 @@ export default class AppWindow extends Component {
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 
-
     	if(this.props.mycalls.length == 0){
 
 
