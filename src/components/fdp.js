@@ -40,11 +40,11 @@ const fdp =  {
 	isMaster:(master)=>{
 		fdp.master = master;
 		if(fdp.synced == false && fdp.master == true){
-			console.log("Init");
+			
 			fdp.login();
 		}
 		if(fdp.synced == true && fdp.master == false){
-			console.log("Abort");
+			
 			setTimeout(()=>{fdp.xhr.abort()},3000);
 		}
 

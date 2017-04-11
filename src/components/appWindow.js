@@ -44,13 +44,13 @@ export default class AppWindow extends Component {
 	componentDidMount() {
 
 		window.onload = ()=> {
-			console.log("Window Loaded")
+			
 		  setTimeout(()=>{this._getQueues()},1500);
 		};
 		
 		
 
-		console.log("Component Mounted");
+		
 		if(this.state.screen == "default"){
 	      window.addEventListener('storage', (e)=> { 
 
@@ -136,11 +136,7 @@ export default class AppWindow extends Component {
     	}
     }
     }
-		//console.log("QUEUE MEMBERS",this.props.queue_members);
-		//console.log("QUEUEs",this.props.queues);
-		//console.log("MEEEE",this.props.settings);
-		//console.log("QUEUE MEMBERS STATUS",this.props.queue_members_status);
-		//console.log("QUEUE LOGOUT REASONS",this.props.queuelogoutreasons);
+		
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		
 		if (this.props.mycalls.length == 0){
@@ -223,7 +219,7 @@ export default class AppWindow extends Component {
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
 		if(fdp.master){
 		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].state != 3) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
-			console.log("PROPS CALLS",this.props.mycalls);
+			
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -864,7 +860,7 @@ export default class AppWindow extends Component {
 		})
 	}
 
-	console.log("GET QUEUES",this.state.myqueues);
+	
 	}
 
 
