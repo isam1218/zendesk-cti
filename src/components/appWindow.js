@@ -42,7 +42,12 @@ export default class AppWindow extends Component {
 	// this lifecycle method happens once when component 1st loads...
 
 	componentDidMount() {
-		this._getQueues();
+
+		window.onload = ()=> {
+			console.log("Window Loaded")
+		  setTimeout(()=>{this._getQueues()},1500);
+		};
+		
 		
 
 		console.log("Component Mounted");
@@ -691,7 +696,7 @@ export default class AppWindow extends Component {
 		
 	}
 
-	_queueLogin(event,queue,myqueues){
+	_queueSelect(event,queue,myqueues){
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
@@ -746,13 +751,9 @@ export default class AppWindow extends Component {
 		myqueues: myqueues
 	})
 
-	console.log("MY QUEUES",this.state.myqueues);
+	
 
-    
-/*
-    this.setState({
-      checkedQueues: checkedArr
-    });*/
+
 
 
 	}
@@ -1126,7 +1127,7 @@ else if (this.state.screen == 'queue') {
 					</div>
 					<div id="queueBlock">
 						<div id="selectAll">
-							<input id="allCheckbox" type="checkbox" onChange={(e)=> this._queueLogin(e,"checkAll",this.state.myqueues)} /><label id="allLabel">Select All</label>
+							<input id="allCheckbox" type="checkbox" onChange={(e)=> this._queueSelect(e,"checkAll",this.state.myqueues)} /><label id="allLabel">Select All</label>
 						</div>
 					</div>
 
@@ -1137,7 +1138,7 @@ else if (this.state.screen == 'queue') {
 						
 							return (
 								<div className="myQueueList">
-								<input className="queueCheckbox" type="checkbox" disabled={data.disableQueue} checked={data.checkStatus} onChange={(e)=> this._queueLogin(e,data,this.state.myqueues)} />
+								<input className="queueCheckbox" type="checkbox" disabled={data.disableQueue} checked={data.checkStatus} onChange={(e)=> this._queueSelect(e,data,this.state.myqueues)} />
 								<div className={"queueTitle "+ data.disableQueue}>{data.name}</div>	
 								<p className={"queueStatus "+ data.disableQueue}>{data.status}</p>
 								
