@@ -776,6 +776,7 @@ export default class AppWindow extends Component {
 			fdp.postFeed("queues","queueLogin",data).then((status)=>{
 				if(status ==1){
 					this._getQueues();
+
 				}
 			}).catch((err)=>{
 
@@ -784,7 +785,7 @@ export default class AppWindow extends Component {
 	}
 
 	_getQueues(){
-		console.log("GET QUEUES");
+		
 		var myqueues = [];
 
 		for(var q = 0; q < this.props.queues.length; q++){
@@ -838,7 +839,31 @@ export default class AppWindow extends Component {
 		});
 
 
+		
+
 	}
+
+
+    var match = 0;
+	    for (var i=0;i < myqueues.length;i++){
+
+	    		if(myqueues[i].checkStatus == true){
+	    			match++;	    
+					}
+			}
+
+	if(match > 0){
+		this.setState({
+			disableButton: false
+		})
+	}
+	else{
+		this.setState({
+			disableButton:true
+		})
+	}
+
+	console.log("GET QUEUES",this.state.myqueues);
 	}
 
 
@@ -1094,7 +1119,7 @@ else if (this.state.screen == 'queue') {
 			localStorage.queueScreen = "queue";
 			
 			body = (
-				<div id="transfer">
+				<div id="transfer" >
 					<div className="banner">
 						<i className="material-icons" onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
 						<span>Manage Queue Status</span>
