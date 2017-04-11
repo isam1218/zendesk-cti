@@ -44,6 +44,7 @@ var logMatch = false;
  // must be array to facilitate sorting
 
 // managing data changed by sync to update state which will be passed down
+
 var reset = fdp.emitter.addListener('logout', () => {
 	locations = {};
 	avatars = {};
@@ -59,16 +60,6 @@ var reset = fdp.emitter.addListener('logout', () => {
 	match = false;
 	logMatch = false;
 
-	localStorage.setItem("avatars","");
-    localStorage.setItem("calllog", "");
-    localStorage.setItem("deletedCalls", "");
-    localStorage.setItem("locations", "");
-    localStorage.setItem("mycalls", "");
-    localStorage.setItem("queue_members", "");
-    localStorage.setItem("queue_members_status", "");
-    localStorage.setItem("queuelogoutreasons", "");
-    localStorage.setItem("queues", "");
-    localStorage.setItem("settings", "");
 
  // client.context().then((context)=>{
   	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));

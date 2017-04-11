@@ -41,8 +41,33 @@ export default class AppWindow extends Component {
 
 	// this lifecycle method happens once when component 1st loads...
 	componentDidMount() {
+		console.log("Component Mounted");
+		if(this.state.screen == "default"){
+	      window.addEventListener('storage', (e)=> { 
 
-
+     	
+		  if(e.key == "ticketPhone"){
+		  	console.log("TICKETED");
+		  	if(e.newValue != ("null" || null)){
+		  	this.setState({
+		  		phone: e.newValue
+		  	})
+		  	this.setState({
+		  		focused: true
+		  	})
+		  }
+		  else{
+		  	this.setState({
+		  		phone: ""
+		  	})
+		  	this.setState({
+		  		focused: false
+		  	})
+		  }
+		  }
+		  //localStorage.removeItem("ticketPhone"); 
+		});
+	  }
 
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
@@ -56,21 +81,7 @@ export default class AppWindow extends Component {
 
 
   componentWillReceiveProps() {
-    this.setState({
-      settings: this.props.settings,
-      locations: this.props.locations,
-      mycalls: this.props.mycalls,
-      calllog: this.props.calllog,
-      avatars: this.props.avatars,
-      ticketPhone: this.props.ticketPhone,
-      queue_members: this.props.queue_members,
-      queue_members_status: this.props.queue_members_status,
-      queues: this.props.queues,
-      queuelogoutreasons: this.props.queuelogoutreasons,
-			my_pid: this.props.settings.my_pid,
-			display_name: this.props.settings.display_name,
-			deletedCalls: this.props.deletedCalls
-    });
+
 
     	//ADD CALL LOG ON END OF CALL FROM USER
 
@@ -173,19 +184,7 @@ export default class AppWindow extends Component {
 
 
 
-      window.addEventListener('storage', (e)=> { 
 
-     	
-		  if(e.key == "ticketPhone" && (e.newValue != ("null" || null))){
-		  	this.setState({
-		  		phone: e.newValue
-		  	})
-		  	this.setState({
-		  		focused: true
-		  	})
-		  }
-		  localStorage.removeItem("ticketPhone"); 
-		});
 
 		// if user mutes thru hudn softphone, need to change mute button anyways
 		if (this.props.settings.hudmw_webphone_mic == "0"){
@@ -214,7 +213,8 @@ export default class AppWindow extends Component {
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
 		if(fdp.master){
-		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
+		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].state != 3) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
+			console.log("PROPS CALLS",this.props.mycalls);
 			var endUserCallNumber = this.props.mycalls[0].phone;
 			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
@@ -352,7 +352,7 @@ export default class AppWindow extends Component {
 	}
 
 		
-		
+
 
   } // CLOSE BRACKET OF: componentWillReceiveProps
 
@@ -564,7 +564,7 @@ export default class AppWindow extends Component {
 			// fdp request to hold call...
 			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid});
 		} else if (call.state === 3){
-			fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid, toContactId: this.state.my_pid})
+			fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid, toContactId: this.props.settings.my_pid})
 			// otherwise if call  is on hold -> unhold...
 		}
 	}
@@ -615,11 +615,11 @@ export default class AppWindow extends Component {
 	_toggleMute(call, onOffice) {
 		var data;
 		// if webphone...
-		if (this.state.locations[this.state.settings['current_location']].locationType == 'w'){
+		if (this.props.locations[this.props.settings['current_location']].locationType == 'w'){
 			// if not muted -> MUTE...
-			if (this.state.settings.hudmw_webphone_mic != "0"){
+			if (this.props.settings.hudmw_webphone_mic != "0"){
 				// save current volume for later use when unmuting...
-				localStorage.hudmw_webphone_mic = this.state.settings.hudmw_webphone_mic;
+				localStorage.hudmw_webphone_mic = this.props.settings.hudmw_webphone_mic;
 				// set volume to 0
 				data = {'name': 'hudmw_webphone_mic', value: 0};
 				fdp.postFeed('settings', 'update', data);
@@ -636,7 +636,7 @@ export default class AppWindow extends Component {
 					mute: false,
 				})
 			} 
-		} else if (this.state.locations[this.state.settings['current_location']].locationType == 'o'){
+		} else if (this.props.locations[this.props.settings['current_location']].locationType == 'o'){
 			// if office phone different API call for mute?
 		} else {
 			// if mobile diff API call for mute?
@@ -813,7 +813,7 @@ export default class AppWindow extends Component {
 
     // [DEFAULT SCREEN - BASIC WINDOW NO CALL] {body} 
 		// *****WILL NEED TO ADD NEW RECENT CALLS SECTION TO THE BOTTOM OF THIS VIEW*****
-    if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.state.locations &&  this.state.locations[this.state.settings.current_location] && this.state.locations[this.state.settings.current_location].name && this.props.calllog.length >= 0){
+    if (this.props && this.props.mycalls.length == 0 && this.state && this.state.screen == 'default' && this.props.locations &&  this.props.locations[this.props.settings.current_location] && this.props.locations[this.props.settings.current_location].name && this.props.calllog.length >= 0){
       var audioBtn, body, call_style, call_type;
       var formCSS = 'form' + (this.state.focused ? ' focused' : '');
       var callBtnCSS = 'material-icons callbtn' + (this.state.focused  ? ' active' : '');
@@ -830,8 +830,8 @@ export default class AppWindow extends Component {
         
           <div className="location">
             <span>Location:</span>
-            <span className="my_location" onClick={this.state.settings.chat_status != 'offline' ? () => this._openPopup('location') : ''}>
-              {this.state.locations[this.state.settings.current_location].name} 
+            <span className="my_location" onClick={this.props.settings.chat_status != 'offline' ? () => this._openPopup('location') : ''}>
+              {this.props.locations[this.props.settings.current_location].name} 
               <i className="material-icons">expand_more</i>
             </span>
           </div>

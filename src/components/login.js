@@ -137,7 +137,6 @@ export default class LoginWindow extends Component {
 					type="text" 
 					placeholder="username" 
 					value={this.state.username}
-					onFocus={(e)=>this._becomeMaster(e)}
 					onChange={(e) => this._updateValue(e, 'username')} 
 					onKeyPress={(e) => this._attemptLogin(e)}
 				/>

@@ -11,7 +11,6 @@ export default class App extends Component {
 this.state = {
       login: true,
       app: false,
-      ticketPhone: ''
     }
           // Initialise the Zendesk JavaScript API client
       // https://developer.zendesk.com/apps/docs/apps-v2
@@ -49,7 +48,6 @@ this.state = {
             this.setState({
               login: false,
               app: true,
-              ticketPhone: ''
             });
 
 
@@ -60,7 +58,6 @@ this.state = {
     this.setState({
       login: true,
       app: false,
-      ticketPhone: ''
     });
   }
 
@@ -75,7 +72,6 @@ this.state = {
     this.setState({
       login: false,
       app: true,
-      ticketPhone: ''
     });
     // versionCheck calls -> syncRequest -> syncRequest calls syncStatus + emits data to listener here in componentDidMount 
     
@@ -85,7 +81,6 @@ this.state = {
     this.setState({
       login: true,
       app: false,
-      ticketPhone: ''
     });
     // versionCheck calls -> syncRequest -> syncRequest calls syncStatus + emits data to listener here in componentDidMount 
   }
@@ -101,7 +96,7 @@ this.state = {
     
       return (
         <div>
-          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} ticketPhone={this.props.ticketPhone} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} deletedCalls={this.props.deletedCalls} logout={this.logoutOfApp} />
+          <AppWindow avatars={this.props.avatars} locations={this.props.locations} settings={this.props.settings} mycalls={this.props.mycalls} calllog={this.props.calllog} queue_members={this.props.queue_members} queue_members_status={this.props.queue_members_status} queues={this.props.queues} queuelogoutreasons={this.props.queuelogoutreasons} deletedCalls={this.props.deletedCalls} logout={this.logoutOfApp} />
         </div>
       )
     }

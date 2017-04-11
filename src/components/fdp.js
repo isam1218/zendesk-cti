@@ -8,6 +8,16 @@ import config from '../config.js';
 import server from '../properties.js';
 
 var obj;
+var avatars;
+var calllog;
+var locations;
+var mycalls;
+var calls;
+var queue_members;
+var queue_members_status;
+var queuelogoutreasons;
+var queues;
+var settings;
 const emitter = new EventEmitter();
 
 const fdp =  {
@@ -18,8 +28,10 @@ const fdp =  {
 	status: 0,
 	becomeMaster:()=>{
 		 
-		 	
-		 obj = new WindowController(true);
+		 if(!fdp.master){
+		 	obj = new WindowController(true);
+		 }	
+		 
 
 		
 	},
@@ -33,7 +45,7 @@ const fdp =  {
 		}
 		if(fdp.synced == true && fdp.master == false){
 			console.log("Abort");
-			setTimeout(function(){fdp.abort()},3000);
+			setTimeout(function(){fdp.xhr.abort()},3000);
 		}
 
 	 		
@@ -42,21 +54,29 @@ const fdp =  {
 	checkMaster:()=>{
 		if(!fdp.master){
 		if(localStorage.auth != undefined && localStorage.node != undefined && localStorage.refresh != undefined){
-			      console.log("CHECK MASTER",fdp.master);
-			      var avatars= JSON.parse(localStorage.avatars);
-			      var calllog= JSON.parse(localStorage.calllog);
-			      var locations= JSON.parse(localStorage.locations);
-			      var mycalls= JSON.parse(localStorage.mycalls);
-			      var calls= JSON.parse(localStorage.deletedCalls);
-			      var queue_members= JSON.parse(localStorage.queue_members);
-			      var queue_members_status= JSON.parse(localStorage.queue_members_status);
-			      var queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
-			      var queues= JSON.parse(localStorage.queues);
-			      var settings= JSON.parse(localStorage.settings);
-			ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+			       var checkPromise = new Promise(function(resolve){
+			       avatars= JSON.parse(localStorage.avatars);
+			       calllog= JSON.parse(localStorage.calllog);
+			       locations= JSON.parse(localStorage.locations);
+			       mycalls= JSON.parse(localStorage.mycalls);
+			       calls= JSON.parse(localStorage.deletedCalls);
+			       queue_members= JSON.parse(localStorage.queue_members);
+			       queue_members_status= JSON.parse(localStorage.queue_members_status);
+			       queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
+			       queues= JSON.parse(localStorage.queues);
+			       settings= JSON.parse(localStorage.settings);
+
+			       resolve(1);
+			   });
+			       checkPromise.then(function(success){
+			       	if(success == 1){
+			       	 ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+			       }
+			       }).catch(function(reason){
+			       });
 		}
 		else{
-			fdp.logout();
+			fdp.emitter.emit('logout');
 		}
 		}
 	},
@@ -96,7 +116,7 @@ const fdp =  {
 		
 		return new Promise(function(resolve, reject){
 			if(fdp.master){
-		$.ajax({
+		fdp.xhr = $.ajax({
 				rejectUnauthorized: false,
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
@@ -145,7 +165,7 @@ const fdp =  {
 					resolve(0);
 				}
 
-				fdp.logout();
+				fdp.emitter.emit('logout');
 			});
 		}
 		else{
