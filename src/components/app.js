@@ -24,6 +24,7 @@ this.state = {
 
     this.loginToApp = this._changeLoginToApp.bind(this);
     this.logoutOfApp = this._logout.bind(this);
+
     // need to include pkg.json module
     this.server = "https://dev4.fon9.com:8081";
     this.configName = "Fonality CTI";

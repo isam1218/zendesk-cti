@@ -86,7 +86,11 @@ export default class Popup extends Component {
     // make fdp call to locations
     fdp.postFeed('locations', 'select', {
       locationId: value
-    });
+    }).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		
     // trigger action from node context
 		// ipcRenderer.send('window', {action, value});
@@ -104,12 +108,20 @@ export default class Popup extends Component {
 			// mic...
 			if (setting == 'hudmw_webphone_mic'){
 				data = {'name': 'hudmw_webphone_mic', 'value': value};
-				fdp.postFeed('settings', 'update', data);
+				fdp.postFeed('settings', 'update', data).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 			}
 			else if (setting == 'hudmw_webphone_speaker'){
 				// speaker...
 				data = {'name': 'hudmw_webphone_speaker', 'value': value};
-				fdp.postFeed('settings', 'update', data);
+				fdp.postFeed('settings', 'update', data).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 			}
 		}
 	}
@@ -133,7 +145,11 @@ export default class Popup extends Component {
 			toLocationId: key,
 			variance: 'native',
 			options: '0'
-		});
+		}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		// close popup...
 		this.props.callback(null);
 	}
@@ -159,8 +175,20 @@ export default class Popup extends Component {
 		data.queues = toSend.join(",");
 		data.reason = logoutReason;
 
-		fdp.postFeed("queues","queueLogout",data);
+		
+			
 
+			
+		fdp.postFeed("queues","queueLogout",data).then((status)=>{
+			if(status ==1){
+				this.props.getQueues();
+			}
+		}).catch((reason)=>{
+
+		});		
+				
+			
+		
 		this.props.callback(null);
 	}
 	

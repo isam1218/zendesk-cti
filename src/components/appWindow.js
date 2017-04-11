@@ -40,14 +40,18 @@ export default class AppWindow extends Component {
   }
 
 	// this lifecycle method happens once when component 1st loads...
+
 	componentDidMount() {
+		this._getQueues();
+		
+
 		console.log("Component Mounted");
 		if(this.state.screen == "default"){
 	      window.addEventListener('storage', (e)=> { 
 
      	
 		  if(e.key == "ticketPhone"){
-		  	console.log("TICKETED");
+		  	
 		  	if(e.newValue != ("null" || null)){
 		  	this.setState({
 		  		phone: e.newValue
@@ -295,61 +299,7 @@ export default class AppWindow extends Component {
 }
 
 			    	
-	var myqueues = [];
 
-		for(var q = 0; q < this.props.queues.length; q++){
-
-			for(var m = 0; m < this.props.queue_members.length; m++){
-					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
-						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
-									myqueues.push(this.props.queues[q]);
-
-
-						}
-					
-				}
-			}
-		}
-
-
-	for(var i = 0; i < myqueues.length; i++){
-		for(var m = 0; m < this.props.queue_members.length; m++){
-				if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
-					if(myqueues[i].xpid == this.props.queue_members[m].queueId){
-				for(var s = 0; s < this.props.queue_members_status.length; s++){
-					if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
-
-
-							if(this.props.queue_members_status[s].status == "login"){
-								var queue_status = "Logged In";
-								var disableQueue = false;										
-							}
-							if(this.props.queue_members_status[s].status == "logout"){
-								var queue_status = "Logged Out";
-								var disableQueue = false;
-							}
-							if(this.props.queue_members_status[s].status == "login-permanent"){
-								var queue_status = "Permanently Logged In";	
-								var disableQueue = true;
-							}
-
-							myqueues[i].status = queue_status;
-							myqueues[i].disableQueue = disableQueue;
-
-
-						}
-					}
-				}
-			}
-		}
-
-		this.setState({
-			myqueues: myqueues
-		});
-
-
-
-	}
 
 		
 
@@ -364,17 +314,22 @@ export default class AppWindow extends Component {
 		
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
-				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid});
+				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 			}
 		}
 
-		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid});
+		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		
 	}
 
-	_getQueues(){
-
-	}
 
 /*	_setQueues(){
 		this.setState({
@@ -391,8 +346,11 @@ export default class AppWindow extends Component {
     if (this.state.phone != '') {      
       // logic if no other call is already in progress (using this.state.phone as the phone # to dial)
 
-			fdp.postFeed('me', 'callTo', {phoneNumber: this.state.phone});
+			fdp.postFeed('me', 'callTo', {phoneNumber: this.state.phone}).then((status)=>{
+				
+			}).catch((err)=>{
 
+			});
       this._changeScreen('call');
 
 
@@ -401,7 +359,11 @@ export default class AppWindow extends Component {
   }
 
   _callRecent(data){
-  	fdp.postFeed('me', 'callTo', {phoneNumber: data});
+  	fdp.postFeed('me', 'callTo', {phoneNumber: data}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
   }
 
   // change view
@@ -476,7 +438,11 @@ export default class AppWindow extends Component {
 		}
 		// hang up current call
 		// fdp post request to end call
-		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid});
+		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		// change screen back to default
 		this._changeScreen('default');
 	}
@@ -562,9 +528,17 @@ export default class AppWindow extends Component {
 		// if call is not on hold
 		if (call.state !== 3){
 			// fdp request to hold call...
-			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid});
+			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		} else if (call.state === 3){
-			fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid, toContactId: this.props.settings.my_pid})
+			fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid, toContactId: this.props.settings.my_pid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 			// otherwise if call  is on hold -> unhold...
 		}
 	}
@@ -622,7 +596,11 @@ export default class AppWindow extends Component {
 				localStorage.hudmw_webphone_mic = this.props.settings.hudmw_webphone_mic;
 				// set volume to 0
 				data = {'name': 'hudmw_webphone_mic', value: 0};
-				fdp.postFeed('settings', 'update', data);
+				fdp.postFeed('settings', 'update', data).then((status)=>{
+				
+				}).catch((err)=>{
+
+				});
 				this.setState({
 					mute: true
 				});
@@ -631,7 +609,11 @@ export default class AppWindow extends Component {
 				// default to .5 if no saved LS value
 				localStorage.hudmw_webphone_mic = localStorage.hudmw_webphone_mic ? localStorage.hudmw_webphone_mic : .5;
 				data = {'name': 'hudmw_webphone_mic', 'value': localStorage.hudmw_webphone_mic};
-				fdp.postFeed('settings', 'update', data);
+				fdp.postFeed('settings', 'update', data).then((status)=>{
+				
+				}).catch((err)=>{
+
+				});
 				this.setState({
 					mute: false,
 				})
@@ -652,7 +634,11 @@ export default class AppWindow extends Component {
 			number = this.state.phone;
 		}
 		// call FDP API to transfer call (either regular or to VM transfer)
-		fdp.postFeed('mycalls', 'transferTo', {mycallId: call.xpid, toNumber: number});
+		fdp.postFeed('mycalls', 'transferTo', {mycallId: call.xpid, toNumber: number}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		// clear screen
 		this._changeScreen('default');
 	}
@@ -662,17 +648,29 @@ export default class AppWindow extends Component {
 			this._changeScreen();
 		for(var i =0; i<this.props.mycalls.length;i++){
 			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state !== 3){
-				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid});
+				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 			}
 		}
 		
-		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid});
+		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 	}
 
 	_add(mycall) {
 
 		if (mycall.state !== 3){
-		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid});
+		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
+
+			});
 		}
 	//this._sendAction('hold', mycall);
 		
@@ -680,6 +678,7 @@ export default class AppWindow extends Component {
 	}
 
 	_openQueue(){
+
 		var message = "Looks like you are not part of any queues. Please contact your administrator if you wish to be added to queues and use this feature.";
 		if(this.state.myqueues){
 		this._changeScreen('queue');
@@ -747,6 +746,8 @@ export default class AppWindow extends Component {
 		myqueues: myqueues
 	})
 
+	console.log("MY QUEUES",this.state.myqueues);
+
     
 /*
     this.setState({
@@ -756,6 +757,7 @@ export default class AppWindow extends Component {
 
 	}
 
+ 
 	_loginQueues(queues){
 		var data ={};
 		var toSend = [];
@@ -768,10 +770,75 @@ export default class AppWindow extends Component {
 		data.contactId = this.props.settings.my_pid;
 		data.queues = toSend.join(",");
 
-		fdp.postFeed("queues","queueLogin",data);
+		
+
+		
+			fdp.postFeed("queues","queueLogin",data).then((status)=>{
+				if(status ==1){
+					this._getQueues();
+				}
+			}).catch((err)=>{
+
+			});
+		
+	}
+
+	_getQueues(){
+		console.log("GET QUEUES");
+		var myqueues = [];
+
+		for(var q = 0; q < this.props.queues.length; q++){
+
+			for(var m = 0; m < this.props.queue_members.length; m++){
+					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
+						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
+									myqueues.push(this.props.queues[q]);
 
 
+						}
+					
+				}
+			}
+		}
 
+
+	for(var i = 0; i < myqueues.length; i++){
+		for(var m = 0; m < this.props.queue_members.length; m++){
+				if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
+					if(myqueues[i].xpid == this.props.queue_members[m].queueId){
+				for(var s = 0; s < this.props.queue_members_status.length; s++){
+					if(this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid){
+
+
+							if(this.props.queue_members_status[s].status == "login"){
+								var queue_status = "Logged In";
+								var disableQueue = false;										
+							}
+							if(this.props.queue_members_status[s].status == "logout"){
+								var queue_status = "Logged Out";
+								var disableQueue = false;
+							}
+							if(this.props.queue_members_status[s].status == "login-permanent"){
+								var queue_status = "Permanently Logged In";	
+								var disableQueue = true;
+							}
+
+							myqueues[i].status = queue_status;
+							myqueues[i].disableQueue = disableQueue;
+
+
+						}
+					}
+				}
+			}
+		}
+
+		this.setState({
+			myqueues: myqueues
+		});
+
+
+	}
 	}
 
 
@@ -1274,6 +1341,7 @@ else if (this.state.screen == 'queue') {
           className={classy}
           callback={() => this._openPopup()}
           myqueues={this.state.myqueues}
+          getQueues={() =>this._getQueues()}
         />
       );
 
@@ -1309,7 +1377,7 @@ else if (this.state.screen == 'queue') {
         <div id="header">
           <div>
             <div ></div>
-						<img className="agent-login" src={queueIcon} onClick={() => this._openQueue()} />
+						<img className="agent-login" src={queueIcon} onClick={() => this._openQueue()} onMouseOver={() => this._getQueues()} />
           </div>
         
           <div className="buttons">            

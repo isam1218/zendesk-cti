@@ -47,7 +47,7 @@ export default class LoginWindow extends Component {
 
 				
 					
-						fdp.login(username, password).then(function(status,err){
+						fdp.login(username, password).then((status,err)=>{
 							 //some type of error
 							let msgObj = {};
 							 //status is set by resolve in index.js...
@@ -79,7 +79,7 @@ export default class LoginWindow extends Component {
 								}
 
 							
-						}).catch(function(reason){
+						}).catch((reason)=>{
 							console.log("login fail ",reason);
 						});
 					

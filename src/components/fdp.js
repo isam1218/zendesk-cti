@@ -45,7 +45,7 @@ const fdp =  {
 		}
 		if(fdp.synced == true && fdp.master == false){
 			console.log("Abort");
-			setTimeout(function(){fdp.xhr.abort()},3000);
+			setTimeout(()=>{fdp.xhr.abort()},3000);
 		}
 
 	 		
@@ -54,7 +54,7 @@ const fdp =  {
 	checkMaster:()=>{
 		if(!fdp.master){
 		if(localStorage.auth != undefined && localStorage.node != undefined && localStorage.refresh != undefined){
-			       var checkPromise = new Promise(function(resolve){
+			       var checkPromise = new Promise((resolve)=>{
 			       avatars= JSON.parse(localStorage.avatars);
 			       calllog= JSON.parse(localStorage.calllog);
 			       locations= JSON.parse(localStorage.locations);
@@ -68,11 +68,11 @@ const fdp =  {
 
 			       resolve(1);
 			   });
-			       checkPromise.then(function(success){
+			       checkPromise.then((success)=>{
 			       	if(success == 1){
 			       	 ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
 			       }
-			       }).catch(function(reason){
+			       }).catch((reason)=>{
 			       });
 		}
 		else{
@@ -114,7 +114,7 @@ const fdp =  {
 
 		console.log("FDP MASTER",fdp.master);
 		
-		return new Promise(function(resolve, reject){
+		return new Promise((resolve, reject) => {
 			if(fdp.master){
 		fdp.xhr = $.ajax({
 				rejectUnauthorized: false,
@@ -171,6 +171,7 @@ const fdp =  {
 		else{
 			resolve(1);
 		}
+
 		});
 	
 
@@ -379,6 +380,8 @@ const fdp =  {
 		}
 		// console.log('pf params - ', params);
 		// checking the fdp call before it's made...
+
+		return new Promise((resolve, reject) => {
 		$.ajax({
 			rejectUnauthorized: false,
 			url: `${server.serverURL}/v1/${feed}`,
@@ -393,21 +396,24 @@ const fdp =  {
 			data: params
 		}).done((res,success,body) => {
 			 console.log('postFeed done - ', res, success, body);
+			 setTimeout(()=>{resolve(1)},1000);
 		}).fail((res,err,body) => {
 			// fail placeholder
 			 console.log('postfeed fail - ', res, err, body);
 		});
+	});
+		
 	}
 };
 
 export default fdp;
 
 function WindowController (newId) {
-	console.log("NEW ID",newId);
+	
 
     if(!fdp.master && newId){
     	this.id = Math.random();
-    	console.log("ID",this.id);
+    	
     }
     else{
     	this.id = new Date().getTime();
