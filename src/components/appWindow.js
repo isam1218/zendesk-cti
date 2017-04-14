@@ -228,7 +228,7 @@ export default class AppWindow extends Component {
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
 
-					if(endUserNumber.length > 4 || end){
+					if(endUserNumber.length > 4 || endUserNumber == ""){
 				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
 
