@@ -30,22 +30,24 @@ const fdp =  {
 		 
 		 if(!fdp.master){
 		 	obj = new WindowController(true);
+
 		 }	
 		 
 
 		
 	},
-	master:false,
 	xhr:'',
+	master:false,
 	isMaster:(master)=>{
 		fdp.master = master;
+		console.log("FDP MASTER",fdp.master);
 		if(fdp.synced == false && fdp.master == true){
 			
-			fdp.login();
+			setTimeout(function(){fdp.login()},3000);
 		}
 		if(fdp.synced == true && fdp.master == false){
 			
-			setTimeout(()=>{fdp.xhr.abort()},3000);
+			setTimeout(function(){fdp.xhr.abort()},3000);
 		}
 
 	 		
@@ -112,11 +114,11 @@ const fdp =  {
 		
 		// login resolves in a promise
 
-		console.log("FDP MASTER",fdp.master);
+	
 		
 		return new Promise((resolve, reject) => {
 			if(fdp.master){
-		fdp.xhr = $.ajax({
+			$.ajax({
 				rejectUnauthorized: false,
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',

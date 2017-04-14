@@ -10,12 +10,12 @@ import App from './app.js';
 
 export default class AppWindow extends Component {
   // data requirements
-  static propTypes = {
+/*  static propTypes = {
     locations: React.PropTypes.object.isRequired,
     settings: React.PropTypes.object.isRequired,
     avatars: React.PropTypes.object.isRequired,
     mycalls: React.PropTypes.array.isRequired
-  }
+  }*/
   
   constructor(props) {
     super(props);
@@ -43,13 +43,7 @@ export default class AppWindow extends Component {
 
 	componentDidMount() {
 
-		window.onload = ()=> {
-			
-		  setTimeout(()=>{this._getQueues()},1500);
-		};
 		
-		
-
 		
 		if(this.state.screen == "default"){
 	      window.addEventListener('storage', (e)=> { 
@@ -233,7 +227,7 @@ export default class AppWindow extends Component {
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
 
-					if(endUserNumber.length > 4){
+					if(endUserNumber.length > 4 || end){
 				zendesk.grabCallId(endUserNumber)
 					.then((status, err) => {
 
@@ -1393,13 +1387,13 @@ else if (this.state.screen == 'queue') {
 
     // RENDER COMPONENTS TOGETHER:
     return(
-		<div id="app" onClick={popup ? () => this._openPopup(null) : ''}>
+		<div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => this._getQueues()} onMouseEnter={() => this._getQueues()}>
         {overlay}
         {popup}
         <div id="header">
           <div>
             <div ></div>
-						<img className="agent-login" src={queueIcon} onClick={() => this._openQueue()} onMouseOver={() => this._getQueues()} />
+						<img className="agent-login" src={queueIcon} onClick={() => this._openQueue()}  />
           </div>
         
           <div className="buttons">            

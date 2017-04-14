@@ -30,7 +30,7 @@ export default class LoginWindow extends Component {
 	
 	_attemptLogin(e) {
 		if(!fdp.master){
-				setTimeout(function(){fdp.becomeMaster()},1);
+			setTimeout(function(){fdp.becomeMaster()},1000);
 			}
 		// press enter to call
 		if (e && e.key != 'Enter')

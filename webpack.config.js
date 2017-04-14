@@ -24,23 +24,23 @@ module.exports = {
     {
       test: /\.(js|jsx)/,
       exclude: /node_modules/,
-      loader: "react-hot"
+      loader: "react-hot-loader"
     },
     {
       exclude: /node_modules/,
-      loader: 'babel',
+      loader: 'babel-loader',
       query: {
         presets: ['react', 'es2015', 'stage-0']
       }
     },
     {
       test: /\.less$/,
-      loader: "style!css!autoprefixer!less"
+      loader: "style-loader!css-loader!autoprefixer-loader!less-loader"
     }
     ]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.js', '.jsx']
   },
   devServer: {
     historyApiFallback: true,
