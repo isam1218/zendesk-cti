@@ -5,5 +5,6 @@ export default {
     //serverURL:"https://huc-dev.fonality.com:8081"
     //serverURL:"https://lb-stage3.fonality.com:446"
     //serverURL:"https://lb-stage4.fonality.com:446"
-    serverURL:"PLACEHOLDER"
+    //serverURL:"https://fdp-huc-v5.fonality.com"
+    //serverURL:"PLACEHOLDER"
 }
