@@ -1,10 +1,10 @@
 import "babel-polyfill";
+import "es6-promise/auto";
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import App from './app';
 import $ from 'jquery';
 import {EventEmitter} from 'fbemitter';
-import config from '../config.js';
 import server from '../properties.js';
 
 var obj;

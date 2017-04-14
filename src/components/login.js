@@ -1,6 +1,6 @@
 import "babel-polyfill";
+import "es6-promise/auto";
 import React, { Component } from 'react';
-import duel from 'dueljs';
 import fdp from './fdp';
 
 export default class LoginWindow extends Component {

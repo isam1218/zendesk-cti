@@ -1,4 +1,5 @@
 import "babel-polyfill";
+import "es6-promise/auto";
 import React, { Component } from 'react';
 import css from '../../style/main.less';
 import Popup from './popup.js';
@@ -690,6 +691,8 @@ export default class AppWindow extends Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+
+    console.log("VALUE",value);
 
     var queue = queue;
     var myqueue = myqueue;

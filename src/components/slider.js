@@ -1,4 +1,5 @@
 import "babel-polyfill";
+import "es6-promise/auto";
 import React, { Component } from 'react';
 // custom input to facilitate adding color to ranges //
 

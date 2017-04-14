@@ -1,6 +1,6 @@
 import "babel-polyfill";
+import "es6-promise/auto";
 import $ from 'jquery';
-import config from '../config.js';
 
 // http://stackoverflow.com/questions/5507234/how-to-use-basic-auth-with-jquery-and-ajax
 // xhr.setRequestHeader("Authorization", "Bearer " + `${config.accessToken}`);
