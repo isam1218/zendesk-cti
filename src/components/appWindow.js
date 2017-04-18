@@ -90,7 +90,7 @@ export default class AppWindow extends Component {
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 
-    	if(this.props.mycalls.length == 0){
+    	if(this.props.calllog){
 
 
     	if(this.props.deletedCalls){
@@ -120,7 +120,10 @@ export default class AppWindow extends Component {
 						     this.setState({
 						        ticketNumber: ""
 						      });
-						     fdp.clearCalls();
+						     if(this.props.mycalls.length == 0){
+						     	fdp.clearCalls();
+						     }
+						     
 					});
 					}
 				}
@@ -417,7 +420,7 @@ export default class AppWindow extends Component {
 
 	_endCall(call,ticketNumber) {
 
-		var call_num = call.phone;
+/*		var call_num = call.phone;
 		var call_type = call.incoming;
 		var start_time = call.created;
 		var currentTime = new Date().getTime();
@@ -431,7 +434,7 @@ export default class AppWindow extends Component {
 				        callEnded: ""
 				      });
 			});
-		}
+		}*/
 		// hang up current call
 		// fdp post request to end call
 		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid}).then((status)=>{
