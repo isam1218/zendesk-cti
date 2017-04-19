@@ -357,7 +357,11 @@ export default class AppWindow extends Component {
 			}).catch((err)=>{
 
 			});
-      this._changeScreen('call');
+			
+	  if(this.props.mycalls.length > 0){
+	  	this._changeScreen('call');
+	  }
+      
 
 
       // e.target.blur();
@@ -928,7 +932,7 @@ export default class AppWindow extends Component {
         
           <div className="location">
             <span>Location:</span>
-            <span className="my_location" onClick={this.props.settings.chat_status != 'offline' ? () => this._openPopup('location') : ''}>
+            <span className={"my_location "+this.props.locations[this.props.settings.current_location].status.deviceStatus} onClick={this.props.settings.chat_status != 'offline' ? () => this._openPopup('location') : ''}>
               {this.props.locations[this.props.settings.current_location].name} 
               <i className="material-icons">expand_more</i>
             </span>
