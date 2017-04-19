@@ -314,7 +314,8 @@ export default class AppWindow extends Component {
 
 	_answerCall(call) {
 		// fdp postFeed
-		
+					
+
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
@@ -328,7 +329,7 @@ export default class AppWindow extends Component {
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
 				this.setState({
 					newCallerFlag: true
-				});
+				});	
 			}).catch((err)=>{
 
 			});
@@ -530,6 +531,9 @@ export default class AppWindow extends Component {
 
 	_holdCall(call) {
 
+		this.setState({
+			newCallerFlag: false
+		});
 		// if call is not on hold
 		if (call.state !== 3){
 			// fdp request to hold call...
@@ -1168,7 +1172,7 @@ else if (this.state.screen == 'queue') {
 
 		// [INCOMING CALL SCREEN]
 		else if (this.props.mycalls.length == 1 && this.props.mycalls[0].state === 0){
-
+			
 
 			var answerBtn;
 			
