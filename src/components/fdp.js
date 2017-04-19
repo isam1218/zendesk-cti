@@ -359,7 +359,7 @@ const fdp =  {
 			case 200:
 				setTimeout(() => {
 					fdp.versionCheck();
-				}, 1500);
+				}, 2000);
 				
 			
 				break;
@@ -398,7 +398,7 @@ const fdp =  {
 			data: params
 		}).done((res,success,body) => {
 			 console.log('postFeed done - ', res, success, body);
-			 setTimeout(()=>{resolve(1)},1500);
+			 setTimeout(()=>{resolve(1)},2000);
 		}).fail((res,err,body) => {
 			// fail placeholder
 			 console.log('postfeed fail - ', res, err, body);

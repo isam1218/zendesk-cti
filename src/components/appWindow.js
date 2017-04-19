@@ -73,6 +73,10 @@ export default class AppWindow extends Component {
 		});
 	  }
 
+	  window.addEventListener('focus',(e)=>{
+			setTimeout(()=>{this._getQueues()},1000);
+	  });
+
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
@@ -223,10 +227,10 @@ export default class AppWindow extends Component {
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
 			// set newCallerFlag to false since we have a new call...
-			//if (this.state.newCallerFlag == true) {
-				/*this.setState({
+			if (this.state.newCallerFlag == true) {
+				this.setState({
 					newCallerFlag: false
-				});*/
+				});
 				
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
@@ -291,7 +295,7 @@ export default class AppWindow extends Component {
 					}
 				/*****SCREEN POP LOGIC END******/
 
-			//} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
+			} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
 			
 		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 	}
@@ -322,7 +326,9 @@ export default class AppWindow extends Component {
 		}
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
-				
+				this.setState({
+					newCallerFlag: true
+				});
 			}).catch((err)=>{
 
 			});
@@ -695,7 +701,6 @@ export default class AppWindow extends Component {
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
 
-    console.log("VALUE",value);
 
     var queue = queue;
     var myqueue = myqueue;
@@ -772,7 +777,7 @@ export default class AppWindow extends Component {
 		
 			fdp.postFeed("queues","queueLogin",data).then((status)=>{
 				if(status ==1){
-					this._getQueues();
+					setTimeout(()=>{this._getQueues()},1);
 
 				}
 			}).catch((err)=>{
@@ -1363,7 +1368,7 @@ else if (this.state.screen == 'queue') {
           className={classy}
           callback={() => this._openPopup()}
           myqueues={this.state.myqueues}
-          getQueues={() =>this._getQueues()}
+          getQueues={() =>setTimeout(()=>{this._getQueues()},1)}
         />
       );
 
@@ -1393,7 +1398,7 @@ else if (this.state.screen == 'queue') {
 
     // RENDER COMPONENTS TOGETHER:
     return(
-		<div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => this._getQueues()} onMouseEnter={() => this._getQueues()}>
+		<div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => setTimeout(()=>{this._getQueues()},1000)} >
         {overlay}
         {popup}
         <div id="header">
