@@ -673,7 +673,7 @@ export default class AppWindow extends Component {
 		this.setState({
 			newCallerFlag: false
 		});
-		
+
 		if (this.props.mycalls.length < 2)
 			this._changeScreen();
 		for(var i =0; i<this.props.mycalls.length;i++){
@@ -812,7 +812,7 @@ export default class AppWindow extends Component {
 	}
 
 	_getQueues(){
-		console.log("PROPS QUEUES",this.props.queues);
+		
 		var myqueues = [];
 
 		for(var q = 0; q < this.props.queues.length; q++){

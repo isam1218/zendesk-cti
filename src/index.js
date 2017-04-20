@@ -138,7 +138,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 	}
 	if(data['queues']){
-		console.log("INDEX QUEUES",data["queues"]);
+		
 		for (let i = 0; i < data['queues'].length; i++){
 			
 			
