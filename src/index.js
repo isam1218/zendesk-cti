@@ -35,11 +35,13 @@ var calllog = [];
 var new_log = [];
 var queue_members_status = [];
 var queues = [];
+var new_queues = [];
 var queue_members = [];
 var queuelogoutreasons = [];
 var members_status = [];
 var match = false;
 var logMatch = false;
+var queue_match = false;
 
 
  // must be array to facilitate sorting
@@ -60,6 +62,7 @@ var reset = fdp.emitter.addListener('logout', () => {
 	members_status = [];
 	match = false;
 	logMatch = false;
+	queue_match = false;
 
 
  // client.context().then((context)=>{
@@ -135,10 +138,35 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 	}
 	if(data['queues']){
+		console.log("INDEX QUEUES",data["queues"]);
 		for (let i = 0; i < data['queues'].length; i++){
+			
+			
+			for (let z = 0; z < new_queues.length;z++){
+
+
+			if(new_queues[z].xpid == data['queues'][i].xpid){
+					new_queues[z] = data['queues'][i];
+				 	queue_match = true;
+				}
+
+
+			}
+					 
+
+			if (!queue_match) {
+				new_queues.push(data['queues'][i]);
+				queues = new_queues;
+
+			}
+			
+
+		}
+
+		/*for (let i = 0; i < data['queues'].length; i++){
 			var queueList = data['queues'][i];
 		queues[i] = queueList;
-		}
+		}*/
 	}
 	if(data['queue_members']){
 		for (let i = 0; i < data['queue_members'].length; i++){

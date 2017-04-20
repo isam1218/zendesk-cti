@@ -491,7 +491,7 @@ WindowController.prototype.bye = function ( event ) {
 
 WindowController.prototype.check = function ( event ) {
     if(!fdp.master){
-	 setTimeout(function(){fdp.checkMaster()},1);
+	 fdp.checkMaster();
 	}
     var now = +new Date(),
         takeMaster = true,

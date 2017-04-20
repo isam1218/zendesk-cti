@@ -77,6 +77,19 @@ export default class AppWindow extends Component {
 			setTimeout(()=>{this._getQueues()},1000);
 	  });
 
+	  fdp.emitter.addListener('data_sync_update', (data) => {
+		  	if(data['queues']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+		  	if(data['queue_members_status']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+		  	if(data['queue_members']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+	  });
+
+
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
 			zendesk.grabMyAgentObj()
@@ -357,7 +370,7 @@ export default class AppWindow extends Component {
 			}).catch((err)=>{
 
 			});
-			
+
 	  if(this.props.mycalls.length > 0){
 	  	this._changeScreen('call');
 	  }
@@ -657,6 +670,10 @@ export default class AppWindow extends Component {
 	}
 
 	_switch(call) {
+		this.setState({
+			newCallerFlag: false
+		});
+		
 		if (this.props.mycalls.length < 2)
 			this._changeScreen();
 		for(var i =0; i<this.props.mycalls.length;i++){
@@ -785,7 +802,7 @@ export default class AppWindow extends Component {
 		
 			fdp.postFeed("queues","queueLogin",data).then((status)=>{
 				if(status ==1){
-					setTimeout(()=>{this._getQueues()},1);
+					this._getQueues();
 
 				}
 			}).catch((err)=>{
@@ -795,14 +812,14 @@ export default class AppWindow extends Component {
 	}
 
 	_getQueues(){
-		
+		console.log("PROPS QUEUES",this.props.queues);
 		var myqueues = [];
 
 		for(var q = 0; q < this.props.queues.length; q++){
 
 			for(var m = 0; m < this.props.queue_members.length; m++){
 					if(this.props.queue_members[m].contactId == this.props.settings.my_pid){
-						if(this.props.queues[q].xpid == this.props.queue_members[m].queueId){
+						if(this.props.queues[q].xef001type != "delete" && this.props.queues[q].xpid == this.props.queue_members[m].queueId){
 									myqueues.push(this.props.queues[q]);
 
 
@@ -1376,7 +1393,7 @@ else if (this.state.screen == 'queue') {
           className={classy}
           callback={() => this._openPopup()}
           myqueues={this.state.myqueues}
-          getQueues={() =>setTimeout(()=>{this._getQueues()},1)}
+          getQueues={() =>this._getQueues()}
         />
       );
 
@@ -1418,7 +1435,7 @@ else if (this.state.screen == 'queue') {
           <div className="buttons">            
           </div>
 
-          
+          <i className="material-icons">settings</i>
           <i className="material-icons" onClick={() => this._logout()}>power_settings_new</i>
         </div>
         
