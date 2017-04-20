@@ -694,7 +694,10 @@ export default class AppWindow extends Component {
 	}
 
 	_add(mycall) {
-
+		this.setState({
+			newCallerFlag: false
+		});
+		
 		if (mycall.state !== 3){
 		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status)=>{
 				
