@@ -1438,7 +1438,7 @@ else if (this.state.screen == 'queue') {
           <div className="buttons">            
           </div>
 
-          <i className="material-icons">settings</i>
+          
           <i className="material-icons" onClick={() => this._logout()}>power_settings_new</i>
         </div>
         
