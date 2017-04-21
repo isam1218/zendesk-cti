@@ -137,6 +137,7 @@ export default class AppWindow extends Component {
 						     this.setState({
 						        ticketNumber: ""
 						      });
+						     callEnded = "";
 						     if(this.props.mycalls.length == 0){
 						     	fdp.clearCalls();
 						     }
