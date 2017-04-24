@@ -44,6 +44,8 @@ export default class AppWindow extends Component {
 
 	componentDidMount() {
 
+
+				
 		
 		
 		if(this.state.screen == "default"){
@@ -87,11 +89,23 @@ export default class AppWindow extends Component {
 		  	if(data['queue_members']){
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
+		  	if(data['mycalls']){
+		  		
+		  		if(data['mycalls'].length > 0){
+		  			for(var i = 0; i < data['mycalls'].length;i++){
+				  		if(data['mycalls'][i].state == 2 && data['mycalls'][i].holdAction != "hold"){
+
+				  			this._screenPop(data['mycalls'][i]);
+				  		}
+			  		}
+		  		}
+		  	}
 	  });
 
 
 		// GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
 		// GET REQUEST to ZD API: 'https://fonality1406577563.zendesk.com/api/v2/users/me.json'
+			
 			zendesk.grabMyAgentObj()
 				.then((status, err) => {
 					this.setState({
@@ -102,6 +116,7 @@ export default class AppWindow extends Component {
 
 
   componentWillReceiveProps() {
+  	
 
 
     	//ADD CALL LOG ON END OF CALL FROM USER
@@ -233,10 +248,23 @@ export default class AppWindow extends Component {
 		// Here comes a call...
 		// (grab 1st call in mycalls) + (only incoming call) + (not 1 psuedo call menu/system call)
 		// if ZI-3 is to apply to outgoing calls as well, then remove 2nd part of the if branch (this.props.mycalls[0].incoming)...
+
+
+			    	
+
+
+		
+
+
+  } // CLOSE BRACKET OF: componentWillReceiveProps
+
+
+_screenPop(call){
+
 		if(fdp.master){
-		if (this.props.mycalls.length > 0 && (this.props.mycalls[0].incoming) && (this.props.mycalls[0].state == 2) && (this.props.mycalls[0].state != 3) && (this.props.mycalls[0].displayName !== "Call menu" && this.props.mycalls[0].displayName !== "system")) {
+		if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 			
-			var endUserCallNumber = this.props.mycalls[0].phone;
+			var endUserCallNumber = call.phone;
 			
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
@@ -254,15 +282,14 @@ export default class AppWindow extends Component {
 					.then((status, err) => {
 
 						// set the end user profile object
-						this.setState({
-							otherCallerEndUser: status.users[0]
-						});
+							var otherCallerEndUser = status.users[0];
+						
 
 						// if end user is found -> scren pop end user profile...
 						if (status.users.length > 0 && endUserNumber != ""){
 							// screen pop the end user..
-							if (this.state.myZendeskAgent.id && this.state.otherCallerEndUser.id){
-								zendesk.profilePop(this.state.myZendeskAgent.id, this.state.otherCallerEndUser.id)
+							if (this.state.myZendeskAgent.id && otherCallerEndUser.id){
+								zendesk.profilePop(this.state.myZendeskAgent.id, otherCallerEndUser.id)
 									.then((status, err) => {
 									});
 							}
@@ -278,7 +305,7 @@ export default class AppWindow extends Component {
 							// https://developer.zendesk.com/rest_api/docs/core/users#create-user
 
 									// grab call info...
-									var incomingCall = this.props.mycalls[0].incoming;
+									var incomingCall = call.incoming;
 									// incoming call -> ID == 45
 									// outbound call -> ID == 46
 									// via_id property needs to be set per ZD documentation
@@ -290,15 +317,15 @@ export default class AppWindow extends Component {
 									zendesk.createNewTicket(endUserNumber, via_id, this.state.myZendeskAgent)
 										.then((status, err) => {
 											var lastCreatedTicket = status.ticket;
-											this.setState({
-												createdTicket: lastCreatedTicket
-											});
+											
+												var createdTicket = lastCreatedTicket;
+											
 
 
 										// 3. open that ticket in an agent's browser...
 										// https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser
 										// otherwise, working version is...
-										zendesk.openCreatedTicket(this.state.myZendeskAgent.id, this.state.createdTicket.id)
+										zendesk.openCreatedTicket(this.state.myZendeskAgent.id, createdTicket.id)
 											.then((status, err) => {
 											});
 										});
@@ -314,17 +341,7 @@ export default class AppWindow extends Component {
 		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 	}
 }
-
-			    	
-
-
-		
-
-
-  } // CLOSE BRACKET OF: componentWillReceiveProps
-
-
-
+}
 
 	_answerCall(call) {
 		// fdp postFeed
@@ -342,8 +359,8 @@ export default class AppWindow extends Component {
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
 				this.setState({
-					newCallerFlag: true
-				});	
+					newCallerFlag:true
+				})
 			}).catch((err)=>{
 
 			});
