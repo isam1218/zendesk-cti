@@ -53,8 +53,6 @@ var reset = fdp.emitter.addListener('logout', () => {
 	avatars = {};
 	mycalls = [];
 	calls = [];
-	calllog = [];
-	new_log = [];
 	queue_members_status = [];
 	queues = [];
 	new_queues = [];
@@ -65,7 +63,7 @@ var reset = fdp.emitter.addListener('logout', () => {
 
 
  // client.context().then((context)=>{
-  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
    //});
 });
 
