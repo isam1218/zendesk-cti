@@ -690,14 +690,18 @@ _screenPop(call){
 	_switch(call) {
 		this.setState({
 			newCallerFlag: false
-		});
+		})
+
+		
 
 		if (this.props.mycalls.length < 2)
 			this._changeScreen();
 		for(var i =0; i<this.props.mycalls.length;i++){
 			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state !== 3){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
-				
+				this.setState({
+					ticketNumber:""
+				})
 			}).catch((err)=>{
 
 			});
