@@ -57,12 +57,11 @@ var reset = fdp.emitter.addListener('logout', () => {
 	new_log = [];
 	queue_members_status = [];
 	queues = [];
+	new_queues = [];
 	queue_members = [];
 	queuelogoutreasons = [];
 	members_status = [];
-	match = false;
-	logMatch = false;
-	queue_match = false;
+
 
 
  // client.context().then((context)=>{
@@ -86,7 +85,6 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['calllog']){
-		localStorage.removeItem("calllog");
 		for (let i = 0; i < data['calllog'].length; i++){
 
 			for (let z = 0; z < new_log.length;z++){
