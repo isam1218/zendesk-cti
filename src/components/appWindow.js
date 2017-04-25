@@ -173,14 +173,12 @@ export default class AppWindow extends Component {
 		if (this.props.mycalls.length == 0){
 			if(localStorage.queueScreen != 'queue'){
 				this.setState({
-					screen: 'default',
-					newCallerFlag: true
+					screen: 'default'
 				})
 			}
 			else{
 				this.setState({
-					screen: 'queue',
-					newCallerFlag: true
+					screen: 'queue'
 				})
 			}
 
@@ -345,7 +343,9 @@ _screenPop(call){
 
 	_answerCall(call) {
 		// fdp postFeed
-					
+			this.setState({
+					newCallerFlag:true
+				})		
 
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
@@ -358,9 +358,7 @@ _screenPop(call){
 		}
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
-				this.setState({
-					newCallerFlag:true
-				})
+				
 			}).catch((err)=>{
 
 			});
