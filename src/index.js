@@ -39,9 +39,9 @@ var new_queues = [];
 var queue_members = [];
 var queuelogoutreasons = [];
 var members_status = [];
-var match = false;
-var logMatch = false;
-var queue_match = false;
+
+
+
 
 
  // must be array to facilitate sorting
@@ -49,21 +49,37 @@ var queue_match = false;
 // managing data changed by sync to update state which will be passed down
 
 var reset = fdp.emitter.addListener('logout', () => {
-	locations = {};
-	avatars = {};
-	mycalls = [];
-	calls = [];
-	queue_members_status = [];
-	queues = [];
-	new_queues = [];
-	queue_members = [];
-	queuelogoutreasons = [];
-	members_status = [];
+ settings = {
+	display_name: '',
+	current_location: 'self',
+	ringing_volume: '1', 
+	hudmw_webphone_mic: '0.5',
+	hudmw_webphone_speaker: '0.5',
+	chat_status: 'offline', 
+	chat_custom_status: '',
+	alwaysOnTop: false,
+	coords: {},
+	devices: {input:[], output:[]},
+};
+
+ locations = {};
+ avatars = {};
+ mycalls = [];
+ calls = [];
+ calllog = [];
+ new_log = [];
+ queue_members_status = [];
+ queues = [];
+ new_queues = [];
+ queue_members = [];
+ queuelogoutreasons = [];
+ members_status = [];
+ 
 
 
 
  // client.context().then((context)=>{
-  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
    //});
 });
 
@@ -83,15 +99,19 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 	if(data['calllog']){
-		for (let i = 0; i < data['calllog'].length; i++){
 
+		for (let i = 0; i < data['calllog'].length; i++){
+			var logMatch = false;
 			for (let z = 0; z < new_log.length;z++){
 	
 				if(new_log[z].xef001id == data['calllog'][i].xef001id){
 					
 					new_log[z] = data['calllog'][i];
 				 	logMatch = true;
+					break;
+				 	
 				}
+					
 
 
 
@@ -107,7 +127,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	if(data['queue_members_status']){
 
 		for (let i = 0; i < data['queue_members_status'].length; i++){
-			
+			var match = false;
 			
 			//members_status[i] = data["queue_members_status"][i];
 			for (let z = 0; z < members_status.length;z++){
@@ -116,8 +136,9 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			if(members_status[z].xpid == data['queue_members_status'][i].xpid){
 					members_status[z] = data['queue_members_status'][i];
 				 	match = true;
+					break;
 				}
-
+				
 
 			}
 					 
@@ -136,7 +157,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	if(data['queues']){
 		
 		for (let i = 0; i < data['queues'].length; i++){
-			
+			var queue_match = false;
 			
 			for (let z = 0; z < new_queues.length;z++){
 
@@ -144,6 +165,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 			if(new_queues[z].xpid == data['queues'][i].xpid){
 					new_queues[z] = data['queues'][i];
 				 	queue_match = true;
+				 	break;
 				}
 
 
@@ -217,7 +239,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 		}
 		
 		processCalls(data['mycalls']);
-		logMatch = false;
+		
 	}
 	
 	if (data['mycalldetails']) {		
