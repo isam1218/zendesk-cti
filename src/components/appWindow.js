@@ -350,7 +350,7 @@ _screenPop(call){
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
-				
+					
 			}).catch((err)=>{
 
 			});
@@ -358,7 +358,9 @@ _screenPop(call){
 		}
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
-				
+				this.setState({
+					ticketNumber:""
+				})
 			}).catch((err)=>{
 
 			});
