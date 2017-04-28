@@ -32,11 +32,12 @@ export default class AppWindow extends Component {
 			myZendeskAgent: null,
 			otherCallerEndUser: null,
 			createdTicket: null,
-			newCallerFlag: true,
 			isChecked: false,
 			disableButton:true,
 			callObj:[]
     }
+
+    localStorage.newCallerFlag = true;
 
   }
 
@@ -89,17 +90,17 @@ export default class AppWindow extends Component {
 		  	if(data['queue_members']){
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
-		  	if(data['mycalls']){
-		  		
-		  		if(data['mycalls'].length > 0){
-		  			for(var i = 0; i < data['mycalls'].length;i++){
-				  		if(data['mycalls'][i].state == 2 && data['mycalls'][i].holdAction != "hold"){
-
-				  			this._screenPop(data['mycalls'][i]);
+		  	if(data["mycalls"]){
+		  				  		if(data["mycalls"].length > 0){
+		  			for(var i = 0; i < data["mycalls"].length;i++){
+				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
+				  			console.log("LOCAL NEW caller flag",localStorage.newCallerFlag);
+				  			this._screenPop(data["mycalls"][i]);
 				  		}
 			  		}
 		  		}
 		  	}
+	
 	  });
 
 
@@ -118,7 +119,10 @@ export default class AppWindow extends Component {
   componentWillReceiveProps() {
   	
 
+  	
+		  		
 
+		  	
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 
@@ -259,7 +263,7 @@ export default class AppWindow extends Component {
 
 _screenPop(call){
 
-		if(fdp.master){
+		
 		if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 			
 			var endUserCallNumber = call.phone;
@@ -267,10 +271,8 @@ _screenPop(call){
 			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
 			// set newCallerFlag to false since we have a new call...
-			if (this.state.newCallerFlag == true) {
-				this.setState({
-					newCallerFlag: false
-				});
+			if (localStorage.newCallerFlag == "true") {
+				localStorage.newCallerFlag = false;
 				
 				/***** SCREEN POP LOGIC START ******/
 					// grab call object and link to end user...
@@ -338,14 +340,12 @@ _screenPop(call){
 			
 		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
 	}
-}
+
 }
 
 	_answerCall(call) {
 		// fdp postFeed
-			this.setState({
-					newCallerFlag:true
-				})		
+			localStorage.newCallerFlag = true;	
 
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if(this.props.mycalls[i].xpid != call.xpid){
@@ -566,9 +566,7 @@ _screenPop(call){
 
 	_holdCall(call) {
 
-		this.setState({
-			newCallerFlag: false
-		});
+		localStorage.newCallerFlag = false;
 		// if call is not on hold
 		if (call.state !== 3){
 			// fdp request to hold call...
@@ -688,9 +686,7 @@ _screenPop(call){
 	}
 
 	_switch(call) {
-		this.setState({
-			newCallerFlag: false
-		})
+		localStorage.newCallerFlag = false;
 
 		
 
@@ -716,9 +712,7 @@ _screenPop(call){
 	}
 
 	_add(mycall) {
-		this.setState({
-			newCallerFlag: false
-		});
+		localStorage.newCallerFlag = false;
 		
 		if (mycall.state !== 3){
 		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status)=>{

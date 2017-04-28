@@ -398,7 +398,13 @@ const fdp =  {
 			data: params
 		}).done((res,success,body) => {
 			 console.log('postFeed done - ', res, success, body);
-			 setTimeout(()=>{resolve(1)},2000);
+			 if(feed == "queues"){
+			 	setTimeout(()=>{resolve(1)},2000);
+			 }
+			 else{
+			 	setTimeout(()=>{resolve(1)},500);
+			 }
+			 
 		}).fail((res,err,body) => {
 			// fail placeholder
 			 console.log('postfeed fail - ', res, err, body);
@@ -491,7 +497,7 @@ WindowController.prototype.bye = function ( event ) {
 
 WindowController.prototype.check = function ( event ) {
     if(!fdp.master){
-	 setTimeout(function(){fdp.checkMaster()},1);
+	 fdp.checkMaster();
 	}
     var now = +new Date(),
         takeMaster = true,
