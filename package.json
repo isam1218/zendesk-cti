@@ -4,7 +4,7 @@
   "description": "Fonality Zendesk Integration",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --hot --inline",
+    "start": "webpack-dev-server --inline --optimize-minimize",
     "build": "webpack --optimize-minimize"
   },
   "author": "",
