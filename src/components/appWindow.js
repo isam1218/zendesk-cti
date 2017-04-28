@@ -1,6 +1,6 @@
 import "babel-polyfill";
 import "es6-promise/auto";
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
@@ -10,37 +10,38 @@ import LoginWindow from './login.js';
 import App from './app.js';
 
 export default class AppWindow extends Component {
-    // data requirements
-    /*  static propTypes = {
-     locations: React.PropTypes.object.isRequired,
-     settings: React.PropTypes.object.isRequired,
-     avatars: React.PropTypes.object.isRequired,
-     mycalls: React.PropTypes.array.isRequired
-     }*/
-
-    constructor(props) {
-        super(props);
-        // this.state.phone is the phone # dialed into form input
-        fdp.checkMaster();
-        this.state = {
-            screen: 'default',
-            phone: '',
-            focused: false,
-            popup: null,
-            my_pid: '',
-            mute: '',
-            myZendeskAgent: null,
-            otherCallerEndUser: null,
-            createdTicket: null,
-            newCallerFlag: true,
-            isChecked: false,
-            disableButton: true,
-            callObj: []
-        }
-
+  // data requirements
+/*  static propTypes = {
+    locations: React.PropTypes.object.isRequired,
+    settings: React.PropTypes.object.isRequired,
+    avatars: React.PropTypes.object.isRequired,
+    mycalls: React.PropTypes.array.isRequired
+  }*/
+  
+  constructor(props) {
+    super(props);
+    // this.state.phone is the phone # dialed into form input
+    fdp.checkMaster();
+    this.state = {
+      screen: 'default',
+      phone: '',
+      focused: false,
+      popup: null,
+			my_pid: '',
+			mute: '',
+			myZendeskAgent: null,
+			otherCallerEndUser: null,
+			createdTicket: null,
+			isChecked: false,
+			disableButton:true,
+			callObj:[]
     }
 
-    // this lifecycle method happens once when component 1st loads...
+    localStorage.newCallerFlag = true;
+
+  }
+
+
 
     componentDidMount() {
 
@@ -78,34 +79,28 @@ export default class AppWindow extends Component {
             }, 1000);
         });
 
-        fdp.emitter.addListener('data_sync_update', (data) => {
-            if (data['queues']) {
-                setTimeout(() => {
-                    this._getQueues()
-                }, 1000);
-            }
-            if (data['queue_members_status']) {
-                setTimeout(() => {
-                    this._getQueues()
-                }, 1000);
-            }
-            if (data['queue_members']) {
-                setTimeout(() => {
-                    this._getQueues()
-                }, 1000);
-            }
-            if (data['mycalls']) {
+	  fdp.emitter.addListener('data_sync_update', (data) => {
+		  	if(data['queues']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+		  	if(data['queue_members_status']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+		  	if(data['queue_members']){
+		  		setTimeout(()=>{this._getQueues()},1000);
+		  	}
+		  	if(data["mycalls"]){
+		  				  		if(data["mycalls"].length > 0){
+		  			for(var i = 0; i < data["mycalls"].length;i++){
+				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
+				  			console.log("LOCAL NEW caller flag",localStorage.newCallerFlag);
+				  			this._screenPop(data["mycalls"][i]);
+				  		}
+			  		}
+		  		}
+		  	}
 
-                if (data['mycalls'].length > 0) {
-                    for (var i = 0; i < data['mycalls'].length; i++) {
-                        if (data['mycalls'][i].state == 2 && data['mycalls'][i].holdAction != "hold") {
-
-                            this._screenPop(data['mycalls'][i]);
-                        }
-                    }
-                }
-            }
-        });
+	  });
 
 
         // GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
@@ -121,6 +116,10 @@ export default class AppWindow extends Component {
 
 
     componentWillReceiveProps() {
+
+
+
+
 
 
 
@@ -248,21 +247,19 @@ export default class AppWindow extends Component {
 
     _screenPop(call) {
 
-        if (fdp.master) {
-            if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 
-                var endUserCallNumber = call.phone;
+		if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
+			
+			var endUserCallNumber = call.phone;
+			
+			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
-                var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
-
-                // set newCallerFlag to false since we have a new call...
-                if (this.state.newCallerFlag == true) {
-                    this.setState({
-                        newCallerFlag: false
-                    });
-
-                    /***** SCREEN POP LOGIC START ******/
-                    // grab call object and link to end user...
+			// set newCallerFlag to false since we have a new call...
+			if (localStorage.newCallerFlag == "true") {
+				localStorage.newCallerFlag = false;
+				
+				/***** SCREEN POP LOGIC START ******/
+					// grab call object and link to end user...
 
                     if (endUserNumber.length > 4 || endUserNumber == "") {
                         zendesk.grabCallId(endUserNumber)
@@ -322,18 +319,16 @@ export default class AppWindow extends Component {
                     }
                     /*****SCREEN POP LOGIC END******/
 
-                } // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
+			} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
+			
+		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
+	}
 
-                // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
-            }
-        }
-    }
+}
 
-    _answerCall(call) {
-        // fdp postFeed
-        this.setState({
-            newCallerFlag: true
-        })
+	_answerCall(call) {
+		// fdp postFeed
+			localStorage.newCallerFlag = true;
 
         for (var i = 0; i < this.props.mycalls.length; i++) {
             if (this.props.mycalls[i].xpid != call.xpid) {
@@ -551,15 +546,13 @@ export default class AppWindow extends Component {
 
     _holdCall(call) {
 
-        this.setState({
-            newCallerFlag: false
-        });
-        // if call is not on hold
-        if (call.state !== 3) {
-            // fdp request to hold call...
-            fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid}).then((status) => {
-
-            }).catch((err) => {
+		localStorage.newCallerFlag = false;
+		// if call is not on hold
+		if (call.state !== 3){
+			// fdp request to hold call...
+			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
 
             });
         } else if (call.state === 3) {
@@ -676,10 +669,8 @@ export default class AppWindow extends Component {
         this._changeScreen('default');
     }
 
-    _switch(call) {
-        this.setState({
-            newCallerFlag: false
-        })
+	_switch(call) {
+		localStorage.newCallerFlag = false;
 
 
         if (this.props.mycalls.length < 2)
@@ -703,15 +694,13 @@ export default class AppWindow extends Component {
         });
     }
 
-    _add(mycall) {
-        this.setState({
-            newCallerFlag: false
-        });
-
-        if (mycall.state !== 3) {
-            fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status) => {
-
-            }).catch((err) => {
+	_add(mycall) {
+		localStorage.newCallerFlag = false;
+		
+		if (mycall.state !== 3){
+		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status)=>{
+				
+			}).catch((err)=>{
 
             });
         }
