@@ -348,7 +348,7 @@ _screenPop(call){
 			localStorage.newCallerFlag = true;	
 
 		for(var i = 0; i < this.props.mycalls.length; i++){
-			if(this.props.mycalls[i].xpid != call.xpid){
+			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state != 3){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
 					
 			}).catch((err)=>{
