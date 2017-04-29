@@ -440,14 +440,14 @@ function WindowController (newId) {
     var that = this;
     var check = function check () {
         that.check();
-        that._checkTimeout = setTimeout( check, 1000 );
+        that._checkTimeout = setTimeout( check, 500 );
     };
     var ping = function ping () {
         that.sendPing();
-        that._pingTimeout = setTimeout( ping, 1700 );
+        that._pingTimeout = setTimeout( ping, 1200 );
     };
     this._checkTimeout = setTimeout( check, 50 );
-    this._pingTimeout = setTimeout( ping, 1700 );
+    this._pingTimeout = setTimeout( ping, 1200 );
 }
 
 WindowController.prototype.destroy = function () {

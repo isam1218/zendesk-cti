@@ -91,14 +91,18 @@ export default class AppWindow extends Component {
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
 		  	if(data["mycalls"]){
-		  				  		if(data["mycalls"].length > 0){
+			  		
 		  			for(var i = 0; i < data["mycalls"].length;i++){
 				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
-				  			console.log("LOCAL NEW caller flag",localStorage.newCallerFlag);
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
+				  		if(data["mycalls"][i].xef001type == "delete"){
+				  			this._callEnded();
+				  		}
 			  		}
-		  		}
+		  		
+		  		
+		  		
 		  	}
 	
 	  });
@@ -126,51 +130,7 @@ export default class AppWindow extends Component {
     	//ADD CALL LOG ON END OF CALL FROM USER
 
 
-    	if(this.props.calllog){
 
-
-    	if(this.props.deletedCalls){
-
-    	for(var d = 0; d < this.props.deletedCalls.length; d++){
-
-	    	if(this.props.deletedCalls[this.props.deletedCalls.length - 1].xef001type == 'delete'){
-	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
-	    				
-	    			var callEnded = this.props.deletedCalls[d];
-	    			if(callEnded){
-	    					var call_num = "";
-							var call_type = "";
-							var start_time = "";
-							var currentTime = "";
-							var duration = "";
-
-	    					 call_num = callEnded.phone;
-							 call_type = callEnded.incoming;
-							 start_time = callEnded.created;
-							 currentTime = new Date().getTime();
-							 duration = (parseInt(currentTime) - parseInt(callEnded.created));
-							duration.toString();
-
-					if(this.state.ticketNumber){
-					zendesk.addCallLog(this.state.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
-						     this.setState({
-						        ticketNumber: ""
-						      });
-						     callEnded = "";
-						     if(this.props.mycalls.length == 0){
-						     	fdp.clearCalls();
-						     }
-						     
-					});
-					}
-				}
-	    		}
-	    		
-	    	}
-
-    	}
-    }
-    }
 		
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		
@@ -260,6 +220,52 @@ export default class AppWindow extends Component {
 
   } // CLOSE BRACKET OF: componentWillReceiveProps
 
+_callEnded(){
+
+
+
+    	if(this.props.deletedCalls){
+
+    	for(var d = 0; d < this.props.deletedCalls.length; d++){
+
+	    	if(this.props.deletedCalls[this.props.deletedCalls.length - 1].xef001type == 'delete'){
+	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
+	    				
+	    			var callEnded = this.props.deletedCalls[d];
+	    			if(callEnded){
+	    					var call_num = "";
+							var call_type = "";
+							var start_time = "";
+							var currentTime = "";
+							var duration = "";
+
+	    					 call_num = callEnded.phone;
+							 call_type = callEnded.incoming;
+							 start_time = callEnded.created;
+							 currentTime = new Date().getTime();
+							 duration = (parseInt(currentTime) - parseInt(callEnded.created));
+							duration.toString();
+
+					if(localStorage.ticketNumber != ""){
+					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
+						     
+							localStorage.ticketNumber = "";
+						     callEnded = "";
+						     if(this.props.mycalls.length == 0){
+						     	fdp.clearCalls();
+						     }
+						     
+					});
+					}
+				}
+	    		}
+	    		
+	    	}
+
+    	}
+    }
+    
+}
 
 _screenPop(call){
 
@@ -358,9 +364,8 @@ _screenPop(call){
 		}
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
-				this.setState({
-					ticketNumber:""
-				})
+				
+		localStorage.ticketNumber = "";
 			}).catch((err)=>{
 
 			});
@@ -368,11 +373,7 @@ _screenPop(call){
 	}
 
 
-/*	_setQueues(){
-		this.setState({
-			myqueues: this.state.myqueues
-		});
-	}*/
+
 
   // press enter or green call button to call
   _callNumber(e) {
@@ -460,23 +461,9 @@ _screenPop(call){
     }
   }
 
-	_endCall(call,ticketNumber) {
+	_endCall(call) {
 
-/*		var call_num = call.phone;
-		var call_type = call.incoming;
-		var start_time = call.created;
-		var currentTime = new Date().getTime();
-		var duration = (currentTime - call.created);
 
-		if(ticketNumber){
-			zendesk.addCallLog(ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
-
-				      this.setState({
-				        ticketNumber: "",
-				        callEnded: ""
-				      });
-			});
-		}*/
 		// hang up current call
 		// fdp post request to end call
 		fdp.postFeed('mycalls', 'hangup', {mycallId: call.xpid}).then((status)=>{
@@ -695,9 +682,8 @@ _screenPop(call){
 		for(var i =0; i<this.props.mycalls.length;i++){
 			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state !== 3){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
-				this.setState({
-					ticketNumber:""
-				})
+				
+				localStorage.ticketNumber = "";
 			}).catch((err)=>{
 
 			});
@@ -926,6 +912,8 @@ _screenPop(call){
 		this.setState({
 	      [property]: e.target.value
     	})
+
+    	localStorage.ticketNumber = e.target.value;
   }
 
   _removeByAttr(arr, attr, value){
@@ -1345,10 +1333,10 @@ else if (this.state.screen == 'queue') {
 
 						<div className="associateZendesk">
 							<div id="associateText">Associate call with a Zendesk ticket</div>
-							<input id="associateTicket" type="text" placeholder="Ticket Number" value={this.state.ticketNumber} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
+							<input id="associateTicket" type="text" placeholder="Ticket Number" value={localStorage.ticketNumber} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
 						</div>
 						
-						<i className="material-icons end" onClick={() => this._endCall(mycall,this.state.ticketNumber)}>call_end</i>
+						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
 						
 						
 						{answerBtn}
