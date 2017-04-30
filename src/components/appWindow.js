@@ -91,15 +91,15 @@ export default class AppWindow extends Component {
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
 		  	if(data["mycalls"]){
-			  		
+			  		console.log("DATA MYCALLS",data["mycalls"]);
 		  			for(var i = 0; i < data["mycalls"].length;i++){
 				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
-				  			if(fdp.master){
+				  			
 				  				this._callEnded();
-				  			}
+				  			
 				  			
 				  		}
 			  		}
@@ -125,12 +125,6 @@ export default class AppWindow extends Component {
 
   componentWillReceiveProps() {
   	
-
-  	
-		  		
-
-		  	
-    	//ADD CALL LOG ON END OF CALL FROM USER
 
 
 
@@ -354,7 +348,7 @@ _screenPop(call){
 
 	_answerCall(call) {
 		// fdp postFeed
-			localStorage.newCallerFlag = true;	
+		localStorage.newCallerFlag = true;	
 
 		for(var i = 0; i < this.props.mycalls.length; i++){
 			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state != 3){
@@ -925,9 +919,14 @@ _screenPop(call){
 			localStorage.ticketNumber = "";
 		}
     	
-    
+ 	
+  }
 
-    	
+  _clearTicketNumber(){
+  	this.setState({
+  		ticketNumber:""
+  	})
+  	localStorage.ticketNumber = "";
   }
 
   _removeByAttr(arr, attr, value){
@@ -1347,7 +1346,7 @@ else if (this.state.screen == 'queue') {
 
 						<div className="associateZendesk">
 							<div id="associateText">Associate call with a Zendesk ticket</div>
-							<input id="associateTicket" type="text" placeholder="Ticket Number" value={localStorage.ticketNumber} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
+							<input id="associateTicket" type="text" placeholder="Ticket Number" value={this.state.ticketNumber} onFocus={()=>this._clearTicketNumber()} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
 						</div>
 						
 						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
