@@ -97,7 +97,10 @@ export default class AppWindow extends Component {
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
-				  			this._callEnded();
+				  			if(fdp.master){
+				  				this._callEnded();
+				  			}
+				  			
 				  		}
 			  		}
 		  		
@@ -910,14 +913,19 @@ _screenPop(call){
   // handles input event.target.value
   _updateValue(e, property) {
 
-  	if(property == "phone"){
+  	
 		this.setState({
 	      [property]: e.target.value
     	})
-    }
-    else if(property == "ticketNumber"){
-    	localStorage.ticketNumber = e.target.value;
-    }
+    
+		if(property == "ticketNumber"){
+			localStorage.ticketNumber = e.target.value;
+		}
+		else if(property == "phone"){
+			localStorage.ticketNumber = "";
+		}
+    	
+    
 
     	
   }
