@@ -246,7 +246,7 @@ _callEnded(){
 							 duration = (parseInt(currentTime) - parseInt(callEnded.created));
 							duration.toString();
 
-					if(localStorage.ticketNumber != ""){
+					if(localStorage.ticketNumber && localStorage.ticketNumber.length > 0){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 						     
 							localStorage.ticketNumber = "";
@@ -909,11 +909,17 @@ _screenPop(call){
 
   // handles input event.target.value
   _updateValue(e, property) {
+
+  	if(property == "phone"){
 		this.setState({
 	      [property]: e.target.value
     	})
-
+    }
+    else if(property == "ticketNumber"){
     	localStorage.ticketNumber = e.target.value;
+    }
+
+    	
   }
 
   _removeByAttr(arr, attr, value){
