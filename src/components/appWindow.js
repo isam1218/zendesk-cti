@@ -34,6 +34,8 @@ export default class AppWindow extends Component {
             createdTicket: null,
             isChecked: false,
             disableButton: true,
+            isDisplayAssociatedTicketsChecked: false,
+            isCreateNewTicketChecked: false,
             callObj: []
         }
 
@@ -121,15 +123,7 @@ export default class AppWindow extends Component {
 
 
     componentWillReceiveProps() {
-
-
-
-
-
-
-
         //ADD CALL LOG ON END OF CALL FROM USER
-
 
         if (this.props.calllog) {
 
@@ -252,11 +246,12 @@ export default class AppWindow extends Component {
 
     _screenPop(call) { //todo: call is a number
 
+        console.debug( "*** _screenPop this.state.isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked );
+
 
         if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 
             var endUserCallNumber = call.phone;
-
             var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
             // set newCallerFlag to false since we have a new call...
@@ -277,7 +272,13 @@ export default class AppWindow extends Component {
                             // if end user is found -> scren pop end user profile...
                             if (status.users.length > 0 && endUserNumber != "") { //todo:
                                 // screen pop the end user..
-                                if (this.state.myZendeskAgent.id && otherCallerEndUser.id) {
+                                if( !this.state.isDisplayAssociatedTicketsChecked ){
+                                    console.debug( "!!! _screenPop DO NOT Display Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
+
+                                }else if (this.state.myZendeskAgent.id && otherCallerEndUser.id) {
+
+                                    console.debug( "!!! _screenPop DISPLAY Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
+
                                     zendesk.profilePop(this.state.myZendeskAgent.id, otherCallerEndUser.id)
                                         .then((status, err) => {
                                         });
@@ -285,8 +286,8 @@ export default class AppWindow extends Component {
                             }
 
                             // NO MATCH OF END USERS, create a user w/ random phone number (for now)...
-                            else {
-
+                            else if( this.state.isCreateNewTicketChecked )  {
+                                console.debug( "!!! _screenPop creating NEW ticket =", this.state.isCreateNewTicketChecked );
 
 
                                 // IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
@@ -318,6 +319,9 @@ export default class AppWindow extends Component {
                                             });
                                     });
 
+                            }else{
+
+                                console.debug( "!!! _screenPop DO NOT create new ticket =", this.state.isCreateNewTicketChecked );
                             }
 
                         });
@@ -402,6 +406,7 @@ export default class AppWindow extends Component {
         });
         if (type == "default") {
             localStorage.queueScreen = "";
+            localStorage.settingScreen = "";
             if (this.props.mycalls.length == 1)
                 client.invoke('resize', {width: '320px', height: "440px"});
             if (this.props.mycalls.length == 2)
@@ -411,6 +416,7 @@ export default class AppWindow extends Component {
         }
         else if (type == "dialpad:add") {
             localStorage.queueScreen = "";
+            localStorage.settingScreen = "";
             if (this.props.mycalls.length == 1)
                 client.invoke('resize', {width: '320px', height: "495px"});
             if (this.props.mycalls.length == 2)
@@ -420,6 +426,7 @@ export default class AppWindow extends Component {
         }
         else if (type == "transfer") {
             localStorage.queueScreen = "";
+            localStorage.settingScreen = "";
             if (this.props.mycalls.length == 1)
                 client.invoke('resize', {width: '320px', height: "495px"});
             if (this.props.mycalls.length == 2)
@@ -429,11 +436,16 @@ export default class AppWindow extends Component {
         }
         else if (type == "queue") {
             localStorage.queueScreen = "queue";
+            localStorage.settingScreen = "";
             client.invoke('resize', {width: '320px', height: "440px"});
 
         }
+        else if (type == "settings") {
+            localStorage.settingScreen = "settings";
+            localStorage.queueScreen = "";
+            client.invoke('resize', {width: '320px', height: "440px"});
 
-
+        }
     }
 
     // [DIALPAD SCREEN]
@@ -731,6 +743,18 @@ export default class AppWindow extends Component {
 
         this._changeScreen('settings');
 
+    }
+
+
+    _settingsSelect(event, propertyName) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+
+        var obj = {};
+        obj[propertyName] = value;
+        this.setState(obj);
+
+        console.debug("obj", obj);
     }
 
     _queueSelect(event, queue, myqueues) {
@@ -1168,7 +1192,7 @@ export default class AppWindow extends Component {
                         {
 
                             this.state.myqueues.map(data => {
-                                    console.debug( "data =", data);
+                                console.debug("data =", data);
 
                                 return (
                                     <div className="myQueueList">
@@ -1213,14 +1237,23 @@ export default class AppWindow extends Component {
                     </div>
 
                     <div id="queueContent">
+
+                        {console.debug("*** render - isDisplayAssociatedTicketsChecked =", this.state.isDisplayAssociatedTicketsChecked) }
+                        {console.debug("*** render - isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked) }
+
+
                         <div className="myQueueList">
-                            <input className="queueCheckbox" type="checkbox"/>
+                            <input className="queueCheckbox" type="checkbox"
+                                   checked={this.state.isDisplayAssociatedTicketsChecked}
+                                   onChange={(e) => this._settingsSelect(e, "isDisplayAssociatedTicketsChecked")}/>
                             <div className="queueTitle">Display Associated Tickets</div>
                             <p className="settingsInfo">Display tickets on inbound calls that are associated with the caller/user.</p>
                         </div>
 
                         <div className="myQueueList">
-                            <input className="queueCheckbox" type="checkbox"/>
+                            <input className="queueCheckbox" type="checkbox"
+                                   checked={this.state.isCreateNewTicketChecked}
+                                   onChange={(e) => this._settingsSelect(e, "isCreateNewTicketChecked")}/>
                             <div className="queueTitle">Create New Ticket</div>
                             <p className="settingsInfo">Create new ticket on inbound calls when caller/user is unknown</p>
                         </div>
@@ -1240,60 +1273,60 @@ export default class AppWindow extends Component {
 
                     </div>
 
-                        {/*{
-                            this.state.myqueues.map(data => { return (
-                                <div className="settingsList">
-                                    <input className="settingsCheckbox" type="checkbox" disabled={data.disableQueue}
-                                           checked={data.checkStatus}
-                                           onChange={(e) => this._queueSelect(e, data, this.state.settings)}/>
-                                    <div className={"settingsTitle " + data.disableSettings}>{data.name}</div>
-                                    <p className={"settingsStatus " + data.disableSettings}>{data.status}</p>
+                    {/*{
+                     this.state.myqueues.map(data => { return (
+                     <div className="settingsList">
+                     <input className="settingsCheckbox" type="checkbox" disabled={data.disableQueue}
+                     checked={data.checkStatus}
+                     onChange={(e) => this._queueSelect(e, data, this.state.settings)}/>
+                     <div className={"settingsTitle " + data.disableSettings}>{data.name}</div>
+                     <p className={"settingsStatus " + data.disableSettings}>{data.status}</p>
 
-                                </div>
-                            );
+                     </div>
+                     );
 
-                            })
-                        }*/}
+                     })
+                     }*/}
 
                     {/*
-                    <div id="queueBlock">
-                        <div id="selectAll">
-                            <input id="allCheckbox" type="checkbox"
-                                   onChange={(e) => this._queueSelect(e, "checkAll", this.state.myqueues)}/><label
-                            id="allLabel">Select All</label>
-                        </div>
-                    </div>
+                     <div id="queueBlock">
+                     <div id="selectAll">
+                     <input id="allCheckbox" type="checkbox"
+                     onChange={(e) => this._queueSelect(e, "checkAll", this.state.myqueues)}/><label
+                     id="allLabel">Select All</label>
+                     </div>
+                     </div>
 
-                    <div id="queueContent">
-                        {
-                            this.state.myqueues.map(data => {
+                     <div id="queueContent">
+                     {
+                     this.state.myqueues.map(data => {
 
 
-                                return (
-                                    <div className="myQueueList">
-                                        <input className="queueCheckbox" type="checkbox" disabled={data.disableQueue}
-                                               checked={data.checkStatus}
-                                               onChange={(e) => this._queueSelect(e, data, this.state.myqueues)}/>
-                                        <div className={"queueTitle " + data.disableQueue}>{data.name}</div>
-                                        <p className={"queueStatus " + data.disableQueue}>{data.status}</p>
+                     return (
+                     <div className="myQueueList">
+                     <input className="queueCheckbox" type="checkbox" disabled={data.disableQueue}
+                     checked={data.checkStatus}
+                     onChange={(e) => this._queueSelect(e, data, this.state.myqueues)}/>
+                     <div className={"queueTitle " + data.disableQueue}>{data.name}</div>
+                     <p className={"queueStatus " + data.disableQueue}>{data.status}</p>
 
-                                    </div>
-                                );
+                     </div>
+                     );
 
-                            })
-                        }
-                    </div>
-                    <div className="queueBtns">
+                     })
+                     }
+                     </div>
+                     <div className="queueBtns">
 
-                        <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
-                                onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN
-                        </button>
-                        <button className={"queueLogout " + this.state.disableButton}
-                                disabled={this.state.disableButton}
-                                onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>LOG OUT
-                        </button>
+                     <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
+                     onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN
+                     </button>
+                     <button className={"queueLogout " + this.state.disableButton}
+                     disabled={this.state.disableButton}
+                     onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>LOG OUT
+                     </button>
 
-                    </div>*/}
+                     </div>*/}
                 </div>
             );
 
@@ -1548,7 +1581,7 @@ export default class AppWindow extends Component {
                     </div>
 
                     <i className="material-icons" onClick={() => this._openPreferences()}>settings</i>
-
+                    <br/>
                     <i className="material-icons" onClick={() => this._logout()}>power_settings_new</i>
                 </div>
 
