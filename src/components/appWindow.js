@@ -247,6 +247,9 @@ _callEnded(){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 						     
 							localStorage.ticketNumber = "";
+							this.setState({
+						  		ticketNumber:""
+						  	})
 						     callEnded = "";
 						     if(this.props.mycalls.length == 0){
 						     	fdp.clearCalls();
@@ -363,9 +366,12 @@ _screenPop(call){
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
 				
 		localStorage.ticketNumber = "";
-			}).catch((err)=>{
+			this.setState({
+		  		ticketNumber:""
+		  	})
+		}).catch((err)=>{
 
-			});
+		});
 		
 	}
 
@@ -681,6 +687,9 @@ _screenPop(call){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
 				
 				localStorage.ticketNumber = "";
+				this.setState({
+			  		ticketNumber:""
+			  	})
 			}).catch((err)=>{
 
 			});
