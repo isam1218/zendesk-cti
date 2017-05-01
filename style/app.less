@@ -1,8 +1,6 @@
 /* APP.LESS */
 #app {
 
- 
-  
   .overlay {    
     position: absolute;
     left: 0;
@@ -52,6 +50,10 @@
       
       &.more {
         color: #9b9b9b;
+      }
+
+      &.settings {
+        left: 0px;
       }
     }
     
@@ -509,6 +511,23 @@
 
   }
 
+  .settingsBtn{
+    background-color: #00AD33;
+    border: none;
+    font-size: 19px;
+    color: white;
+    border-radius: 7px;
+    padding: 6px 20px 6px 20px;
+    margin: 10px 10px 0px 10px;
+    width: 40%;
+    &.true{
+      background-color:#9C9C9C;
+    }
+    &.false{
+      background-color:#00AD33;
+    }
+  }
+
   .queueCheckbox{
     margin: 12px 20px 0 0;
     float: right;
@@ -524,6 +543,7 @@
     border-radius: 7px;
     padding: 6px 20px 6px 20px;
     margin: 10px 10px 0px 10px;
+    width: 40%;
 
     &.true{
       background-color:#9C9C9C;
@@ -541,6 +561,7 @@
     border-radius: 7px;
     padding: 6px 10px 6px 10px;
     margin: 10px 10px 0px 10px;
+    width: 40%;
 
     &.false{
       background-color:#00AD33;

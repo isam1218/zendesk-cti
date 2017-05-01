@@ -34,13 +34,12 @@ export default class AppWindow extends Component {
             createdTicket: null,
             isChecked: false,
             disableButton: true,
-            isDisplayAssociatedTicketsChecked: false,
-            isCreateNewTicketChecked: false,
+            isDisplayAssociatedTicketsChecked: true,
+            isCreateNewTicketChecked: true,
             callObj: []
         }
 
         localStorage.newCallerFlag = true;
-
     }
 
 
@@ -445,6 +444,17 @@ export default class AppWindow extends Component {
             localStorage.queueScreen = "";
             client.invoke('resize', {width: '320px', height: "440px"});
 
+
+           if( localStorage.preferences === undefined ){
+                var preferences = { isDisplayAssociatedTicketsChecked: this.state.isDisplayAssociatedTicketsChecked,
+                                    isCreateNewTicketChecked: this.state.isCreateNewTicketChecked};
+                localStorage.setItem('preferences', JSON.stringify(preferences));
+           }else{
+               preferences = JSON.parse(localStorage.getItem("preferences"));
+
+               this.state.isDisplayAssociatedTicketsChecked = preferences.isDisplayAssociatedTicketsChecked;
+               this.state.isCreateNewTicketChecked = preferences.isCreateNewTicketChecked;
+           }
         }
     }
 
@@ -689,7 +699,6 @@ export default class AppWindow extends Component {
     _switch(call) {
         localStorage.newCallerFlag = false;
 
-
         if (this.props.mycalls.length < 2)
             this._changeScreen();
         for (var i = 0; i < this.props.mycalls.length; i++) {
@@ -740,11 +749,19 @@ export default class AppWindow extends Component {
 
 
     _openPreferences() {
-
         this._changeScreen('settings');
-
     }
 
+    _settingsSave() {
+        console.debug("$$$ settingsSave");
+        console.debug("$$$ localStorage =", localStorage );
+        var preferences = { isDisplayAssociatedTicketsChecked: this.state.isDisplayAssociatedTicketsChecked,
+            isCreateNewTicketChecked: this.state.isCreateNewTicketChecked};
+
+        localStorage.setItem('preferences', JSON.stringify(preferences));
+
+        this._changeScreen('default');
+    }
 
     _settingsSelect(event, propertyName) {
         const target = event.target;
@@ -762,7 +779,6 @@ export default class AppWindow extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-
         var queue = queue;
         var myqueue = myqueue;
         var match = 0;
@@ -771,25 +787,18 @@ export default class AppWindow extends Component {
             if (queue != "checkAll") {
                 if (queue.xpid == myqueues[i].xpid) {
                     myqueues[i].checkStatus = value;
-
                 }
                 if (myqueues[i].checkStatus == true) {
                     match++;
-
                 }
-
-
             }
             else if (myqueues[i].status != "Permanently Logged In") {
 
                 myqueues[i].checkStatus = value;
 
                 if (myqueues[i].checkStatus == true) {
-
                     match++;
                 }
-
-
             }
         }
 
@@ -1238,6 +1247,7 @@ export default class AppWindow extends Component {
 
                     <div id="queueContent">
 
+                        { console.debug( "localStorage.preferences=",  JSON.parse(localStorage.getItem("preferences") )) }
                         {console.debug("*** render - isDisplayAssociatedTicketsChecked =", this.state.isDisplayAssociatedTicketsChecked) }
                         {console.debug("*** render - isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked) }
 
@@ -1262,13 +1272,12 @@ export default class AppWindow extends Component {
 
                     <div className="queueBtns">
 
-                        <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
-                                onClick={() => this._loginQueues(this.state.myqueues)}>CANCEL
+                        <button className={"settingsBtn true"}
+                                onClick={() => this._changeScreen('default')}>CANCEL
                         </button>
 
-                        <button className={"queueLogout"}
-                                disabled={false}
-                                onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>SAVE
+                        <button className={"settingsBtn"}
+                                onClick={() => this._settingsSave()}>SAVE
                         </button>
 
                     </div>
@@ -1580,7 +1589,7 @@ export default class AppWindow extends Component {
                     <div className="buttons">
                     </div>
 
-                    <i className="material-icons" onClick={() => this._openPreferences()}>settings</i>
+                    <i className="material-icons settings" onClick={() => this._openPreferences()}>settings</i>
                     <br/>
                     <i className="material-icons" onClick={() => this._logout()}>power_settings_new</i>
                 </div>
