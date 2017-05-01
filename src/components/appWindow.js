@@ -248,9 +248,7 @@ _callEnded(){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 						     
 							localStorage.ticketNumber = "";
-							this.setState({
-						  		ticketNumber:""
-						  	})
+							
 						     callEnded = "";
 						     if(this.props.mycalls.length == 0){
 						     	fdp.clearCalls();
@@ -367,9 +365,7 @@ _screenPop(call){
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
 				
 		localStorage.ticketNumber = "";
-			this.setState({
-		  		ticketNumber:""
-		  	})
+		
 		}).catch((err)=>{
 
 		});
@@ -688,9 +684,7 @@ _screenPop(call){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
 				
 				localStorage.ticketNumber = "";
-				this.setState({
-			  		ticketNumber:""
-			  	})
+				
 			}).catch((err)=>{
 
 			});
@@ -698,7 +692,8 @@ _screenPop(call){
 		}
 		
 		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid}).then((status)=>{
-				
+				localStorage.ticketNumber = "";
+							
 			}).catch((err)=>{
 
 			});
@@ -933,9 +928,7 @@ _screenPop(call){
   }
 
   _clearTicketNumber(){
-  	this.setState({
-  		ticketNumber:""
-  	})
+
   	localStorage.ticketNumber = "";
   }
 
@@ -1356,7 +1349,7 @@ else if (this.state.screen == 'queue') {
 
 						<div className="associateZendesk">
 							<div id="associateText">Associate call with a Zendesk ticket</div>
-							<input id="associateTicket" type="text" placeholder="Ticket Number" value={this.state.ticketNumber} onFocus={()=>this._clearTicketNumber()} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
+							<input id="associateTicket" type="text" placeholder="Ticket Number" value={localStorage.ticketNumber} onFocus={()=>this._clearTicketNumber()} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
 						</div>
 						
 						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
