@@ -97,9 +97,8 @@ export default class AppWindow extends Component {
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
-				  				if(this.props.mycalls[0] == undefined){
 				  					this._callEnded();
-				  				}
+				  				
 				  				
 				  			
 				  			
