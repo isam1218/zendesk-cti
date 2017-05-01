@@ -674,7 +674,7 @@ _screenPop(call){
 
 	_switch(call) {
 		localStorage.newCallerFlag = false;
-
+		localStorage.ticketNumber = "";
 		
 
 		if (this.props.mycalls.length < 2)
@@ -683,7 +683,6 @@ _screenPop(call){
 			if((this.props.mycalls[i].xpid != call.xpid) && this.props.mycalls[i].state !== 3){
 				fdp.postFeed('mycalls', 'transferToHold', {mycallId: this.props.mycalls[i].xpid}).then((status)=>{
 				
-				localStorage.ticketNumber = "";
 				
 			}).catch((err)=>{
 
@@ -692,7 +691,7 @@ _screenPop(call){
 		}
 		
 		fdp.postFeed('mycalls', 'transferFromHold', {mycallId: call.xpid}).then((status)=>{
-				localStorage.ticketNumber = "";
+				
 							
 			}).catch((err)=>{
 
