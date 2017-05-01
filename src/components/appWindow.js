@@ -132,7 +132,7 @@ export default class AppWindow extends Component {
 		// when call ends, return user to default screen, and set newCallerFlag back to true...
 		
 		if (this.props.mycalls.length == 0){
-			if(localStorage.queueScreen != 'queue'){
+			/*if(localStorage.queueScreen != 'queue'){
 				this.setState({
 					screen: 'default'
 				})
@@ -142,7 +142,7 @@ export default class AppWindow extends Component {
 					screen: 'queue'
 				})
 			}
-
+*/
 			
 		}
 
@@ -758,7 +758,7 @@ _callEnded(endedCall){
             isCreateNewTicketChecked: this.state.isCreateNewTicketChecked};
 
         localStorage.setItem('preferences', JSON.stringify(preferences));
-        this._changeScreen('default');
+        //this._changeScreen('default');
     }
 
     _settingsSelect(event, propertyName) {
