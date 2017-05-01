@@ -1559,9 +1559,7 @@ export default class AppWindow extends Component {
             for (var q = 0; q < this.state.myqueues.length; q++) {
                 if (this.state.myqueues[q].status == "Logged In" || this.state.myqueues[q].status == "Permanently Logged In") {
                     queueCount = parseInt(queueCount) + 1;
-
                 }
-
             }
         }
 
@@ -1571,7 +1569,6 @@ export default class AppWindow extends Component {
         else {
             queueIcon = "./queue-off.png";
         }
-
 
         // RENDER COMPONENTS TOGETHER:
         return (
