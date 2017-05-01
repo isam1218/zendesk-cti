@@ -91,13 +91,13 @@ export default class AppWindow extends Component {
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
 		  	if(data["mycalls"]){
-			  		console.log("DATA MYCALLS",data["mycalls"]);
+			  		
 		  			for(var i = 0; i < data["mycalls"].length;i++){
 				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
-				  					this._callEnded();
+				  					this._callEnded(data["mycalls"][i]);
 				  				
 				  				
 				  			
@@ -218,9 +218,20 @@ export default class AppWindow extends Component {
 
   } // CLOSE BRACKET OF: componentWillReceiveProps
 
-_callEnded(){
+_callEnded(endedCall){
+	var focusedCall = true;
 
-
+	for(var i = 0; i < this.props.mycalls.length; i++){
+		if(this.props.mycalls[i].state == 2 && this.props.mycalls[i].xpid != endedCall.xpid){
+			
+			focusedCall = false;
+		}
+		else{
+			
+			focusedCall = true;
+		} 
+	}
+		if(focusedCall){
 
     	if(this.props.deletedCalls){
 
@@ -263,6 +274,7 @@ _callEnded(){
 
     	}
     }
+}
     
 }
 
