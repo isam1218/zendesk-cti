@@ -1,6 +1,6 @@
 import "babel-polyfill";
 import "es6-promise/auto";
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import css from '../../style/main.less';
 import Popup from './popup.js';
 import Timer from './timer.js';
@@ -10,37 +10,36 @@ import LoginWindow from './login.js';
 import App from './app.js';
 
 export default class AppWindow extends Component {
-  // data requirements
-/*  static propTypes = {
-    locations: React.PropTypes.object.isRequired,
-    settings: React.PropTypes.object.isRequired,
-    avatars: React.PropTypes.object.isRequired,
-    mycalls: React.PropTypes.array.isRequired
-  }*/
-  
-  constructor(props) {
-    super(props);
-    // this.state.phone is the phone # dialed into form input
-    fdp.checkMaster();
-    this.state = {
-      screen: 'default',
-      phone: '',
-      focused: false,
-      popup: null,
-			my_pid: '',
-			mute: '',
-			myZendeskAgent: null,
-			otherCallerEndUser: null,
-			createdTicket: null,
-			isChecked: false,
-			disableButton:true,
-			callObj:[]
+    // data requirements
+    /*  static propTypes = {
+     locations: React.PropTypes.object.isRequired,
+     settings: React.PropTypes.object.isRequired,
+     avatars: React.PropTypes.object.isRequired,
+     mycalls: React.PropTypes.array.isRequired
+     }*/
+
+    constructor(props) {
+        super(props);
+        // this.state.phone is the phone # dialed into form input
+        fdp.checkMaster();
+        this.state = {
+            screen: 'default',
+            phone: '',
+            focused: false,
+            popup: null,
+            my_pid: '',
+            mute: '',
+            myZendeskAgent: null,
+            otherCallerEndUser: null,
+            createdTicket: null,
+            isChecked: false,
+            disableButton: true,
+            callObj: []
+        }
+
+        localStorage.newCallerFlag = true;
+
     }
-
-    localStorage.newCallerFlag = true;
-
-  }
-
 
 
     componentDidMount() {
@@ -79,28 +78,34 @@ export default class AppWindow extends Component {
             }, 1000);
         });
 
-	  fdp.emitter.addListener('data_sync_update', (data) => {
-		  	if(data['queues']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
-		  	if(data['queue_members_status']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
-		  	if(data['queue_members']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
-		  	if(data["mycalls"]){
-		  				  		if(data["mycalls"].length > 0){
-		  			for(var i = 0; i < data["mycalls"].length;i++){
-				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
-				  			console.log("LOCAL NEW caller flag",localStorage.newCallerFlag);
-				  			this._screenPop(data["mycalls"][i]);
-				  		}
-			  		}
-		  		}
-		  	}
+        fdp.emitter.addListener('data_sync_update', (data) => {
+            if (data['queues']) {
+                setTimeout(() => {
+                    this._getQueues()
+                }, 1000);
+            }
+            if (data['queue_members_status']) {
+                setTimeout(() => {
+                    this._getQueues()
+                }, 1000);
+            }
+            if (data['queue_members']) {
+                setTimeout(() => {
+                    this._getQueues()
+                }, 1000);
+            }
+            if (data["mycalls"]) {
+                if (data["mycalls"].length > 0) {
+                    for (var i = 0; i < data["mycalls"].length; i++) {
+                        if (data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold") {
+                            console.log("LOCAL NEW caller flag", localStorage.newCallerFlag);
+                            this._screenPop(data["mycalls"][i]);
+                        }
+                    }
+                }
+            }
 
-	  });
+        });
 
 
         // GRAB MY AGENT INFO/ID based on user i am logged into zendesk as...
@@ -174,15 +179,15 @@ export default class AppWindow extends Component {
         // when call ends, return user to default screen, and set newCallerFlag back to true...
         if (this.props.mycalls.length == 0) {
             /*if (localStorage.queueScreen != 'queue') {
-                this.setState({
-                    screen: 'default'
-                })
-            }
-            else {
-                this.setState({
-                    screen: 'queue'
-                })
-            }*/
+             this.setState({
+             screen: 'default'
+             })
+             }
+             else {
+             this.setState({
+             screen: 'queue'
+             })
+             }*/
         }
 
         if (this.state.screen == "default") {
@@ -245,90 +250,90 @@ export default class AppWindow extends Component {
     } // CLOSE BRACKET OF: componentWillReceiveProps
 
 
-    _screenPop(call) {
+    _screenPop(call) { //todo: call is a number
 
 
-		if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
-			
-			var endUserCallNumber = call.phone;
-			
-			var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
+        if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 
-			// set newCallerFlag to false since we have a new call...
-			if (localStorage.newCallerFlag == "true") {
-				localStorage.newCallerFlag = false;
-				
-				/***** SCREEN POP LOGIC START ******/
-					// grab call object and link to end user...
+            var endUserCallNumber = call.phone;
 
-                    if (endUserNumber.length > 4 || endUserNumber == "") {
-                        zendesk.grabCallId(endUserNumber)
-                            .then((status, err) => {
+            var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
-                                // set the end user profile object
-                                var otherCallerEndUser = status.users[0];
+            // set newCallerFlag to false since we have a new call...
+            if (localStorage.newCallerFlag == "true") {
+                localStorage.newCallerFlag = false;
+
+                /***** SCREEN POP LOGIC START ******/
+                // grab call object and link to end user...
+
+                if (endUserNumber.length > 4 || endUserNumber == "") {
+                    zendesk.grabCallId(endUserNumber)
+                        .then((status, err) => {
+
+                            // set the end user profile object
+                            var otherCallerEndUser = status.users[0];
 
 
-                                // if end user is found -> scren pop end user profile...
-                                if (status.users.length > 0 && endUserNumber != "") {
-                                    // screen pop the end user..
-                                    if (this.state.myZendeskAgent.id && otherCallerEndUser.id) {
-                                        zendesk.profilePop(this.state.myZendeskAgent.id, otherCallerEndUser.id)
+                            // if end user is found -> scren pop end user profile...
+                            if (status.users.length > 0 && endUserNumber != "") { //todo:
+                                // screen pop the end user..
+                                if (this.state.myZendeskAgent.id && otherCallerEndUser.id) {
+                                    zendesk.profilePop(this.state.myZendeskAgent.id, otherCallerEndUser.id)
+                                        .then((status, err) => {
+                                        });
+                                }
+                            }
+
+                            // NO MATCH OF END USERS, create a user w/ random phone number (for now)...
+                            else {
+
+
+
+                                // IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
+                                // 1. create new end user profile..
+                                // https://developer.zendesk.com/rest_api/docs/core/users#create-user
+
+                                // grab call info...
+                                var incomingCall = call.incoming;
+                                // incoming call -> ID == 45
+                                // outbound call -> ID == 46
+                                // via_id property needs to be set per ZD documentation
+                                var via_id = incomingCall ? 45 : 46;
+
+
+                                // 2. create new ticket w/ prepopulated data
+                                // https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
+                                zendesk.createNewTicket(endUserNumber, via_id, this.state.myZendeskAgent)
+                                    .then((status, err) => {
+                                        var lastCreatedTicket = status.ticket;
+
+                                        var createdTicket = lastCreatedTicket;
+
+
+                                        // 3. open that ticket in an agent's browser...
+                                        // https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser
+                                        // otherwise, working version is...
+                                        zendesk.openCreatedTicket(this.state.myZendeskAgent.id, createdTicket.id)
                                             .then((status, err) => {
                                             });
-                                    }
-                                }
+                                    });
 
-                                // NO MATCH OF END USERS, create a user w/ random phone number (for now)...
-                                else {
+                            }
 
+                        });
+                }
+                /*****SCREEN POP LOGIC END******/
 
+            } // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
 
-                                    // IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
-                                    // 1. create new end user profile..
-                                    // https://developer.zendesk.com/rest_api/docs/core/users#create-user
+            // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
+        }
 
-                                    // grab call info...
-                                    var incomingCall = call.incoming;
-                                    // incoming call -> ID == 45
-                                    // outbound call -> ID == 46
-                                    // via_id property needs to be set per ZD documentation
-                                    var via_id = incomingCall ? 45 : 46;
+    }
 
-
-                                    // 2. create new ticket w/ prepopulated data
-                                    // https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#creating-tickets
-                                    zendesk.createNewTicket(endUserNumber, via_id, this.state.myZendeskAgent)
-                                        .then((status, err) => {
-                                            var lastCreatedTicket = status.ticket;
-
-                                            var createdTicket = lastCreatedTicket;
-
-
-                                            // 3. open that ticket in an agent's browser...
-                                            // https://developer.zendesk.com/rest_api/docs/voice-api/talk_partner_edition#open-a-ticket-in-an-agents-browser
-                                            // otherwise, working version is...
-                                            zendesk.openCreatedTicket(this.state.myZendeskAgent.id, createdTicket.id)
-                                                .then((status, err) => {
-                                                });
-                                        });
-
-                                }
-
-                            });
-                    }
-                    /*****SCREEN POP LOGIC END******/
-
-			} // CLOSE BRACKET OF: if (this.state.newCallerFlag == true) {
-			
-		 // CLOSE BRACKET OF: if (this.props.mycalls.length > 0) {
-	}
-
-}
-
-	_answerCall(call) {
-		// fdp postFeed
-			localStorage.newCallerFlag = true;
+    _answerCall(call) {
+        // fdp postFeed
+        localStorage.newCallerFlag = true;
 
         for (var i = 0; i < this.props.mycalls.length; i++) {
             if (this.props.mycalls[i].xpid != call.xpid) {
@@ -546,13 +551,13 @@ export default class AppWindow extends Component {
 
     _holdCall(call) {
 
-		localStorage.newCallerFlag = false;
-		// if call is not on hold
-		if (call.state !== 3){
-			// fdp request to hold call...
-			fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid}).then((status)=>{
-				
-			}).catch((err)=>{
+        localStorage.newCallerFlag = false;
+        // if call is not on hold
+        if (call.state !== 3) {
+            // fdp request to hold call...
+            fdp.postFeed('mycalls', 'transferToHold', {mycallId: call.xpid}).then((status) => {
+
+            }).catch((err) => {
 
             });
         } else if (call.state === 3) {
@@ -669,8 +674,8 @@ export default class AppWindow extends Component {
         this._changeScreen('default');
     }
 
-	_switch(call) {
-		localStorage.newCallerFlag = false;
+    _switch(call) {
+        localStorage.newCallerFlag = false;
 
 
         if (this.props.mycalls.length < 2)
@@ -694,13 +699,13 @@ export default class AppWindow extends Component {
         });
     }
 
-	_add(mycall) {
-		localStorage.newCallerFlag = false;
-		
-		if (mycall.state !== 3){
-		fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status)=>{
-				
-			}).catch((err)=>{
+    _add(mycall) {
+        localStorage.newCallerFlag = false;
+
+        if (mycall.state !== 3) {
+            fdp.postFeed('mycalls', 'transferToHold', {mycallId: mycall.xpid}).then((status) => {
+
+            }).catch((err) => {
 
             });
         }
@@ -1161,8 +1166,9 @@ export default class AppWindow extends Component {
 
                     <div id="queueContent">
                         {
-                            this.state.myqueues.map(data => {
 
+                            this.state.myqueues.map(data => {
+                                    console.debug( "data =", data);
 
                                 return (
                                     <div className="myQueueList">
@@ -1183,14 +1189,12 @@ export default class AppWindow extends Component {
                         <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
                                 onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN
                         </button>
+
                         <button className={"queueLogout " + this.state.disableButton}
                                 disabled={this.state.disableButton}
                                 onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>LOG OUT
                         </button>
-
                     </div>
-
-
                 </div>
             );
         }
@@ -1202,9 +1206,57 @@ export default class AppWindow extends Component {
                     <div className="banner">
                         <i className="material-icons"
                            onClick={() => this._changeScreen('default')}>keyboard_arrow_left</i>
-                        <span>Manage Queue Status</span>
+                        <span>PREFERENCES</span>
                     </div>
-                    {/*<div id="queueBlock">
+
+                    <div id="queueBlock">
+                    </div>
+
+                    <div id="queueContent">
+                        <div className="myQueueList">
+                            <input className="queueCheckbox" type="checkbox"/>
+                            <div className="queueTitle">Display Associated Tickets</div>
+                            <p className="settingsInfo">Display tickets on inbound calls that are associated with the caller/user.</p>
+                        </div>
+
+                        <div className="myQueueList">
+                            <input className="queueCheckbox" type="checkbox"/>
+                            <div className="queueTitle">Create New Ticket</div>
+                            <p className="settingsInfo">Create new ticket on inbound calls when caller/user is unknown</p>
+                        </div>
+
+                    </div>
+
+                    <div className="queueBtns">
+
+                        <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
+                                onClick={() => this._loginQueues(this.state.myqueues)}>CANCEL
+                        </button>
+
+                        <button className={"queueLogout"}
+                                disabled={false}
+                                onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>SAVE
+                        </button>
+
+                    </div>
+
+                        {/*{
+                            this.state.myqueues.map(data => { return (
+                                <div className="settingsList">
+                                    <input className="settingsCheckbox" type="checkbox" disabled={data.disableQueue}
+                                           checked={data.checkStatus}
+                                           onChange={(e) => this._queueSelect(e, data, this.state.settings)}/>
+                                    <div className={"settingsTitle " + data.disableSettings}>{data.name}</div>
+                                    <p className={"settingsStatus " + data.disableSettings}>{data.status}</p>
+
+                                </div>
+                            );
+
+                            })
+                        }*/}
+
+                    {/*
+                    <div id="queueBlock">
                         <div id="selectAll">
                             <input id="allCheckbox" type="checkbox"
                                    onChange={(e) => this._queueSelect(e, "checkAll", this.state.myqueues)}/><label
@@ -1504,8 +1556,6 @@ export default class AppWindow extends Component {
                 {footer}
             </div>
         );
-
-
     }
 }
 
