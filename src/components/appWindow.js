@@ -245,9 +245,6 @@ export default class AppWindow extends Component {
 
     _screenPop(call) { //todo: call is a number
 
-        console.debug( "*** _screenPop this.state.isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked );
-
-
         if ((call.incoming) && (call.state == 2) && (call.state != 3) && (call.displayName !== "Call menu" && call.displayName !== "system")) {
 
             var endUserCallNumber = call.phone;
@@ -272,11 +269,11 @@ export default class AppWindow extends Component {
                             if (status.users.length > 0 && endUserNumber != "") { //todo:
                                 // screen pop the end user..
                                 if( !this.state.isDisplayAssociatedTicketsChecked ){
-                                    console.debug( "!!! _screenPop DO NOT Display Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
+                                    //console.debug( "!!! _screenPop DO NOT Display Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
 
                                 }else if (this.state.myZendeskAgent.id && otherCallerEndUser.id) {
 
-                                    console.debug( "!!! _screenPop DISPLAY Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
+                                    //console.debug( "!!! _screenPop DISPLAY Associated Tickets =", this.state.isDisplayAssociatedTicketsChecked );
 
                                     zendesk.profilePop(this.state.myZendeskAgent.id, otherCallerEndUser.id)
                                         .then((status, err) => {
@@ -286,7 +283,7 @@ export default class AppWindow extends Component {
 
                             // NO MATCH OF END USERS, create a user w/ random phone number (for now)...
                             else if( this.state.isCreateNewTicketChecked )  {
-                                console.debug( "!!! _screenPop creating NEW ticket =", this.state.isCreateNewTicketChecked );
+                                //console.debug( "!!! _screenPop creating NEW ticket =", this.state.isCreateNewTicketChecked );
 
 
                                 // IF USER IS NOT FOUND -> screen pop NEW TICKET (3 step process)...
@@ -317,12 +314,9 @@ export default class AppWindow extends Component {
                                             .then((status, err) => {
                                             });
                                     });
-
                             }else{
-
-                                console.debug( "!!! _screenPop DO NOT create new ticket =", this.state.isCreateNewTicketChecked );
+                                //console.debug( "!!! _screenPop DO NOT create new ticket =", this.state.isCreateNewTicketChecked );
                             }
-
                         });
                 }
                 /*****SCREEN POP LOGIC END******/
@@ -753,13 +747,11 @@ export default class AppWindow extends Component {
     }
 
     _settingsSave() {
-        console.debug("$$$ settingsSave");
-        console.debug("$$$ localStorage =", localStorage );
+
         var preferences = { isDisplayAssociatedTicketsChecked: this.state.isDisplayAssociatedTicketsChecked,
             isCreateNewTicketChecked: this.state.isCreateNewTicketChecked};
 
         localStorage.setItem('preferences', JSON.stringify(preferences));
-
         this._changeScreen('default');
     }
 
@@ -770,8 +762,6 @@ export default class AppWindow extends Component {
         var obj = {};
         obj[propertyName] = value;
         this.setState(obj);
-
-        console.debug("obj", obj);
     }
 
     _queueSelect(event, queue, myqueues) {
@@ -817,8 +807,6 @@ export default class AppWindow extends Component {
         this.setState({
             myqueues: myqueues
         })
-
-
     }
 
 
@@ -872,7 +860,6 @@ export default class AppWindow extends Component {
                         for (var s = 0; s < this.props.queue_members_status.length; s++) {
                             if (this.props.queue_members[m].xpid == this.props.queue_members_status[s].xpid) {
 
-
                                 if (this.props.queue_members_status[s].status == "login") {
                                     var queue_status = "Logged In";
                                     var disableQueue = false;
@@ -885,11 +872,8 @@ export default class AppWindow extends Component {
                                     var queue_status = "Permanently Logged In";
                                     var disableQueue = true;
                                 }
-
                                 myqueues[i].status = queue_status;
                                 myqueues[i].disableQueue = disableQueue;
-
-
                             }
                         }
                     }
@@ -1201,7 +1185,6 @@ export default class AppWindow extends Component {
                         {
 
                             this.state.myqueues.map(data => {
-                                console.debug("data =", data);
 
                                 return (
                                     <div className="myQueueList">
@@ -1246,11 +1229,6 @@ export default class AppWindow extends Component {
                     </div>
 
                     <div id="queueContent">
-
-                        { console.debug( "localStorage.preferences=",  JSON.parse(localStorage.getItem("preferences") )) }
-                        {console.debug("*** render - isDisplayAssociatedTicketsChecked =", this.state.isDisplayAssociatedTicketsChecked) }
-                        {console.debug("*** render - isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked) }
-
 
                         <div className="myQueueList">
                             <input className="queueCheckbox" type="checkbox"
