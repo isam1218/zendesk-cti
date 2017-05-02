@@ -299,7 +299,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 	}
 
 
-	 localStorage.setItem("avatars",JSON.stringify(avatars));
+	localStorage.setItem("avatars",JSON.stringify(avatars));
     localStorage.setItem("calllog", JSON.stringify(calllog));
     localStorage.setItem("deletedCalls", JSON.stringify(calls));
     localStorage.setItem("locations", JSON.stringify(locations));

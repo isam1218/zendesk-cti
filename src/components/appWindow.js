@@ -74,13 +74,15 @@ export default class AppWindow extends Component {
         }
 
         window.addEventListener('focus', (e) => {
-            setTimeout(() => {
+           /* setTimeout(() => {
                 this._getQueues()
-            }, 1000);
+            }, 1000);*/
+
+            this._getQueues();
         });
 
 	  fdp.emitter.addListener('data_sync_update', (data) => {
-		  	if(data['queues']){
+		  	/*if(data['queues']){
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}
 		  	if(data['queue_members_status']){
@@ -88,7 +90,7 @@ export default class AppWindow extends Component {
 		  	}
 		  	if(data['queue_members']){
 		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
+		  	}*/
 		  	if(data["mycalls"]){
 
 		  			for(var i = 0; i < data["mycalls"].length;i++){
@@ -840,7 +842,22 @@ _callEnded(endedCall){
 
     }
 
+    _getCheckStatus( myqueues, xpid ){
+        for (var q = 0; q < myqueues.length; q++) {
+            if( myqueues[q].xpid = xpid ){
+
+                //console.debug( "Found IT ",  myqueues[q].xpid, xpid );
+            }
+        }
+
+    }
+
     _getQueues() {
+
+
+        if( this.state.myqueues && this.state.myqueues.checkStatus ){
+           // console.debug( "~B this.state.myqueues.checkStatus",  this.state.myqueues.checkStatus );
+        }
 
         var myqueues = [];
 
@@ -849,8 +866,9 @@ _callEnded(endedCall){
             for (var m = 0; m < this.props.queue_members.length; m++) {
                 if (this.props.queue_members[m].contactId == this.props.settings.my_pid) {
                     if (this.props.queues[q].xef001type != "delete" && this.props.queues[q].xpid == this.props.queue_members[m].queueId) {
-                        myqueues.push(this.props.queues[q]);
+                       // console.debug( "this.props.queues[q]",  this.props.queues[q] );
 
+                        myqueues.push(this.props.queues[q]);
 
                     }
 
@@ -886,11 +904,11 @@ _callEnded(endedCall){
                 }
             }
 
+            //console.debug( "myqueues =", myqueues);
+
             this.setState({
                 myqueues: myqueues
             });
-
-
         }
 
 
@@ -1569,9 +1587,7 @@ _callEnded(endedCall){
 
         // RENDER COMPONENTS TOGETHER:
         return (
-            <div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => setTimeout(() => {
-                this._getQueues()
-            }, 1000)}>
+            <div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => this._getQueues()}>
                 {overlay}
                 {popup}
                 <div id="header">
