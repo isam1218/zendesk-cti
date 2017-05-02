@@ -46,8 +46,9 @@ export default class AppWindow extends Component {
     componentDidMount() {
 
 
-        if (this.state.screen == "default") {
+        if (this.state.screen == "default" || this.state.screen == "settings" ) {
             window.addEventListener('storage', (e) => {
+
 
 
                 if (e.key == "ticketPhone") {
@@ -68,6 +69,15 @@ export default class AppWindow extends Component {
                             focused: false
                         })
                     }
+                }else if(e.key == "preferences"){
+
+                    var preferences = JSON.parse(localStorage.getItem("preferences"));
+
+                    this.state.isDisplayAssociatedTicketsChecked = preferences.isDisplayAssociatedTicketsChecked;
+                    this.state.isCreateNewTicketChecked = preferences.isCreateNewTicketChecked;
+
+                    console.debug( "window.addEventListener - this.state.isDisplayAssociatedTicketsChecked =", this.state.isDisplayAssociatedTicketsChecked );
+                    console.debug( "window.addEventListener -this.state.isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked );
                 }
                 //localStorage.removeItem("ticketPhone");
             });
