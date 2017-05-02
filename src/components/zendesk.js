@@ -34,6 +34,7 @@ const zendesk = {
 
 	addCallLog(ticketNumber,phoneNumber,callType,startTime,duration){
 		// https://developer.zendesk.com/rest_api/docs/core/users#show-the-currently-authenticated-user
+		localStorage.ticketNumber = "";
 		var grabCall = {
 		  url: `/api/v2/users/search.json?query=*${phoneNumber}`,
 		  type: 'GET',
