@@ -740,7 +740,7 @@ _callEnded(endedCall){
     _openQueue() {
 
         var message = "Looks like you are not part of any queues. Please contact your administrator if you wish to be added to queues and use this feature.";
-        if (this.state.myqueues) {
+        if (localStorage.myqueues != undefined && localStorage.myqueues != "") {
             this._changeScreen('queue');
         }
         else {
@@ -812,9 +812,10 @@ _callEnded(endedCall){
         }
 
 
-        this.setState({
+        /*this.setState({
             myqueues: myqueues
-        })
+        })*/
+localStorage.setItem("myqueues",JSON.stringify(myqueues));
     }
 
 
@@ -848,10 +849,6 @@ _callEnded(endedCall){
 
     _getQueues() {
 
-
-        if( this.state.myqueues && this.state.myqueues.checkStatus ){
-           // console.debug( "~B this.state.myqueues.checkStatus",  this.state.myqueues.checkStatus );
-        }
 
         var myqueues = [];
 
@@ -900,9 +897,10 @@ _callEnded(endedCall){
 
             //console.debug( "myqueues =", myqueues);
 
-            this.setState({
+           /* this.setState({
                 myqueues: myqueues
-            });
+            });*/
+            localStorage.setItem("myqueues",JSON.stringify(myqueues));
         }
 
 
@@ -1210,7 +1208,7 @@ _callEnded(endedCall){
                     <div id="queueBlock">
                         <div id="selectAll">
                             <input id="allCheckbox" type="checkbox"
-                                   onChange={(e) => this._queueSelect(e, "checkAll", this.state.myqueues)}/><label
+                                   onChange={(e) => this._queueSelect(e, "checkAll", JSON.parse(localStorage.myqueues))}/><label
                             id="allLabel">Select All</label>
                         </div>
                     </div>
@@ -1218,13 +1216,13 @@ _callEnded(endedCall){
                     <div id="queueContent">
                         {
 
-                            this.state.myqueues.map(data => {
+                            JSON.parse(localStorage.myqueues).map(data => {
 
                                 return (
                                     <div className="myQueueList">
                                         <input className="queueCheckbox" type="checkbox" disabled={data.disableQueue}
                                                checked={data.checkStatus}
-                                               onChange={(e) => this._queueSelect(e, data, this.state.myqueues)}/>
+                                               onChange={(e) => this._queueSelect(e, data, JSON.parse(localStorage.myqueues))}/>
                                         <div className={"queueTitle " + data.disableQueue}>{data.name}</div>
                                         <p className={"queueStatus " + data.disableQueue}>{data.status}</p>
 
@@ -1237,12 +1235,12 @@ _callEnded(endedCall){
                     <div className="queueBtns">
 
                         <button className={"queueLogin " + this.state.disableButton} disabled={this.state.disableButton}
-                                onClick={() => this._loginQueues(this.state.myqueues)}>LOG IN
+                                onClick={() => this._loginQueues(JSON.parse(localStorage.myqueues))}>LOG IN
                         </button>
 
                         <button className={"queueLogout " + this.state.disableButton}
                                 disabled={this.state.disableButton}
-                                onClick={() => this._openPopup('logoutreasons', this.state.myqueues)}>LOG OUT
+                                onClick={() => this._openPopup('logoutreasons', JSON.parse(localStorage.myqueues))}>LOG OUT
                         </button>
                     </div>
                 </div>
@@ -1554,7 +1552,7 @@ _callEnded(endedCall){
                     {...this.props}
                     className={classy}
                     callback={() => this._openPopup()}
-                    myqueues={this.state.myqueues}
+                    myqueues={JSON.parse(localStorage.myqueues)}
                     getQueues={() => this._getQueues()}
                     clearSelect={()=> this._clearCheckbox()}
                 />
@@ -1564,10 +1562,12 @@ _callEnded(endedCall){
         }
         var queueCount = 0;
         var queueIcon;
+        var myqueues;
 
-        if (this.state.myqueues) {
-            for (var q = 0; q < this.state.myqueues.length; q++) {
-                if (this.state.myqueues[q].status == "Logged In" || this.state.myqueues[q].status == "Permanently Logged In") {
+        if (localStorage.myqueues != undefined && localStorage.myqueues != "") {
+        	myqueues = JSON.parse(localStorage.myqueues);
+            for (var q = 0; q < myqueues.length; q++) {
+                if (myqueues[q].status == "Logged In" || myqueues[q].status == "Permanently Logged In") {
                     queueCount = parseInt(queueCount) + 1;
                 }
             }
