@@ -51,7 +51,7 @@ this.state = {
               app: true,
             });
 
-            fdp.becomeMaster();
+          
     
     }
 
