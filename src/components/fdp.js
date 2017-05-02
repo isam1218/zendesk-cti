@@ -402,7 +402,7 @@ const fdp =  {
 			 	setTimeout(()=>{resolve(1)},2500);
 			 }
 			 else{
-			 	resolve(1);
+			 	setTimeout(()=>{resolve(1)},1500);
 			 }
 			 
 		}).fail((res,err,body) => {
