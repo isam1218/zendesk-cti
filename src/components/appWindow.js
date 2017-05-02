@@ -988,6 +988,8 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
             var sorted = this.props.calllog.sort(function (a, b) {
                 return a.startedAt - b.startedAt;
             });
+            console.log("SORTED",sorted);
+        
 
             client.invoke('resize', {width: '320px', height: "440px"});
 
@@ -1029,10 +1031,15 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 
 
                         <ul className="recentList">
-                            {
+                        {(() => {
 
+                        
+                            
+                            	if(sorted.length > 0){
+                            		return(
                                 sorted.reverse().slice(0, 5).map(items => {
-                                    if (items) {
+                                	console.log("ITEMS1",items);
+                                    
                                         call_style = 'material-icons ' + ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
                                         call_type = ((!items.incoming && !items.missed) ? "call_made" : (!items.incoming && items.missed) ? "call_missed_outgoing" : (items.incoming && !items.missed) ? "call_received" : (items.incoming && items.missed) ? "call_missed" : '');
 
@@ -1047,14 +1054,17 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
                                                     className="recentTimeAgo">{moment(items.startedAt).startOf().fromNow()}</div>
                                             </li>
                                         )
-                                    }
-                                    else {
-                                        return <div></div>;
-                                    }
+                                    
+                                    
 
                                 })
+								)
+								}
+								else{
+									return <div className="noRecents">No recent calls</div>;
+								}
 
-                            }
+                            })()}
                         </ul>
                     </div>
 
