@@ -183,6 +183,7 @@ export default class Popup extends Component {
 		fdp.postFeed("queues","queueLogout",data).then((status)=>{
 			if(status ==1){
 				this.props.getQueues();
+				this.props.clearSelect();
 
 			}
 		}).catch((reason)=>{

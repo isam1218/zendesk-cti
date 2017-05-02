@@ -834,7 +834,7 @@ _callEnded(endedCall){
         fdp.postFeed("queues", "queueLogin", data).then((status) => {
             if (status == 1) {
                 this._getQueues();
-
+                this._clearCheckbox();
             }
         }).catch((err) => {
 
@@ -842,14 +842,8 @@ _callEnded(endedCall){
 
     }
 
-    _getCheckStatus( myqueues, xpid ){
-        for (var q = 0; q < myqueues.length; q++) {
-            if( myqueues[q].xpid = xpid ){
-
-                //console.debug( "Found IT ",  myqueues[q].xpid, xpid );
-            }
-        }
-
+    _clearCheckbox(){
+    	document.getElementById("allCheckbox").checked = false;
     }
 
     _getQueues() {
@@ -1562,6 +1556,7 @@ _callEnded(endedCall){
                     callback={() => this._openPopup()}
                     myqueues={this.state.myqueues}
                     getQueues={() => this._getQueues()}
+                    clearSelect={()=> this._clearCheckbox()}
                 />
             );
 

@@ -399,7 +399,7 @@ const fdp =  {
 		}).done((res,success,body) => {
 			 console.log('postFeed done - ', res, success, body);
 			 if(feed == "queues"){
-			 	setTimeout(()=>{resolve(1)},2000);
+			 	setTimeout(()=>{resolve(1)},2500);
 			 }
 			 else{
 			 	setTimeout(()=>{resolve(1)},500);
