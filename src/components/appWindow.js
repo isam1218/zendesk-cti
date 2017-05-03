@@ -70,14 +70,15 @@ export default class AppWindow extends Component {
                         })
                     }
                 }else if(e.key == "preferences"){
-
-                    var preferences = JSON.parse(localStorage.getItem("preferences"));
+                	if (e.newValue != ("null" || null)) {
+                	
+                    var preferences = JSON.parse(e.newValue);
 
                     this.state.isDisplayAssociatedTicketsChecked = preferences.isDisplayAssociatedTicketsChecked;
                     this.state.isCreateNewTicketChecked = preferences.isCreateNewTicketChecked;
 
-                    console.debug( "window.addEventListener - this.state.isDisplayAssociatedTicketsChecked =", this.state.isDisplayAssociatedTicketsChecked );
-                    console.debug( "window.addEventListener -this.state.isCreateNewTicketChecked =", this.state.isCreateNewTicketChecked );
+                    
+                	}
                 }
                 //localStorage.removeItem("ticketPhone");
             });
