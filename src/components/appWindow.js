@@ -253,11 +253,12 @@ _callEnded(endedCall){
 							 currentTime = new Date().getTime();
 							 duration = (parseInt(currentTime) - parseInt(callEnded.created));
 							duration.toString();
-
+					localStorage.getItem("ticketNumber");
 					if(localStorage.ticketNumber && localStorage.ticketNumber.length > 0){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 
-							localStorage.ticketNumber = "";
+							
+							localStorage.removeItem("ticketNumber");
 
 						     callEnded = "";
 						     if(this.props.mycalls.length == 0){
@@ -378,7 +379,8 @@ _callEnded(endedCall){
 
 		fdp.postFeed('mycalls', 'answer', {mycallId: call.xpid}).then((status)=>{
 
-		localStorage.ticketNumber = "";
+		
+		localStorage.removeItem("ticketNumber");
 
 		}).catch((err)=>{
 
@@ -708,7 +710,7 @@ _callEnded(endedCall){
 
 	_switch(call) {
 		localStorage.newCallerFlag = false;
-		localStorage.ticketNumber = "";
+		localStorage.removeItem("ticketNumber");
 
 
 		if (this.props.mycalls.length < 2)
@@ -770,7 +772,7 @@ _callEnded(endedCall){
             isCreateNewTicketChecked: this.state.isCreateNewTicketChecked};
 
         localStorage.setItem('preferences', JSON.stringify(preferences));
-        //this._changeScreen('default');
+        this._changeScreen('default');
     }
 
     _settingsSelect(event, propertyName) {
@@ -954,10 +956,10 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
     	})
 
 		if(property == "ticketNumber"){
-			localStorage.ticketNumber = e.target.value;
+			localStorage.setItem("ticketNumber",e.target.value);
 		}
 		else if(property == "phone"){
-			localStorage.ticketNumber = "";
+			localStorage.removeItem("ticketNumber");
 		}
 
 
@@ -965,7 +967,7 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 
   _clearTicketNumber(){
 
-  	localStorage.ticketNumber = "";
+  	localStorage.removeItem("ticketNumber");
   }
 
     _removeByAttr(arr, attr, value) {
