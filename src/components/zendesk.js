@@ -61,15 +61,23 @@ const zendesk = {
 		client.request(grabCall).then(info =>{
 
 			if(info.users.length > 0){
+
 				 contactID = info.users[0].id;
-				 dialNum = info.users[0].phone;
+				 if(info.users[0].phone != null){
+				 	dialNum = info.users[0].phone;
+				 }
+				 else{
+				 	dialNum = "n/a";
+				 }
+				 
 				 callFrom = info.users[0].name;
+				 
 				}
 			else{
 				contactID = "Unknown";
 				dialNum = phoneNumber;
 				callFrom = phoneNumber;
-
+				
 				}
 
 		client.get("currentUser").then((user)=>{
