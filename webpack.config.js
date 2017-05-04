@@ -7,9 +7,6 @@ const PATHS = {
 };
 
 module.exports = {
-
-  devtool: 'source-map',
-
   entry: {
     javascript: PATHS.app
   },
@@ -38,7 +35,7 @@ module.exports = {
     },
     {
       test: /\.less$/,
-      loader: "style-loader!css-loader?sourceMap!autoprefixer-loader!less-loader?sourceMap"
+      loader: "style-loader!css-loader!autoprefixer-loader!less-loader"
     }
     ]
   },
