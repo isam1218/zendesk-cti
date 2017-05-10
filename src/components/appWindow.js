@@ -260,20 +260,22 @@ _callEnded(endedCall){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
 
 							
-							localStorage.removeItem("ticketNumber");
 
-						     callEnded = "";
+
+					});
+					}
+
+                        localStorage.removeItem("ticketNumber");
+
+                             callEnded = "";
                              call_num = "";
                              call_type = "";
                              start_time = "";
                              currentTime = "";
                              duration = "";
-						     if(this.props.mycalls.length == 0){
-						     	fdp.clearCalls();
-						     }
-
-					});
-					}
+                             if(this.props.mycalls.length == 0){
+                                fdp.clearCalls();
+                             }
 				}
 	    		}
 
