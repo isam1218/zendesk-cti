@@ -103,17 +103,14 @@ export default class AppWindow extends Component {
 		  		setTimeout(()=>{this._getQueues()},1000);
 		  	}*/
 		  	if(data["mycalls"]){
-
+                
 		  			for(var i = 0; i < data["mycalls"].length;i++){
 				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
 				  			this._screenPop(data["mycalls"][i]);
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
 				  					this._callEnded(data["mycalls"][i]);
-
-
-
-
+                                    console.log("DELETE MYCALLS",data["mycalls"][i]);
 				  		}
 			  		}
 
@@ -258,7 +255,7 @@ _callEnded(endedCall){
 					localStorage.getItem("ticketNumber");
 					if(localStorage.ticketNumber && localStorage.ticketNumber.length > 0){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
-
+                        console.log("CALLLOG",status);
 							
 
 
@@ -964,14 +961,14 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 	      [property]: e.target.value
     	})
 
-		if(property == "ticketNumber"){
-			localStorage.setItem("ticketNumber",e.target.value);
-		}
-		else if(property == "phone"){
-			localStorage.removeItem("ticketNumber");
-		}
+  }
 
+  _updateTicket(e,property){
+        this.setState({
+          [property]: e.target.value
+        })
 
+        localStorage.setItem("ticketNumber",e.target.value);
   }
 
   _clearTicketNumber(){
@@ -1515,7 +1512,7 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 
 						<div className="associateZendesk">
 							<div id="associateText">Associate call with a Zendesk ticket</div>
-							<input id="associateTicket" type="text" placeholder="Ticket Number" value={localStorage.ticketNumber} onFocus={()=>this._clearTicketNumber()} onChange={(e) => this._updateValue(e, 'ticketNumber')} />
+							<input id="associateTicket" type="text" placeholder="Ticket Number" value={localStorage.ticketNumber} onFocus={()=>this._clearTicketNumber()} onChange={(e) => this._updateTicket(e, 'ticketNumber')} />
 						</div>
 
 						<i className="material-icons end" onClick={() => this._endCall(mycall)}>call_end</i>
