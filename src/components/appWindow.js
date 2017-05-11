@@ -85,23 +85,12 @@ export default class AppWindow extends Component {
         }
 
         window.addEventListener('focus', (e) => {
-           /* setTimeout(() => {
-                this._getQueues()
-            }, 1000);*/
-
+          
             this._getQueues();
         });
 
 	  fdp.emitter.addListener('data_sync_update', (data) => {
-		  	/*if(data['queues']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
-		  	if(data['queue_members_status']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}
-		  	if(data['queue_members']){
-		  		setTimeout(()=>{this._getQueues()},1000);
-		  	}*/
+
 		  	if(data["mycalls"]){
                 
 		  			for(var i = 0; i < data["mycalls"].length;i++){
@@ -110,7 +99,7 @@ export default class AppWindow extends Component {
 				  		}
 				  		if(data["mycalls"][i].xef001type == "delete"){
 				  					this._callEnded(data["mycalls"][i]);
-                                    console.log("DELETE MYCALLS",data["mycalls"][i]);
+                                    
 				  		}
 			  		}
 
@@ -255,7 +244,7 @@ _callEnded(endedCall){
 					localStorage.getItem("ticketNumber");
 					if(localStorage.ticketNumber && localStorage.ticketNumber.length > 0){
 					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
-                        console.log("CALLLOG",status);
+                        
 							
 
 
