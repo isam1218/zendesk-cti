@@ -159,12 +159,14 @@ export default class Popup extends Component {
 		var logoutReason = reason;
 		var data = {};
 		var toSend = [];
-		for(var i = 0; i < this.props.myqueues.length;i++){
-			if(this.props.myqueues[i].checkStatus == true){
+		var myqueues = JSON.parse(this.props.myqueues);
+
+		for(var i = 0; i < myqueues.length;i++){
+			if(myqueues[i].checkStatus == true){
 				
 				
 					
-					toSend.push(this.props.myqueues[i].xpid);
+					toSend.push(myqueues[i].xpid);
 					
 
 				

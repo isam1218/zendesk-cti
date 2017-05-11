@@ -1389,10 +1389,9 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 
             if (mycall.incoming && mycall.state == 0) {
                 // not for carrier location
-                if (this.props.locations[mycall.locationId].locationType != 'm')
-                    answerBtn = (
-                        <i className="material-icons answer" onClick={() => this._answerCall(mycall)}>call</i>);
-
+                //if (this.props.locations[mycall.locationId].locationType != 'm'){
+                    answerBtn = (<i className="material-icons answer" onClick={() => this._answerCall(mycall)}>call</i>);
+                    //}
                 // change color of bottom bar
                 barCSS = `type${mycall.type}`;
             }
@@ -1583,7 +1582,7 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
                     {...this.props}
                     className={classy}
                     callback={() => this._openPopup()}
-                    myqueues={JSON.parse(localStorage.myqueues)}
+                    myqueues={localStorage.myqueues}
                     getQueues={() => this._getQueues()}
                     clearSelect={()=> this._clearCheckbox()}
                 />
