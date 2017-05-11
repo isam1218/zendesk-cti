@@ -93,8 +93,10 @@ const fdp =  {
 		localStorage.clear("auth");
 		localStorage.clear("node");
 		localStorage.clear("refresh");
-		fdp.synced = false;
-		fdp.emitter.emit('logout');
+		window.location.reload();
+		
+		//fdp.synced = false;
+		//fdp.emitter.emit('logout');
 
 	},
 	login: (username, password) => {

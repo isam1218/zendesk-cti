@@ -49,38 +49,7 @@ var members_status = [];
 // managing data changed by sync to update state which will be passed down
 
 var reset = fdp.emitter.addListener('logout', () => {
- settings = {
-	display_name: '',
-	current_location: 'self',
-	ringing_volume: '1', 
-	hudmw_webphone_mic: '0.5',
-	hudmw_webphone_speaker: '0.5',
-	chat_status: 'offline', 
-	chat_custom_status: '',
-	alwaysOnTop: false,
-	coords: {},
-	devices: {input:[], output:[]},
-};
-
- locations = {};
- avatars = {};
- mycalls = [];
- calls = [];
- calllog = [];
- new_log = [];
- queue_members_status = [];
- queues = [];
- new_queues = [];
- queue_members = [];
- queuelogoutreasons = [];
- members_status = [];
- 
-
-
-
- // client.context().then((context)=>{
   	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
-   //});
 });
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{
