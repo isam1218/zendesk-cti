@@ -125,7 +125,7 @@ const fdp =  {
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
 				cache:false,
-				timeout: 9000,
+				timeout: 3000,
 				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
@@ -152,12 +152,12 @@ const fdp =  {
 				
 			}).fail((res,err,body)=>{
 				// does the below (along w/ an else if for 2nd branch) fix refresh???
-				/*
+				
 				if (err == "timeout") {
 					console.log('timeout! refresh??? - ', err);
 					fdp.login();
 				}
-				*/
+				
 
 				if (res.status == 403){
 					// no response -> can't connect to FDP server -> display error
@@ -198,7 +198,7 @@ const fdp =  {
 			url: url,
 			method: 'POST',
 			cache:false,
-			timeout: 9000,
+			timeout: 2000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -271,7 +271,7 @@ const fdp =  {
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
 			cache:false,
-			timeout: 9000,
+			timeout: 2000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
