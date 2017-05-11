@@ -340,8 +340,12 @@ const fdp =  {
 				localStorage.auth = null;
 				localStorage.node = null;
 				// call client login for new auth token
+				if(localStorage.refresh == null || localStorage.refresh == undefined){
+					fdp.logout();
+				}
+				else{
 				fdp.login();
-				
+				}
 			
 				break;
 			// network failure
