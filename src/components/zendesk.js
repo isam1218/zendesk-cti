@@ -65,12 +65,14 @@ const zendesk = {
 				 contactID = info.users[0].id;
 				 if(info.users[0].phone != null){
 				 	dialNum = info.users[0].phone;
+				 	callFrom = info.users[0].name;
 				 }
 				 else{
 				 	dialNum = "n/a";
+				 	callFrom = "Unknown";
 				 }
 				 
-				 callFrom = info.users[0].name;
+				 
 				 
 				}
 			else{
