@@ -49,7 +49,9 @@ var members_status = [];
 // managing data changed by sync to update state which will be passed down
 
 var reset = fdp.emitter.addListener('logout', () => {
-  	ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+	client.context().then((context)=>{
+  		ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+  	});
 });
 
 var clearCalls = fdp.emitter.addListener('clearCalls',()=>{
