@@ -125,7 +125,7 @@ const fdp =  {
 				url: server.serverURL+"/accounts/ClientLogin",
 				method: 'POST',
 				cache:false,
-				timeout: 3000,
+				timeout: 2000,
 				data:params,
 				headers: {
 					'Content-type': 'application/x-www-form-urlencoded'
@@ -198,7 +198,7 @@ const fdp =  {
 			url: url,
 			method: 'POST',
 			cache:false,
-			timeout: 2000,
+			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -271,7 +271,7 @@ const fdp =  {
 			url: `${server.serverURL}/v1/sync?t=web&${updates.join('=&')}=`,
 			method: 'POST',
 			cache:false,
-			timeout: 2000,
+			timeout: 9000,
 			headers: {
 				'Content-type': 'application/x-www-form-urlencoded',
 				'Authorization': 'auth=' + localStorage.auth,
@@ -400,12 +400,8 @@ const fdp =  {
 			data: params
 		}).done((res,success,body) => {
 			 console.log('postFeed done - ', res, success, body);
-			 if(feed == "queues"){
-			 	setTimeout(()=>{resolve(1)},1000);
-			 }
-			 else{
 			 	setTimeout(()=>{resolve(1)},1500);
-			 }
+			 
 			 
 		}).fail((res,err,body) => {
 			// fail placeholder
