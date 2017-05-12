@@ -1598,7 +1598,7 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
 
         // RENDER COMPONENTS TOGETHER:
         return (
-            <div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => this._getQueues()}>
+            <div id="app" onClick={popup ? () => this._openPopup(null) : ''} onLoad={() => setTimeout(()=>{this._getQueues()},1)}>
                 {overlay}
                 {popup}
                 <div id="header">
