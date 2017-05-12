@@ -80,16 +80,19 @@ export default class AppWindow extends Component {
                     
                 	}
                 }
+
+
                 //localStorage.removeItem("ticketPhone");
             });
         }
 
-        window.addEventListener('focus', (e) => {
-          
-            this._getQueues();
-        });
+
 
 	  fdp.emitter.addListener('data_sync_update', (data) => {
+
+            if(data['queue_members_status']){
+                this._getQueues();
+            }
 
 		  	if(data["mycalls"]){
                 
@@ -838,15 +841,16 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
         data.contactId = this.props.settings.my_pid;
         data.queues = toSend.join(",");
 
+        
 
         fdp.postFeed("queues", "queueLogin", data).then((status) => {
-            if (status == 1) {
-                this._getQueues();
-                this._clearCheckbox();
-            }
+            this._clearCheckbox();
+            this._getQueues();
         }).catch((err) => {
 
         });
+
+
 
     }
 
@@ -1569,8 +1573,8 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
                     className={classy}
                     callback={() => this._openPopup()}
                     myqueues={localStorage.myqueues}
-                    getQueues={() => this._getQueues()}
                     clearSelect={()=> this._clearCheckbox()}
+                    getQueues={()=> this._getQueues()}
                 />
             );
 
