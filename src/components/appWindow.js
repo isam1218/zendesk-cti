@@ -93,6 +93,9 @@ export default class AppWindow extends Component {
             if(data['queue_members_status']){
                 this._getQueues();
             }
+            if(data['queues']){
+                setTimeout(()=>{this._getQueues()},1000);
+            }
 
 		  	if(data["mycalls"]){
                 
