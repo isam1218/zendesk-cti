@@ -100,9 +100,25 @@ export default class AppWindow extends Component {
 		  	if(data["mycalls"]){
                 
 		  			for(var i = 0; i < data["mycalls"].length;i++){
-				  		if(data["mycalls"][i].state == 2 && data["mycalls"][i].holdAction != "hold"){
-				  			this._screenPop(data["mycalls"][i]);
-				  		}
+
+
+                            for(var d = 0; d < this.props.calls.length; d++){
+
+                                
+                                    if(this.props.calls[this.props.calls.length - 2] != undefined && this.props.calls[this.props.calls.length - 2].xef001type == "delete"){
+                                        localStorage.newCallerFlag = false;
+                                        break;
+                                    }
+                                    else if(this.props.calls[this.props.calls.length - 1].state == 2 && this.props.calls[this.props.calls.length - 1].state != 3){
+                                        localStorage.newCallerFlag = true;
+                                        this._screenPop(this.props.calls[this.props.calls.length - 1]);
+                                        break;
+                                    }
+                                
+                                
+                            }
+
+				  		
 				  		if(data["mycalls"][i].xef001type == "delete"){
 				  					this._callEnded(data["mycalls"][i]);
                                     
@@ -225,14 +241,14 @@ _callEnded(endedCall){
 	}
 		if(focusedCall){
 
-    	if(this.props.deletedCalls){
+    	if(this.props.calls){
 
-    	for(var d = 0; d < this.props.deletedCalls.length; d++){
+    	for(var d = 0; d < this.props.calls.length; d++){
 
-	    	if(this.props.deletedCalls[this.props.deletedCalls.length - 1].xef001type == 'delete'){
-	    		if((this.props.deletedCalls[this.props.deletedCalls.length - 1].xpid == this.props.deletedCalls[d].xpid) && (this.props.deletedCalls[d].xef001type != 'delete')){
+	    	if(this.props.calls[this.props.calls.length - 1].xef001type == 'delete'){
+	    		if((this.props.calls[this.props.calls.length - 1].xpid == this.props.calls[d].xpid) && (this.props.calls[d].xef001type != 'delete')){
 
-	    			var callEnded = this.props.deletedCalls[d];
+	    			var callEnded = this.props.calls[d];
                     console.log("CALL ENDED",callEnded);
 	    			if(callEnded){
 	    					var call_num = "";

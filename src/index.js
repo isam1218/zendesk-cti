@@ -50,7 +50,7 @@ var members_status = [];
 
 var reset = fdp.emitter.addListener('logout', () => {
 	client.context().then((context)=>{
-  		ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} logout={true} />, document.querySelector('.container'));
+  		ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} calls={calls} logout={true} />, document.querySelector('.container'));
   	});
 });
 
@@ -272,7 +272,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 	localStorage.setItem("avatars",JSON.stringify(avatars));
     localStorage.setItem("calllog", JSON.stringify(calllog));
-    localStorage.setItem("deletedCalls", JSON.stringify(calls));
+    localStorage.setItem("calls", JSON.stringify(calls));
     localStorage.setItem("locations", JSON.stringify(locations));
     localStorage.setItem("mycalls", JSON.stringify(mycalls));
     localStorage.setItem("queue_members", JSON.stringify(queue_members));
@@ -286,7 +286,7 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
       calllog= JSON.parse(localStorage.calllog);
       locations= JSON.parse(localStorage.locations);
       mycalls= JSON.parse(localStorage.mycalls);
-      calls= JSON.parse(localStorage.deletedCalls);
+      calls= JSON.parse(localStorage.calls);
       queue_members= JSON.parse(localStorage.queue_members);
       queue_members_status= JSON.parse(localStorage.queue_members_status);
       queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
@@ -295,14 +295,14 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
   }
 
   client.context().then((context)=>{
-  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} calls={calls} />, document.querySelector('.container'));
    });
 });
 
 
 
  client.context().then((context)=>{
-  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+  ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} calls={calls} />, document.querySelector('.container'));
    });
 
 function processCalls(calls) {

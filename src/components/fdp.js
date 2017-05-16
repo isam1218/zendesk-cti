@@ -61,7 +61,7 @@ const fdp =  {
 			       calllog= JSON.parse(localStorage.calllog);
 			       locations= JSON.parse(localStorage.locations);
 			       mycalls= JSON.parse(localStorage.mycalls);
-			       calls= JSON.parse(localStorage.deletedCalls);
+			       calls= JSON.parse(localStorage.calls);
 			       queue_members= JSON.parse(localStorage.queue_members);
 			       queue_members_status= JSON.parse(localStorage.queue_members_status);
 			       queuelogoutreasons= JSON.parse(localStorage.queuelogoutreasons);
@@ -72,7 +72,7 @@ const fdp =  {
 			   });
 			       checkPromise.then((success)=>{
 			       	if(success == 1){
-			       	 ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} deletedCalls={calls} />, document.querySelector('.container'));
+			       	 ReactDOM.render(<App settings={settings} avatars={avatars} mycalls={mycalls} locations={locations} calllog={calllog} queue_members={queue_members} queue_members_status={queue_members_status} queues={queues} queuelogoutreasons={queuelogoutreasons} calls={calls} />, document.querySelector('.container'));
 			       }
 			       }).catch((reason)=>{
 			       });
