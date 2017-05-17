@@ -154,7 +154,7 @@ const fdp =  {
 				// does the below (along w/ an else if for 2nd branch) fix refresh???
 				console.log("FAILURE",res,err,body);
 				if (err == "timeout") {
-					console.log('timeout! refresh??? - ', err);
+					fdp.synced = false;
 					fdp.login();
 				}
 				
@@ -169,7 +169,7 @@ const fdp =  {
 					resolve(0);
 				}
 
-				fdp.emitter.emit('logout');
+				
 			});
 		}
 		else{
