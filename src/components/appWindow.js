@@ -100,15 +100,24 @@ export default class AppWindow extends Component {
             }
 
 		  	if(data["mycalls"]){
+
+
                 var oldCalls = {};
                 if(localStorage.newCalls != undefined || localStorage.newCalls != null){
                  oldCalls = JSON.parse(localStorage.newCalls);
 
-                console.log("OLD CALLS",oldCalls);
+                
             }
 
                         for(var i = 0; i < data["mycalls"].length;i++){
+                            
                             if(oldCalls){
+
+                            if(this.props.mycalls.length > 0 && (oldCalls[0].phone != this.props.mycalls[0].phone)){
+                               
+                                this._clearTicketNumber();
+                            }
+                            
                             for(var o = 0; o < oldCalls.length; o++){
 
                             
@@ -151,7 +160,7 @@ export default class AppWindow extends Component {
   componentWillReceiveProps() {
 
     if(this.props.mycalls.length > 0){
-        console.log("PROPS",this.props.mycalls);
+
         localStorage.setItem("newCalls",JSON.stringify(this.props.mycalls));
     }
     
@@ -976,7 +985,7 @@ localStorage.setItem("myqueues",JSON.stringify(myqueues));
   }
 
   _clearTicketNumber(){
-
+    console.log("TICKET NUMBER CLEARED");
   	localStorage.removeItem("ticketNumber");
   }
 
