@@ -113,11 +113,11 @@ export default class AppWindow extends Component {
                             
                             if(oldCalls){
 
-                            if(this.props.mycalls.length > 0 && (oldCalls[0].phone != this.props.mycalls[0].phone)){
+                            if(this.props.mycalls.length > 0 && oldCalls.length > 0 && (oldCalls[0].phone != this.props.mycalls[0].phone)){
                                
                                 this._clearTicketNumber();
                             }
-                            
+
                             for(var o = 0; o < oldCalls.length; o++){
 
                             
