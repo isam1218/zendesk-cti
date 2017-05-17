@@ -9,6 +9,7 @@ import zendesk from './zendesk.js';
 import LoginWindow from './login.js';
 import App from './app.js';
 
+
 export default class AppWindow extends Component {
     // data requirements
     /*  static propTypes = {
@@ -39,16 +40,16 @@ export default class AppWindow extends Component {
             callObj: []
         }
 
-        localStorage.newCallerFlag = true;
+        localStorage.setItem("newCallerFlag",false);
     }
 
 
     componentDidMount() {
 
 
-        if (this.state.screen == "default" || this.state.screen == "settings" ) {
+        //if (this.state.screen == "default" || this.state.screen == "settings" ) {
             window.addEventListener('storage', (e) => {
-
+                
 
 
                 if (e.key == "ticketPhone") {
@@ -82,9 +83,10 @@ export default class AppWindow extends Component {
                 }
 
 
+
                 //localStorage.removeItem("ticketPhone");
             });
-        }
+        //}
 
 
 
@@ -98,32 +100,34 @@ export default class AppWindow extends Component {
             }
 
 		  	if(data["mycalls"]){
-                
-		  			for(var i = 0; i < data["mycalls"].length;i++){
+                var oldCalls = {};
+                if(localStorage.newCalls != undefined || localStorage.newCalls != null){
+                 oldCalls = JSON.parse(localStorage.newCalls);
 
+                console.log("OLD CALLS",oldCalls);
+            }
 
-                            for(var d = 0; d < this.props.calls.length; d++){
+                        for(var i = 0; i < data["mycalls"].length;i++){
+                            if(oldCalls){
+                            for(var o = 0; o < oldCalls.length; o++){
 
+                            
+                            if(data["mycalls"][i].state == 2 && data["mycalls"][i].state != 3 && oldCalls[o].state == 0){
                                 
-                                    if(this.props.calls[this.props.calls.length - 2] != undefined && this.props.calls[this.props.calls.length - 2].xef001type == "delete"){
-                                        localStorage.newCallerFlag = false;
-                                        break;
-                                    }
-                                    else if(this.props.calls[this.props.calls.length - 1].state == 2 && this.props.calls[this.props.calls.length - 1].state != 3){
-                                        localStorage.newCallerFlag = true;
-                                        this._screenPop(this.props.calls[this.props.calls.length - 1]);
-                                        break;
-                                    }
+                                    localStorage.setItem("newCallerFlag",true);
+                                    this._screenPop(data["mycalls"][i]);
+                                    break;
                                 
                                 
+                                }
                             }
-
-				  		
-				  		if(data["mycalls"][i].xef001type == "delete"){
-				  					this._callEnded(data["mycalls"][i]);
-                                    
-				  		}
-			  		}
+                        }
+        
+                            if(data["mycalls"][i].xef001type == "delete" && (localStorage.ticketNumber && localStorage.ticketNumber.length > 0)){
+                                        this._callEnded(data["mycalls"][i]);
+                                        break;
+                            }
+                        }
 
 
 
@@ -145,27 +149,13 @@ export default class AppWindow extends Component {
 
 
   componentWillReceiveProps() {
-  	
 
+    if(this.props.mycalls.length > 0){
+        console.log("PROPS",this.props.mycalls);
+        localStorage.setItem("newCalls",JSON.stringify(this.props.mycalls));
+    }
+    
 
-
-		
-		// when call ends, return user to default screen, and set newCallerFlag back to true...
-		
-		if (this.props.mycalls.length == 0){
-			/*if(localStorage.queueScreen != 'queue'){
-				this.setState({
-					screen: 'default'
-				})
-			}
-			else{
-				this.setState({
-					screen: 'queue'
-				})
-			}
-*/
-			
-		}
 
         if (this.state.screen == "default") {
             localStorage.queueScreen = "";
@@ -303,8 +293,10 @@ _callEnded(endedCall){
             var endUserNumber = endUserCallNumber.replace(/[\s()-]+/gi, '');
 
             // set newCallerFlag to false since we have a new call...
-            if (localStorage.newCallerFlag == "true") {
-                localStorage.newCallerFlag = false;
+            var newCallerFlag = localStorage.getItem("newCallerFlag");
+            console.log("newCallerFlag",newCallerFlag);
+            if (newCallerFlag == "true") {
+                localStorage.setItem("newCallerFlag",false);
 
                 /***** SCREEN POP LOGIC START ******/
                 // grab call object and link to end user...
