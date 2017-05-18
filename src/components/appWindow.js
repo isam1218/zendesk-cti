@@ -73,14 +73,25 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
             window.addEventListener('storage', (e) => {
                 
                 if(e.key == "errorTicket"){
-                    
-
-                    
-                    if ((e.newValue != (null || "")) && !fdp.master) {
+                    console.log("STORAGE E",e);
+                    console.log("STORAGE E.NEW",e.newValue);
+                    console.log("STORAGE E.OLD",e.oldValue);
+                    if(isIE){
+                    if ((e.newValue != (null || "")) && (e.oldValue == (null || ""))) {
                         client.invoke('notify', e.newValue, "error", 10000);
                         
                     }
-
+                    }
+                   
+                   if(isChrome || isFirefox || isSafari){
+                        if (e.newValue != null && !fdp.master) {
+                            client.invoke('notify', e.newValue, "error", 10000);
+                            
+                        }
+                        /*if(fdp.master && e.oldValue != null){
+                            client.invoke('notify', e.oldValue, "error", 10000);
+                        }*/
+                    }
 
                     localStorage.removeItem("errorTicket");
                 }

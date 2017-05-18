@@ -109,9 +109,12 @@ const zendesk = {
 				},
 				(error)=> {
 
+						var isIE = /*@cc_on!@*/false || !!document.documentMode;
 
+						if(!isIE){
+							client.invoke('notify', message, "error", 10000);
+						}
 
-						client.invoke('notify', message, "error", 10000);
 						localStorage.setItem("errorTicket",message);
 
 					
