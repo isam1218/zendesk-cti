@@ -53,11 +53,11 @@ export default class AppWindow extends Component {
                 if(e.key == "errorTicket"){
                    
                     if (e.newValue != null && !fdp.master) {
-                        client.invoke('notify', e.newValue, "error", 7000);
+                        client.invoke('notify', e.newValue, "error", 10000);
                         
                     }
                     if(fdp.master && e.oldValue != null){
-                        client.invoke('notify', e.oldValue, "error", 7000);
+                        client.invoke('notify', e.oldValue, "error", 10000);
                     }
 
                     localStorage.removeItem("errorTicket");
