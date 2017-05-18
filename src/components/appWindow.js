@@ -53,11 +53,11 @@ export default class AppWindow extends Component {
                 if(e.key == "errorTicket"){
                    
                     if (e.newValue != null && !fdp.master) {
-                        client.invoke('notify', e.newValue, "error", 12000);
+                        client.invoke('notify', e.newValue, "error", 7000);
                         
                     }
                     if(fdp.master && e.oldValue != null){
-                        client.invoke('notify', e.oldValue, "error", 12000);
+                        client.invoke('notify', e.oldValue, "error", 7000);
                     }
 
                     localStorage.removeItem("errorTicket");
@@ -167,6 +167,11 @@ export default class AppWindow extends Component {
                     myZendeskAgent: status.user
                 });
             });
+
+        client.get("currentUser").then((user)=>{
+            localStorage.agentNo = user.currentUser.id;
+            localStorage.agentName = user.currentUser.name;
+        });
     }
 
 
@@ -277,12 +282,7 @@ _callEnded(endedCall){
 							duration.toString();
 					localStorage.getItem("ticketNumber");
 					if(localStorage.ticketNumber && localStorage.ticketNumber.length > 0){
-					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration).then((status)=>{
-                        
-							
-
-
-					});
+					zendesk.addCallLog(localStorage.ticketNumber,call_num,call_type,start_time,duration);
 					}
 
                         localStorage.removeItem("ticketNumber");

@@ -131,7 +131,7 @@ const fdp =  {
 					'Content-type': 'application/x-www-form-urlencoded'
 				}				
 			}).done((res,success,body) =>{
-				console.log("SUCCESS",res,status,body);
+				
 				// if success...
 				if (res.indexOf('Auth=') != -1) {
 					var creds = res.match(/Auth=[^\n]*/)[0].replace('Auth=', '').split('/');
@@ -152,7 +152,7 @@ const fdp =  {
 				
 			}).fail((res,err,body)=>{
 				// does the below (along w/ an else if for 2nd branch) fix refresh???
-				console.log("FAILURE",res,err,body);
+				
 				if (err == "timeout") {
 					fdp.synced = false;
 					fdp.login();

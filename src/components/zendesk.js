@@ -34,13 +34,14 @@ const zendesk = {
 		},
 
 	addCallLog(ticketNumber,phoneNumber,callType,startTime,duration){
-		// https://developer.zendesk.com/rest_api/docs/core/users#show-the-currently-authenticated-user
-		localStorage.ticketNumber = "";
+		//localStorage.ticketNumber = "";
+		
 		var grabCall = {
 		  url: `/api/v2/users/search.json?query=*${phoneNumber}`,
 		  type: 'GET',
 		  contentType: 'application/json',
 		};
+
 		var contactID;
 		var dialNum;
 		var callFrom;
@@ -57,10 +58,9 @@ const zendesk = {
 		if(callType == false)
 			callType = "Outbound";
 
-		return new Promise((resolve, reject) => {
 
 		client.request(grabCall).then(info =>{
-			console.log("INFO",info);
+			
 			if(info.users.length > 0){
 
 				 
@@ -85,16 +85,14 @@ const zendesk = {
 				
 				}
 
-		client.get("currentUser").then((user)=>{
-			agentNo = user.currentUser.id;
-			agentName = user.currentUser.name;
+
 
 		var data = 
 		{"ticket": 
 			{"status": "open", "comment": 
 			{
 			 "body": 
-			 "Contact Id: "+contactID+"\r\nDial Num: "+dialNum+"\r\nCall From: "+callFrom+"\r\nAgent No: "+agentNo+"\r\nAgent Name: "+agentName+"\r\nCall Type: "+callType+"\r\nStart Time: "+startTime+"\r\nDuration: "+duration+""
+			 "Contact Id: "+contactID+"\r\nDial Num: "+dialNum+"\r\nCall From: "+callFrom+"\r\nAgent No: "+localStorage.agentNo+"\r\nAgent Name: "+localStorage.agentName+"\r\nCall Type: "+callType+"\r\nStart Time: "+startTime+"\r\nDuration: "+duration+""
 			}
 		}
 		};
@@ -108,20 +106,17 @@ const zendesk = {
 		};
 		
 		client.request(fetchData).then((data) => {
-			  resolve(data);
 				},
 				(error)=> {
-					resolve(error);
 
 					if(fdp.master)
 					localStorage.setItem("errorTicket",message);
-					//client.invoke('notify', message, "error", 12000);
 
 				});
-			});
+			
 
 		});
-	});
+	
 		
 	},
 
