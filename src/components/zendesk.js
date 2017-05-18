@@ -35,7 +35,7 @@ const zendesk = {
 
 	addCallLog(ticketNumber,phoneNumber,callType,startTime,duration){
 		//localStorage.ticketNumber = "";
-		
+
 		var grabCall = {
 		  url: `/api/v2/users/search.json?query=*${phoneNumber}`,
 		  type: 'GET',
@@ -109,8 +109,12 @@ const zendesk = {
 				},
 				(error)=> {
 
-					if(fdp.master)
-					localStorage.setItem("errorTicket",message);
+
+
+						client.invoke('notify', message, "error", 10000);
+						localStorage.setItem("errorTicket",message);
+
+					
 
 				});
 			

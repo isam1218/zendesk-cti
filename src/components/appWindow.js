@@ -45,6 +45,7 @@ export default class AppWindow extends Component {
 
 
     componentDidMount() {
+        localStorage.removeItem("errorTicket");
             // Opera 8.0+
 var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
 
@@ -72,23 +73,14 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
             window.addEventListener('storage', (e) => {
                 
                 if(e.key == "errorTicket"){
+                    
 
-                    if(isIE){
-                    if ((e.newValue != (null || "")) && (e.oldValue == (null || ""))) {
+                    
+                    if ((e.newValue != (null || "")) && !fdp.master) {
                         client.invoke('notify', e.newValue, "error", 10000);
                         
                     }
-                    }
-                   
-                   if(isChrome){
-                        if (e.newValue != null && !fdp.master) {
-                            client.invoke('notify', e.newValue, "error", 10000);
-                            
-                        }
-                        if(fdp.master && e.oldValue != null){
-                            client.invoke('notify', e.oldValue, "error", 10000);
-                        }
-                    }
+
 
                     localStorage.removeItem("errorTicket");
                 }
