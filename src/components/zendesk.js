@@ -1,5 +1,6 @@
 import "babel-polyfill";
 import "es6-promise/auto";
+import fdp from './fdp.js';
 import $ from 'jquery';
 
 // http://stackoverflow.com/questions/5507234/how-to-use-basic-auth-with-jquery-and-ajax
@@ -111,7 +112,11 @@ const zendesk = {
 				},
 				(error)=> {
 					resolve(error);
-					client.invoke('notify', message, "error", 12000);
+
+					if(fdp.master)
+					localStorage.setItem("errorTicket",message);
+					//client.invoke('notify', message, "error", 12000);
+
 				});
 			});
 

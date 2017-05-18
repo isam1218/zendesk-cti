@@ -50,7 +50,18 @@ export default class AppWindow extends Component {
         //if (this.state.screen == "default" || this.state.screen == "settings" ) {
             window.addEventListener('storage', (e) => {
                 
+                if(e.key == "errorTicket"){
+                   
+                    if (e.newValue != null && !fdp.master) {
+                        client.invoke('notify', e.newValue, "error", 12000);
+                        
+                    }
+                    if(fdp.master && e.oldValue != null){
+                        client.invoke('notify', e.oldValue, "error", 12000);
+                    }
 
+                    localStorage.removeItem("errorTicket");
+                }
 
                 if (e.key == "ticketPhone") {
 
@@ -81,6 +92,7 @@ export default class AppWindow extends Component {
                     
                 	}
                 }
+
 
 
 
@@ -304,7 +316,7 @@ _callEnded(endedCall){
 
             // set newCallerFlag to false since we have a new call...
             var newCallerFlag = localStorage.getItem("newCallerFlag");
-            console.log("newCallerFlag",newCallerFlag);
+            
             if (newCallerFlag == "true") {
                 localStorage.setItem("newCallerFlag",false);
 
