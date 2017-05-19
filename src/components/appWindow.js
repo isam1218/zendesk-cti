@@ -40,7 +40,7 @@ export default class AppWindow extends Component {
             callObj: []
         }
 
-        localStorage.setItem("newCallerFlag",false);
+        localStorage.setItem("newCallerFlag",true);
     }
 
 
@@ -235,6 +235,8 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
         }
         else if (this.state.screen == "dialpad:add") {
             localStorage.queueScreen = "";
+            if(this.props.mycalls.length == 0)
+                this._changeScreen("default");
             if (this.props.mycalls.length == 1)
                 client.invoke('resize', {width: '320px', height: "495px"});
             if (this.props.mycalls.length == 2)
@@ -244,6 +246,8 @@ var isBlink = (isChrome || isOpera) && !!window.CSS;
         }
         else if (this.state.screen == "transfer") {
             localStorage.queueScreen = "";
+            if(this.props.mycalls.length == 0)
+                this._changeScreen("default");
             if (this.props.mycalls.length == 1)
                 client.invoke('resize', {width: '320px', height: "495px"});
             if (this.props.mycalls.length == 2)
