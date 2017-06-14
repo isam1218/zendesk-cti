@@ -88,10 +88,19 @@ var dataListener = fdp.emitter.addListener('data_sync_update', (data) => {
 
 			}
 
-			if (!logMatch) {
-				new_log.push(data['calllog'][i]);
-				calllog = new_log;
-			}
+				if(!logMatch){
+					
+					if(data['calllog'][i].location == "HUDweb"){
+						new_log.push(data['calllog'][i]);
+						calllog = new_log;
+					}
+					else if(data['calllog'][i].location == settings.primary_extension){
+
+						new_log.push(data['calllog'][i]);
+						calllog = new_log;
+
+					}
+				}	
 		}
 	}
 
