@@ -6,7 +6,7 @@
     "url": ""
   },
   "defaultLocale": "en",
-  "private": true,
+  "private": false,
   "location": {
     "support": {
       "top_bar": "assets/index.html",
