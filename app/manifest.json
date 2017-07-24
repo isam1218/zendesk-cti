@@ -1,8 +1,8 @@
 {
-  "name": "Fonality",
+  "name": "NetFortris",
   "author": {
-    "name": "Isam Shabandri, Sean Rose",
-    "email": "ishabandri@fonality.com, srose@fonality.com",
+    "name": "NetFortris",
+    "email": "zendeskapp@netfortris.com",
     "url": "https://www.netfortris.com"
   },
   "defaultLocale": "en",
