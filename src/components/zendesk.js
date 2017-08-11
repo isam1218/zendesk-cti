@@ -50,7 +50,7 @@ const zendesk = {
 		var agentNo;
 		var agentName;
 		var duration = moment(duration).format("mm:ss");
-		var message = "Looks like the ticket number you entered in the Netfortris for Zendesk app is badly formatted or does not exist. Please make sure you are entering the correct ticket number to log an internal note for this call.";
+		var message = "Looks like the ticket number you entered in the NetFortris for Zendesk app is badly formatted or does not exist. Please make sure you are entering the correct ticket number to log an internal note for this call.";
 
 		if(callType == true)
 			callType = "Inbound";
